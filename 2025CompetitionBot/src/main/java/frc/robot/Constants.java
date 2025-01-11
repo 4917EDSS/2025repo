@@ -14,10 +14,35 @@ package frc.robot;
  * constants are needed, to reduce verbosity.
  */
 public final class Constants {
+
   public static class CanIds {
     public static final int kElevatorMotor = 9;
+    public static final int kClimbMotor = 10; 
+    public static final int kIntakeMotor = 11;
   }
   public static class OperatorConstants {
     public static final int kDriverControllerPort = 0;
+    public static final int kOperatorControllerPort = 1;
   }
+
+  public final static class Arduino {
+    public static final int kBaudRate = 38400;
+    public static final double kTimeOutLength = 0.0;
+    public static final int kReadMessageLength = 19;
+    public static final int kBufferSize = kReadMessageLength * 2;
+    public static final int kSensorDataLength = 16;
+    public static final byte kMessageHeader = (byte) 0xA5;
+  }
+
+  public final static class PwmIds {
+    public final static int kLedStripPwmPort = 0;
+  }
+
+  // Subsystem Constants
+  public final static class Vision {
+    //TODO: change apriltag heights to actual heights, as well as the offsets. This is from last year.
+    public static final double kApriltagOffset = 0.0825; // Apriltag height + bot height (Will need to be changed in the future)
+    public static final double kApriltagHeights[] =
+        {1.22, 1.22, 1.32, 1.32, 1.22, 1.22, 1.32, 1.32, 1.22, 1.22, 1.24, 1.24, 1.24, 1.24, 1.24, 1.24};
+    }
 }
