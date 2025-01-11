@@ -59,11 +59,6 @@ public class RobotContainer {
 
     m_driverController.share().onTrue(new InstantCommand(() -> m_neoTestSub.resetEncoder()));
     //       .onTrue();
-
-    // m_operatorController.square()
-    // .onTrue(new ShooterPrepGrp(Constants.Shooter.kAngleAutoLine, Constants.Flywheel.kFlywheelShootVelocity,
-    //     m_arduinoSub, m_feederSub, m_flywheelSub,
-    //     m_pivotSub, m_ledSub));
   }
 
   /**
