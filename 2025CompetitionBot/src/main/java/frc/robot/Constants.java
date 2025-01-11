@@ -17,6 +17,7 @@ public final class Constants {
   public static class CanIds {
     public static final int kElevatorMotor = 9;
     public static final int kClimbMotor = 10; 
+    public static final int kIntakeMotor = 11;
   }
   public static class OperatorConstants {
     public static final int kDriverControllerPort = 0;

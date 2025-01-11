@@ -16,12 +16,12 @@ import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import frc.robot.Constants;
 import frc.robot.RobotContainer;
 
-public class ClimbSub extends SubsystemBase {
-  // Create the climb motor
-  private final SparkMax m_climbMotor = new SparkMax(Constants.CanIds.kClimbMotor, MotorType.kBrushless);
-  
-  /** Creates a new ClimbSub. */
-  public ClimbSub() {
+public class IntakeSub extends SubsystemBase {
+  // Create the intake motor
+  private final SparkMax m_intakeMotor = new SparkMax(Constants.CanIds.kIntakeMotor, MotorType.kBrushless);
+
+  /** Creates a new IntakeSub. */
+  public IntakeSub() {
     SparkMaxConfig config = new SparkMaxConfig();
 
     config
@@ -29,9 +29,10 @@ public class ClimbSub extends SubsystemBase {
       .smartCurrentLimit(5) // Current limit in amps
       .idleMode(IdleMode.kBrake); // Set to kCoast to allow the motor to coast when power is 0.0
 
+    
     // Save the configuration to the motor
     // Only persist parameters when configuring the motors on start up as this operation can be slow
-    m_climbMotor.configure(config, SparkBase.ResetMode.kResetSafeParameters, SparkBase.PersistMode.kPersistParameters);
+    m_intakeMotor.configure(config, SparkBase.ResetMode.kResetSafeParameters, SparkBase.PersistMode.kPersistParameters);
 
     // If we change the parameters (e.g. brake mode) during robot operation, 
     // we should not save the changes to flash (i.e. want kNoPersistParameters)
@@ -45,20 +46,20 @@ public class ClimbSub extends SubsystemBase {
     // This method will be called once per scheduler run
   }
 
-  // Control the climb
+  // Control the intake
   public void moveClimb(double power) {
-    m_climbMotor.set(power);
+    m_intakeMotor.set(power);
   }
 
   public void resetEncoder() {
-    m_climbMotor.getEncoder().setPosition(0);
+    m_intakeMotor.getEncoder().setPosition(0);
   }
 
   public double getDistance() {
-    return m_climbMotor.getEncoder().getPosition();
+    return m_intakeMotor.getEncoder().getPosition();
   }
 
   public double getVelocity() {
-    return m_climbMotor.getEncoder().getVelocity();
+    return m_intakeMotor.getEncoder().getVelocity();
   }
 }
