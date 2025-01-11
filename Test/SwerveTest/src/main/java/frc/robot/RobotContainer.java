@@ -15,7 +15,7 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandPS4Controller;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.subsystems.VisionSub;
-
+import frc.robot.commands.ReefVisionAlignCmd;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 
@@ -38,7 +38,7 @@ public class RobotContainer {
 
   private final CommandPS4Controller joystick = new CommandPS4Controller(0);
 
-  public final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
+  public static final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
 
   public RobotContainer() {
     configureBindings();
@@ -67,7 +67,8 @@ public class RobotContainer {
 
     // reset the field-centric heading on L1 press
     joystick.L1().onTrue(drivetrain.runOnce(() -> drivetrain.seedFieldCentric()));
-    //joystick.L2().onTrue();
+    joystick.L2().onTrue(new ReefVisionAlignCmd(m_visionSub, -0.164338));
+    joystick.R2().onTrue(new ReefVisionAlignCmd(m_visionSub, 0.164338));
 
     drivetrain.registerTelemetry(logger::telemeterize);
   }
@@ -75,6 +76,5 @@ public class RobotContainer {
   public Command getAutonomousCommand() {
     return Commands.print("No autonomous command configured");
   }
-
 
 }

@@ -7,8 +7,11 @@ package frc.robot.commands;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.Command;
+import frc.robot.Robot;
 import frc.robot.RobotContainer;
 import frc.robot.subsystems.VisionSub;
+import frc.robot.subsystems.CommandSwerveDrivetrain;
+import edu.wpi.first.math.geometry.Transform2d;
 
 /*
  * You should consider using the more terse Command factories API instead
@@ -17,9 +20,14 @@ import frc.robot.subsystems.VisionSub;
 public class ReefVisionAlignCmd extends Command {
   private final VisionSub m_visionSub;
   private static Rotation2d targetAlignment;
+  private final CommandSwerveDrivetrain drivetrain;
+  SwerveRequest.PointWheelsAt driveToPos;
+  private double offset;
 
   /** Creates a new ReefVisionAlignCmd. */
-  public ReefVisionAlignCmd(VisionSub visionSub) {
+  public ReefVisionAlignCmd(VisionSub visionSub, double offset) {
+    this.offset = offset;
+    drivetrain = RobotContainer.drivetrain;
     m_visionSub = visionSub;
     addRequirements(visionSub);
     // Use addRequirements() here to declare subsystem dependencies.
@@ -28,15 +36,15 @@ public class ReefVisionAlignCmd extends Command {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-
+    driveToPos =
+        new SwerveRequest.PointWheelsAt().withModuleDirection(new Rotation2d(0));
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    final SwerveRequest.PointWheelsAt driveToPos =
-        new SwerveRequest.PointWheelsAt().withModuleDirection(m_visionSub.getTargetAngle(m_visionSub.getTarget2D()));
-
+    drivetrain.applyRequest(() -> driveToPos.withModuleDirection(m_visionSub
+        .getTargetAngle(m_visionSub.getTarget2D().transformBy(new Transform2d(offset, 0, new Rotation2d(0))))));
   }
 
   // Called once the command ends or is interrupted.
@@ -46,6 +54,11 @@ public class ReefVisionAlignCmd extends Command {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return false;
+    if(m_visionSub.getTarget2D().getX() < 0.1 && m_visionSub.getTarget2D().getX() > -0.1
+        && m_visionSub.getTarget2D().getX() < 0.1 && m_visionSub.getTarget2D().getX() > -0.1) {
+      return true;
+    } else {
+      return false;
+    }
   }
 }
