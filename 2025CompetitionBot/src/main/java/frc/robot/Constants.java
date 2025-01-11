@@ -37,4 +37,12 @@ public final class Constants {
   public final static class PwmIds {
     public final static int kLedStripPwmPort = 0;
   }
+
+  // Subsystem Constants
+  public final static class Vision {
+    //TODO: change apriltag heights to actual heights, as well as the offsets. This is from last year.
+    public static final double kApriltagOffset = 0.0825; // Apriltag height + bot height (Will need to be changed in the future)
+    public static final double kApriltagHeights[] =
+        {1.22, 1.22, 1.32, 1.32, 1.22, 1.22, 1.32, 1.32, 1.22, 1.22, 1.24, 1.24, 1.24, 1.24, 1.24, 1.24};
+    }
 }

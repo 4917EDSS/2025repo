@@ -33,6 +33,8 @@ public class RobotContainer {
   private final IntakeSub m_intakeSub = new IntakeSub();
   private final LedSub m_ledSub = new LedSub(m_arduinoSub);
 
+  public static boolean disableShuffleboardPrint = true;
+
   private final CommandPS4Controller m_driverController =
       new CommandPS4Controller(OperatorConstants.kDriverControllerPort);
   private final CommandPS4Controller m_operatorController =
