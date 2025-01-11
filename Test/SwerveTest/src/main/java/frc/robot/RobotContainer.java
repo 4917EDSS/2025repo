@@ -14,11 +14,13 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandPS4Controller;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
+import frc.robot.subsystems.VisionSub;
 
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 
 public class RobotContainer {
+  private final VisionSub m_visionSub = new VisionSub();
   private double MaxSpeed = TunerConstants.kSpeedAt12Volts.in(MetersPerSecond); // kSpeedAt12Volts desired top speed
   private double MaxAngularRate = RotationsPerSecond.of(0.75).in(RadiansPerSecond); // 3/4 of a rotation per second max angular velocity
 
@@ -28,6 +30,9 @@ public class RobotContainer {
       .withDriveRequestType(DriveRequestType.OpenLoopVoltage); // Use open-loop control for drive motors
   private final SwerveRequest.SwerveDriveBrake brake = new SwerveRequest.SwerveDriveBrake();
   private final SwerveRequest.PointWheelsAt point = new SwerveRequest.PointWheelsAt();
+
+  private final SwerveRequest.PointWheelsAt driveToPos =
+      new SwerveRequest.PointWheelsAt().withModuleDirection(m_visionSub.getTargetAngle(m_visionSub.getTarget2D()));
 
   private final Telemetry logger = new Telemetry(MaxSpeed);
 
@@ -62,6 +67,7 @@ public class RobotContainer {
 
     // reset the field-centric heading on L1 press
     joystick.L1().onTrue(drivetrain.runOnce(() -> drivetrain.seedFieldCentric()));
+    //joystick.L2().onTrue();
 
     drivetrain.registerTelemetry(logger::telemeterize);
   }
@@ -69,4 +75,6 @@ public class RobotContainer {
   public Command getAutonomousCommand() {
     return Commands.print("No autonomous command configured");
   }
+
+
 }
