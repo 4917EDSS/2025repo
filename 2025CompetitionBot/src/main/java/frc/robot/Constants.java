@@ -22,4 +22,17 @@ public final class Constants {
   public static class OperatorConstants {
     public static final int kDriverControllerPort = 0;
   }
+
+  public final static class Arduino {
+    public static final int kBaudRate = 38400;
+    public static final double kTimeOutLength = 0.0;
+    public static final int kReadMessageLength = 19;
+    public static final int kBufferSize = kReadMessageLength * 2;
+    public static final int kSensorDataLength = 16;
+    public static final byte kMessageHeader = (byte) 0xA5;
+  }
+
+  public final static class PwmIds {
+    public final static int kLedStripPwmPort = 0;
+  }
 }
