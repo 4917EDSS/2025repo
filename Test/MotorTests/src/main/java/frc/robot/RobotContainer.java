@@ -8,12 +8,14 @@ import frc.robot.Constants.OperatorConstants;
 import frc.robot.subsystems.KrakenTestSub;
 import frc.robot.subsystems.NeoTestSub;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.PrintCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandPS4Controller;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.comands.DriveCmd;
+import frc.robot.comands.PivotToAngleCmd;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -53,8 +55,15 @@ public class RobotContainer {
    * joysticks}.
    */
   private void configureBindings() {
-    //   m_driverController.square()
+    m_driverController.square().onTrue(new PivotToAngleCmd(45, m_neoTestSub));
+
+    m_driverController.share().onTrue(new InstantCommand(() -> m_neoTestSub.resetEncoder()));
     //       .onTrue();
+
+    // m_operatorController.square()
+    // .onTrue(new ShooterPrepGrp(Constants.Shooter.kAngleAutoLine, Constants.Flywheel.kFlywheelShootVelocity,
+    //     m_arduinoSub, m_feederSub, m_flywheelSub,
+    //     m_pivotSub, m_ledSub));
   }
 
   /**

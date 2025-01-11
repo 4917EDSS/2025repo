@@ -39,7 +39,7 @@ public class DriveCmd extends InstantCommand {
     // get controller joystick value
     double pivotPowerLeft = -m_controller.getLeftY();
     double pivotPowerRight = -m_controller.getRightY();
-
+    //Deadband
     m_logger.info("pivot power" + pivotPowerLeft);
     if(Math.abs(pivotPowerLeft) > 0.05) {
       m_neotestSub.drive(pivotPowerLeft);
@@ -47,7 +47,7 @@ public class DriveCmd extends InstantCommand {
       m_neotestSub.drive(0.0);
     }
 
-
+    //Deadband
     m_logger.info("pivot power" + pivotPowerRight);
     if(Math.abs(pivotPowerRight) > 0.05) {
       m_krakenTestSub.drive(pivotPowerRight);

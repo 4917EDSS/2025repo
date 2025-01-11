@@ -22,4 +22,8 @@ public final class Constants {
     public static final int kKrakenId = 1;//TODO unknown number 
     public static final int kNeoVortexId = 2;//TODO unknown number 
   }
+
+  public static class NeoSub {
+    public static final double kRotationsToAngleFactor = 180 / 59.95;
+  }
 }

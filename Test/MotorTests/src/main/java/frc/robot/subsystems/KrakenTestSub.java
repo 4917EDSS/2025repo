@@ -41,10 +41,6 @@ public class KrakenTestSub extends SubsystemBase {
   }
 
   public void drive(double power) {
-    if(--count == 0) {
-      count = 10;
-      System.out.println("Kraken " + power);
-    }
     m_krakenMotor.set(power);
   }
 }
