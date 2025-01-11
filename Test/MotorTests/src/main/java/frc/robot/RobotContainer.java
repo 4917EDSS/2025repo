@@ -11,7 +11,9 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.PrintCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandPS4Controller;
+import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import frc.robot.comands.DriveCmd;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -33,9 +35,12 @@ public class RobotContainer {
     // Configure the trigger bindings
     configureBindings();
 
-    m_krakenSub.setDefaultCommand(new RunCommand(() -> m_krakenSub.drive(-m_driverController.getLeftY()), m_krakenSub));
-    m_neoTestSub
-        .setDefaultCommand(new RunCommand(() -> m_neoTestSub.drive(-m_driverController.getRightY()), m_neoTestSub));
+    //m_krakenSub.setDefaultCommand(new RunCommand(() -> m_krakenSub.drive(-m_driverController.getLeftY()), m_krakenSub));
+    // m_neoTestSub
+    //     .setDefaultCommand(new RunCommand(() -> m_neoTestSub.drive(m_driverController.getRightY()), m_neoTestSub));
+
+    m_neoTestSub.setDefaultCommand(
+        new DriveCmd(m_driverController, m_neoTestSub, m_krakenSub));
   }
 
   /**
@@ -47,7 +52,10 @@ public class RobotContainer {
    * PS4} controllers or {@link edu.wpi.first.wpilibj2.command.button.CommandJoystick Flight
    * joysticks}.
    */
-  private void configureBindings() {}
+  private void configureBindings() {
+    //   m_driverController.square()
+    //       .onTrue();
+  }
 
   /**
    * Use this to pass the autonomous command to the main {@link Robot} class.

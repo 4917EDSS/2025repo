@@ -19,7 +19,7 @@ public final class Constants {
   }
 
   public static class CanIds {
-    public static final int kKrakenId = 1;
-    public static final int kNeoVortexId = 0;
+    public static final int kKrakenId = 1;//TODO unknown number 
+    public static final int kNeoVortexId = 2;//TODO unknown number 
   }
 }
