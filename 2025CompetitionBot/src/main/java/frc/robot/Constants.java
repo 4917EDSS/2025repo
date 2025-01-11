@@ -14,6 +14,7 @@ package frc.robot;
  * constants are needed, to reduce verbosity.
  */
 public final class Constants {
+
   public static class CanIds {
     public static final int kElevatorMotor = 9;
     public static final int kClimbMotor = 10; 
@@ -21,6 +22,7 @@ public final class Constants {
   }
   public static class OperatorConstants {
     public static final int kDriverControllerPort = 0;
+    public static final int kOperatorControllerPort = 1;
   }
 
   public final static class Arduino {

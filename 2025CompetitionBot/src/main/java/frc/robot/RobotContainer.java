@@ -6,9 +6,17 @@ package frc.robot;
 
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.commands.Autos;
+import frc.robot.commands.KillAllCmd;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.button.CommandPS4Controller;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import frc.robot.subsystems.ArduinoSub;
+import frc.robot.subsystems.ClimbSub;
+import frc.robot.subsystems.DrivetrainSub;
+import frc.robot.subsystems.ElevatorSub;
+import frc.robot.subsystems.IntakeSub;
+import frc.robot.subsystems.LedSub;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -18,10 +26,17 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
  */
 public class RobotContainer {
   // The robot's subsystems and commands are defined here...
+  private final ArduinoSub m_arduinoSub = new ArduinoSub();
+  private final ClimbSub m_climbSub = new ClimbSub();
+  private final DrivetrainSub m_drivetrainSub = new DrivetrainSub();
+  private final ElevatorSub m_elevatorSub = new ElevatorSub();
+  private final IntakeSub m_intakeSub = new IntakeSub();
+  private final LedSub m_ledSub = new LedSub(m_arduinoSub);
 
-  // Replace with CommandPS4Controller or CommandJoystick if needed
-  private final CommandXboxController m_driverController =
-      new CommandXboxController(OperatorConstants.kDriverControllerPort);
+  private final CommandPS4Controller m_driverController =
+      new CommandPS4Controller(OperatorConstants.kDriverControllerPort);
+  private final CommandPS4Controller m_operatorController =
+      new CommandPS4Controller(OperatorConstants.kOperatorControllerPort);
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
@@ -39,6 +54,13 @@ public class RobotContainer {
    * joysticks}.
    */
   private void configureBindings() {
+    // 'Kill All' command
+    m_driverController.L3()
+        .onTrue(new KillAllCmd(m_climbSub, m_drivetrainSub, m_intakeSub, m_elevatorSub));
+
+    m_driverController.R3()
+        .onTrue(new KillAllCmd(m_climbSub, m_drivetrainSub, m_intakeSub, m_elevatorSub));
+
 
 
 
