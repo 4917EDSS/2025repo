@@ -37,6 +37,7 @@ public class ClimbSub extends SubsystemBase {
     // we should not save the changes to flash (i.e. want kNoPersistParameters)
     //m_intakeMotor.configure(config, SparkBase.ResetMode.kNoResetSafeParameters, 
     //  SparkBase.PersistMode.kNoPersistParameters);
+    resetEncoder();
   }
 
   @Override
@@ -47,5 +48,17 @@ public class ClimbSub extends SubsystemBase {
   // Control the climb
   public void moveClimb(double power) {
     m_climbMotor.set(power); //
+  }
+
+  public void resetEncoder() {
+    m_climbMotor.getEncoder().setPosition(0);
+  }
+
+  public double getDistance() {
+    return m_climbMotor.getEncoder().getPosition();
+  }
+
+  public double getVelocity() {
+    return m_climbMotor.getEncoder().getVelocity();
   }
 }
