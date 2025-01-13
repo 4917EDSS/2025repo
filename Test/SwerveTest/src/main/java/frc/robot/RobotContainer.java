@@ -5,18 +5,20 @@
 package frc.robot;
 
 import static edu.wpi.first.units.Units.*;
-
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandPS4Controller;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
+import frc.robot.subsystems.ClimbSub;
 
 public class RobotContainer {
   private double MaxSpeed = TunerConstants.kSpeedAt12Volts.in(MetersPerSecond); // kSpeedAt12Volts desired top speed
@@ -34,6 +36,8 @@ public class RobotContainer {
   private final CommandPS4Controller joystick = new CommandPS4Controller(0);
 
   public final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
+
+  public final ClimbSub m_climbSub = new ClimbSub();
 
   public RobotContainer() {
     configureBindings();
@@ -62,6 +66,11 @@ public class RobotContainer {
 
     // reset the field-centric heading on L1 press
     joystick.L1().onTrue(drivetrain.runOnce(() -> drivetrain.seedFieldCentric()));
+
+    joystick.povDown()
+        .whileTrue(new StartEndCommand(() -> m_climbSub.moveClimb(0.5), () -> m_climbSub.moveClimb(0.0), m_climbSub));
+    joystick.povUp()
+        .whileTrue(new StartEndCommand(() -> m_climbSub.moveClimb(-0.5), () -> m_climbSub.moveClimb(0.0), m_climbSub));
 
     drivetrain.registerTelemetry(logger::telemeterize);
   }
