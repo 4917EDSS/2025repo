@@ -38,7 +38,7 @@ import frc.robot.subsystems.ClimbSub;
 import frc.robot.subsystems.DrivetrainSub;
 import frc.robot.subsystems.ElevatorSub;
 import frc.robot.subsystems.IntakeSub;
-// import frc.robot.subsystems.VisionSub;
+import frc.robot.subsystems.VisionSub;
 import frc.robot.utils.SwerveTelemetry;
 import frc.robot.utils.TestManager;
 
@@ -71,7 +71,7 @@ public class RobotContainer {
   private final ElevatorSub m_elevatorSub = new ElevatorSub();
   private final IntakeSub m_intakeSub = new IntakeSub();
   //private final LedSub m_ledSub = new LedSub(m_arduinoSub);  // TODO:  Implement with new Arduino
-  //private final VisionSub m_visionSub = new VisionSub();
+  private final VisionSub m_visionSub = new VisionSub();
   private final ArmSub m_armSub = new ArmSub();
 
   // Controllers
@@ -124,9 +124,10 @@ public class RobotContainer {
 
     // Triange - unused
 
-    //m_driverController.L1().onTrue(new AutoDriveCmd(m_visionSub));
+    m_driverController.L1().onTrue(new AutoDriveCmd(m_visionSub, m_drivetrainSub));
 
-    //m_driverController.R1().onTrue(new AutoDriveCmd(m_visionSub));
+    m_driverController.R1().onTrue(new AutoDriveCmd(m_visionSub, m_drivetrainSub));
+
 
     // L2 - unused
 
