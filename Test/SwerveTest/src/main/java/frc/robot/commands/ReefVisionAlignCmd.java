@@ -36,7 +36,7 @@ public class ReefVisionAlignCmd extends Command {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    System.out.println("skibidi");
+    System.out.println("init");
     driveToPos =
         new SwerveRequest.PointWheelsAt().withModuleDirection(new Rotation2d(0));
   }
