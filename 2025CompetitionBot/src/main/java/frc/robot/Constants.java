@@ -19,6 +19,8 @@ public final class Constants {
     public static final int kElevatorMotor = 9;
     public static final int kClimbMotor = 10; 
     public static final int kIntakeMotor = 11;
+    public static final int kKrakenMotor = 1;
+    public static final int kKrakenMotor2 = 2;
   }
   public static class OperatorConstants {
     public static final int kDriverControllerPort = 0;
@@ -44,5 +46,20 @@ public final class Constants {
     public static final double kApriltagOffset = 0.0825; // Apriltag height + bot height (Will need to be changed in the future)
     public static final double kApriltagHeights[] =
         {1.22, 1.22, 1.32, 1.32, 1.22, 1.22, 1.32, 1.32, 1.22, 1.22, 1.24, 1.24, 1.24, 1.24, 1.24, 1.24};
+    }
+
+    public static final class Tests {
+      public static final String kTabName = "Tests";
+      public static final int kDashboardRows = 5; // Max rows that we can use to display tests (start new column after this row)
+      public static final int kDashboardCols = 6; // Max columns that we cna use to display tests (start a new tab after this column)
+  
+      public static final double kDriveMotorPower = 0.1; // Power to test motor at
+      public static final long kDriveMotorTimeMs = 2000; // How long to run the motor for, in milliseconds
+      public static final double kDriveMotorExpectedPosition = 31; // What the expected encoder position is (in ? units)
+      public static final double kDriveMotorPositionTolerance = 0.75; // How for off the position can be (+ or -) and still considered OK
+      public static final double kDriveMotorPositionMinimum = 1; // Minimum position change to be considered a partial pass
+      public static final double kDriveMotorExpectedAmps = 0.06; // How much current we expect it to pull just before the end of the test
+      public static final double kDriveMotorAmpsTolerance = 0.03; // How far off the amps can be (+ or -) and still be considered OK
+      public static final double kDriveMotorAmpsMinimum = 0.02; // Minimum current to be considered a partial pass
     }
 }
