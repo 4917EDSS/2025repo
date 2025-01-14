@@ -101,7 +101,7 @@ public class ElevatorSub extends SubsystemBase {
     double powerValue;
     if(isAtLowerLimit() && power < 0.0) {
       powerValue = 0.0;
-    } else if((getPosition() < Constants.Elevator.kSlowDownLowerStageHeight)
+    } else if((getPositionMM() < Constants.Elevator.kSlowDownLowerStageHeight)
         && (power < Constants.Elevator.kSlowDownLowerStagePower)) {
       powerValue = -0.25;
     } else {
@@ -110,7 +110,7 @@ public class ElevatorSub extends SubsystemBase {
     m_elevatorMotor.set(powerValue);
     m_elevatorMotor2.set(powerValue);
     System.out.println("Current power is " + powerValue);
-    System.out.println("Position is " + getPosition());
+    System.out.println("Position is " + getPositionMM());
   }
 
   public void getPower() {
