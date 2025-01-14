@@ -82,7 +82,7 @@ public class VisionSub extends SubsystemBase {
 
   public void init() {
     //Sets the apriltag pipeline
-    setPipeline(0); // Apriltag vision
+    setPipeline(1); // Apriltag vision
   }
 
   @Override
