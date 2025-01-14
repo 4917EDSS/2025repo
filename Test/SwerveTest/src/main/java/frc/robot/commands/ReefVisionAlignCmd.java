@@ -36,6 +36,7 @@ public class ReefVisionAlignCmd extends Command {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
+    System.out.println("skibidi");
     driveToPos =
         new SwerveRequest.PointWheelsAt().withModuleDirection(new Rotation2d(0));
   }
@@ -55,7 +56,8 @@ public class ReefVisionAlignCmd extends Command {
   @Override
   public boolean isFinished() {
     if(m_visionSub.getTarget2D().getX() < 0.1 && m_visionSub.getTarget2D().getX() > -0.1
-        && m_visionSub.getTarget2D().getX() < 0.1 && m_visionSub.getTarget2D().getX() > -0.1) {
+        && m_visionSub.getTarget2D().getY() < 0.1 && m_visionSub.getTarget2D().getY() > -0.1) {
+      System.out.println(m_visionSub.simpleHasTarget());
       return true;
     } else {
       return false;

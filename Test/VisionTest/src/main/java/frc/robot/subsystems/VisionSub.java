@@ -30,7 +30,7 @@ public class VisionSub extends SubsystemBase {
    * tv: 1 If valid target exists. 0 if no valid targets exist
    * tx: Horizontal offset from crosshair to target (In degrees)
    * ty: Vertical offset from crosshair to target (In degrees)
-   * ta: Target area, how much of the feed is covered by the limelight
+   * ta: Target area, how much of the feed is covered by the apriltag
    * tid: Id of the primary apriltag currently in view
    * botpose_targetspace: 3D transform from the primary in view apriltag
    * getpipe: Active camera pipeline index (0,9)
