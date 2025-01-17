@@ -10,6 +10,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.subsystems.KrakenSub;
+import frc.robot.subsystems.MotorSub;
 import frc.robot.utils.TestManager;
 import frc.robot.utils.TestManager.Result;
 
@@ -18,7 +19,7 @@ import frc.robot.utils.TestManager.Result;
  * https://docs.wpilib.org/en/stable/docs/software/commandbased/organizing-command-based.html#defining-commands
  */
 public class TestMotorCmd extends Command {
-  private SubsystemBase m_subsystem;
+  private MotorSub m_subsystem;
   private final TestManager m_testManager;
   private int m_testId;
   private Instant m_startTime;
@@ -36,7 +37,7 @@ public class TestMotorCmd extends Command {
   //   TestKrakenAll(krakenSub, testManager, m_testId);
   // }
 
-  public TestMotorCmd(TestManager testManager, SubsystemBase subsystem, int testId) {
+  public TestMotorCmd(TestManager testManager, MotorSub subsystem, int testId) {
     m_testManager = testManager;
     m_subsystem = subsystem;
     m_testId = testId;

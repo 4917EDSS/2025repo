@@ -4,14 +4,32 @@
 
 package frc.robot.subsystems;
 
+import com.ctre.phoenix6.StatusCode;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class MotorSub extends SubsystemBase {
   /** Creates a new MotorSub. */
   public MotorSub() {}
 
-  @Override
-  public void periodic() {
-    // This method will be called once per scheduler run
+  public double getPosition() {
+    return 0;
   }
+
+  public double getVelocity() {
+    return 0;
+  }
+
+  public double getAcceleration() {
+    return 0;
+  }
+
+  public double getAmps() {
+    return 0;
+  }
+
+  public void resetPosition() {
+
+  }
+
+  public void runMotor(double power) {}
 }

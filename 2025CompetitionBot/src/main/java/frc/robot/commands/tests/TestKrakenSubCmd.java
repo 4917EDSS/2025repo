@@ -46,17 +46,7 @@ public class TestKrakenSubCmd extends Command {
   public void initialize() {
     // Reset the encoder and run the motor for a given time
     m_startTime = Instant.now();
-    m_krakenSub.resetPosition();
-    StatusCode sc = m_krakenSub.runMotor(Constants.Tests.kDriveMotorPower);
 
-    if(sc != StatusCode.OK) {
-      // Motor isn't working correctly.  Make sure it's off and end the test.
-      m_abortTest = true;
-      m_krakenSub.runMotor(0.0);
-      String resultsText = "Motor error " + sc.value + " - " + sc.getName() + " - " + sc.getDescription();
-      m_testManager.updateTestStatus(m_testId, TestManager.Result.kFail, resultsText);
-      System.out.println("KrakenSub " + resultsText);
-    }
   }
 
   // Called every time the scheduler runs while the command is scheduled.

@@ -31,8 +31,6 @@ public class ArduinoSub extends SubsystemBase {
   private static boolean m_LEDHasChanged = true;
   private static boolean m_LEDArrayChanged = false;
   private static int m_intakeSensors[] = new int[8];
-  private final TalonFX m_testMotor = new TalonFX(Constants.CanIds.kKrakenMotor);
-  private final StatusSignal<Current> m_testMotorAmps = m_testMotor.getSupplyCurrent();
 
   private int[] m_currentRGB = new int[3];
 
@@ -74,10 +72,6 @@ public class ArduinoSub extends SubsystemBase {
     updateShuffleBoard();
   }
 
-  public double getAmps() {
-    m_testMotorAmps.refresh();
-    return m_testMotorAmps.getValueAsDouble();
-  }
 
   private void updateShuffleBoard() {
     m_sensorFlywheelNear.setDouble(m_intakeSensors[0]);

@@ -23,7 +23,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 
-public class KrakenSub extends SubsystemBase {
+public class KrakenSub extends MotorSub {
   private final TalonFX m_testMotor = new TalonFX(Constants.CanIds.kKrakenMotor);
   private final StatusSignal<Angle> m_testMotorPosition = m_testMotor.getPosition();
   private final StatusSignal<AngularVelocity> m_testMotorVelocity = m_testMotor.getVelocity();
@@ -77,30 +77,37 @@ public class KrakenSub extends SubsystemBase {
    * @param power Power from -1.0 to 1.0
    * @return Motor controller's status code. If not OK(0), an error has occurred.
    */
-  public StatusCode runMotor(double power) {
-    return m_testMotor.setControl(m_testMotorDutyCycle.withOutput(power));
+
+  @Override
+  public void runMotor(double power) {
+    m_testMotor.setControl(m_testMotorDutyCycle.withOutput(power));
   }
 
+  @Override
   public double getPosition() {
     m_testMotorPosition.refresh();
     return m_testMotorPosition.getValueAsDouble();
   }
 
+  @Override
   public double getVelocity() {
     m_testMotorVelocity.refresh();
     return m_testMotorVelocity.getValueAsDouble();
   }
 
+  @Override
   public double getAcceleration() {
     m_testMotorAcceleration.refresh();
     return m_testMotorAcceleration.getValueAsDouble();
   }
 
+  @Override
   public double getAmps() {
     m_testMotorAmps.refresh();
     return m_testMotorAmps.getValueAsDouble();
   }
 
+  @Override
   public void resetPosition() {
     m_testMotor.setPosition(0, 0.2); // Not sure if the timeout is necessary or beneficial
   }
