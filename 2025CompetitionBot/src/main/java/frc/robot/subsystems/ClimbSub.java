@@ -54,6 +54,10 @@ public class ClimbSub extends SubsystemBase {
     return m_climbMotor.getEncoder().getPosition();
   }
 
+  public void resetPosition() {
+
+  }
+
   public double getVelocity() {
     return m_climbMotor.getEncoder().getVelocity();
   }
