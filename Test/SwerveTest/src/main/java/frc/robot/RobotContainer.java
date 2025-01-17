@@ -34,7 +34,7 @@ public class RobotContainer {
   private final SwerveRequest.PointWheelsAt driveToPos =
       new SwerveRequest.PointWheelsAt().withModuleDirection(m_visionSub.getTargetAngle(m_visionSub.getTarget2D()));
 
-  private final Telemetry logger = new Telemetry(MaxSpeed);
+  //private final Telemetry logger = new Telemetry(MaxSpeed);
 
   private final CommandPS4Controller joystick = new CommandPS4Controller(0);
 
@@ -70,7 +70,7 @@ public class RobotContainer {
     joystick.L2().onTrue(new ReefVisionAlignCmd(m_visionSub, -0.164338));
     joystick.R2().onTrue(new ReefVisionAlignCmd(m_visionSub, 0.164338));
 
-    drivetrain.registerTelemetry(logger::telemeterize);
+    //drivetrain.registerTelemetry(logger::telemeterize);
   }
 
   public Command getAutonomousCommand() {

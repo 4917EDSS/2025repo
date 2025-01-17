@@ -57,7 +57,7 @@ public class ReefVisionAlignCmd extends Command {
   public boolean isFinished() {
     if(m_visionSub.getTarget2D().getX() < 0.1 && m_visionSub.getTarget2D().getX() > -0.1
         && m_visionSub.getTarget2D().getY() < 0.1 && m_visionSub.getTarget2D().getY() > -0.1) {
-      System.out.println(m_visionSub.simpleHasTarget());
+      System.out.println(m_visionSub.getPrimaryID());
       return true;
     } else {
       return false;

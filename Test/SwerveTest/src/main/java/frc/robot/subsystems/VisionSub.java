@@ -86,7 +86,9 @@ public class VisionSub extends SubsystemBase {
   }
 
   @Override
-  public void periodic() {}
+  public void periodic() {
+    updateShuffleBoard();
+  }
 
   //Method to get the apriltag heights from constants since not all have the same height, 
   public double getDistance(int id) { // In meters
