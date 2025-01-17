@@ -4,7 +4,10 @@
 
 package frc.robot.subsystems;
 
+import com.ctre.phoenix6.StatusSignal;
+import com.ctre.phoenix6.hardware.TalonFX;
 import edu.wpi.first.networktables.GenericEntry;
+import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.wpilibj.SerialPort;
 import edu.wpi.first.wpilibj.SerialPort.Parity;
 import edu.wpi.first.wpilibj.SerialPort.StopBits;
@@ -28,6 +31,8 @@ public class ArduinoSub extends SubsystemBase {
   private static boolean m_LEDHasChanged = true;
   private static boolean m_LEDArrayChanged = false;
   private static int m_intakeSensors[] = new int[8];
+  private final TalonFX m_testMotor = new TalonFX(Constants.CanIds.kKrakenMotor);
+  private final StatusSignal<Current> m_testMotorAmps = m_testMotor.getSupplyCurrent();
 
   private int[] m_currentRGB = new int[3];
 
@@ -67,6 +72,11 @@ public class ArduinoSub extends SubsystemBase {
     RS232Listen();
     writeToSerial();
     updateShuffleBoard();
+  }
+
+  public double getAmps() {
+    m_testMotorAmps.refresh();
+    return m_testMotorAmps.getValueAsDouble();
   }
 
   private void updateShuffleBoard() {
@@ -177,6 +187,7 @@ public class ArduinoSub extends SubsystemBase {
     int bufferIndex = 0;
     byte checksum = 0;
     byte version = 0;
+
 
     // Checksum check
     //   SmartDashboard.putBoolean("Valid Arduino Data", false);

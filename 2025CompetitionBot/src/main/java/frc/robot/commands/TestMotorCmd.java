@@ -7,6 +7,7 @@ package frc.robot.commands;
 import java.time.Duration;
 import java.time.Instant;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.subsystems.KrakenSub;
 import frc.robot.utils.TestManager;
@@ -16,29 +17,36 @@ import frc.robot.utils.TestManager.Result;
  * You should consider using the more terse Command factories API instead
  * https://docs.wpilib.org/en/stable/docs/software/commandbased/organizing-command-based.html#defining-commands
  */
-public class TestElevatorCmd extends Command {
-  private final KrakenSub m_krakenSub;
+public class TestMotorCmd extends Command {
+  private SubsystemBase m_subsystem;
   private final TestManager m_testManager;
-  private final int m_testId;
+  private int m_testId;
   private Instant m_startTime;
   private boolean m_abortTest = false;
 
   /** Creates a new TestElevatorCmd. */
-  public TestElevatorCmd(KrakenSub krakenSub, TestManager testManager) {
-    m_krakenSub = krakenSub;
+  // public TestElevatorCmd(KrakenSub krakenSub, TestManager testManager) {
+  //   m_krakenSub = krakenSub;
+  //   m_testManager = testManager;
+
+  //   // Use addRequirements() here to declare subsystem dependencies.
+  //   addRequirements(krakenSub);
+
+  //   m_testId = m_testManager.registerNewTest("ElevatorKrakenLeftMotor");
+  //   TestKrakenAll(krakenSub, testManager, m_testId);
+  // }
+
+  public TestMotorCmd(TestManager testManager, SubsystemBase subsystem, int testId) {
     m_testManager = testManager;
-
-    // Use addRequirements() here to declare subsystem dependencies.
-    addRequirements(krakenSub);
-
-    m_testId = m_testManager.registerNewTest("ElevatorKrakenLeftMotor");
+    m_subsystem = subsystem;
+    m_testId = testId;
   }
 
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
     m_startTime = Instant.now();
-    m_krakenSub.resetPosition();
+    m_subsystem.resetPosition();
   }
 
   // Called every time the scheduler runs while the command is scheduled.
@@ -54,16 +62,16 @@ public class TestElevatorCmd extends Command {
     }
 
     if(interrupted) {
-      m_krakenSub.runMotor(0.0);
+      m_subsystem.runMotor(0.0);
       m_testManager.updateTestStatus(m_testId, Result.kFail, "Test interrupted");
       return;
     }
 
-    double currentAmps = m_krakenSub.getAmps();
-    double currentPosition = m_krakenSub.getPosition();
+    double currentAmps = m_subsystem.getAmps();
+    double currentPosition = m_subsystem.getPosition();
 
     // Stop the motor
-    m_krakenSub.runMotor(0.0);
+    m_subsystem.runMotor(0.0);
 
     // Check to see if the measured current is good, ok or bad
     TestManager.Result ampsResult = m_testManager.determineResult(currentAmps, Constants.Tests.kDriveMotorExpectedAmps,
