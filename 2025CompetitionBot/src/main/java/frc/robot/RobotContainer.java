@@ -22,13 +22,34 @@ import frc.robot.Constants.OperatorConstants;
 import frc.robot.commands.KillAllCmd;
 import frc.robot.commands.tests.RunTestsGrp;
 import frc.robot.generated.TunerConstants;
-import frc.robot.subsystems.ArduinoSub;
-import frc.robot.subsystems.ClimbSub;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
+// Subsystems
 import frc.robot.subsystems.DrivetrainSub;
 import frc.robot.subsystems.ElevatorSub;
 import frc.robot.subsystems.IntakeSub;
 import frc.robot.subsystems.LedSub;
+import frc.robot.subsystems.VisionSub;
+import frc.robot.subsystems.ArduinoSub;
+import frc.robot.subsystems.ClimbSub;
+import frc.robot.subsystems.ArmSub;
+
+// Copyright (c) FIRST and other WPILib contributors.
+// Open Source Software; you can modify and/or share it under the terms of
+// the WPILib BSD license file in the root directory of this project.
+
+import static edu.wpi.first.units.Units.*;
+
+import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
+import com.ctre.phoenix6.swerve.SwerveRequest;
+
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.button.CommandPS4Controller;
+import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
+
+import frc.robot.generated.TunerConstants;
+import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.utils.TestManager;
 
 /**
@@ -65,6 +86,8 @@ public class RobotContainer {
   private final ElevatorSub m_elevatorSub = new ElevatorSub();
   private final IntakeSub m_intakeSub = new IntakeSub();
   private final LedSub m_ledSub = new LedSub(m_arduinoSub);
+  private final VisionSub m_visionSub = new VisionSub();
+  private final ArmSub m_armSub = new ArmSub();
 
 
   private final CommandPS4Controller m_driverController =

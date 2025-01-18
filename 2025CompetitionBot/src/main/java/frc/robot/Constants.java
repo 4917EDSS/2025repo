@@ -25,6 +25,7 @@ public final class Constants {
 
     public static final int kElevatorMotor = 1;
     public static final int kElevatorMotor2 = 2;
+    public static final int kArmMotor = 3;
     public static final int kClimbMotor = 10;
     public static final int kIntakeMotor = 11;
   }
@@ -32,6 +33,12 @@ public final class Constants {
   public static class DioIds {
     public static final int kElevatorLowerLimit = 0;
     public static final int kElevatorUpperLimit = 1;
+
+    public static final int kArmUpperLimit = 2;
+    public static final int kArmLowerLimit = 3;
+
+    public static final int kIntakeUpperLimit = 4;
+    public static final int kIntakeLowerLimit = 5;
   }
 
   public final static class PwmIds {
@@ -82,5 +89,21 @@ public final class Constants {
     public static final double kIntakeMotorExpectedAmps = 0.06; // How much current we expect it to pull just before the end of the test
     public static final double kIntakeMotorAmpsTolerance = 0.03; // How far off the amps can be (+ or -) and still be considered OK
     public static final double kIntakeMotorAmpsMinimum = 0.02; // Minimum current to be considered a partial pass
+  }
+
+  public static class ArmSub {
+    public static final double kArmEncoderPositionConversionFactor = 0.00; //in mm
+    public static final double kArmEncoderVelocityConversionFactor = 0.00; //in mm
+  }
+
+  public static class IntakeSub {
+
+    public static final double kIntakeMotorEncoderPositionConversionFactor = 0.00; //in mm
+    public static final double kIntakeMotorEncoderVelocityConversionFactor = 0.00; //in mm
+
+
+    public static final double kIntakeRaiseMotorEncoderPositionConversionFactor = 0.00; //in mm
+    public static final double kIntakeRaiseMotorEncoderVelocityConversionFactor = 0.00; //in mm
+
   }
 }

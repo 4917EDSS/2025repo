@@ -13,15 +13,35 @@ import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.SparkMaxConfig;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
+import frc.robot.RobotContainer;
+import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.controller.SimpleMotorFeedforward;
+import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
+
 
 public class NeoTestSub extends SubsystemBase {
   private static Logger m_logger = Logger.getLogger(NeoTestSub.class.getName());
   private final SparkMax m_neoVortexMotor = new SparkMax(Constants.CanIds.kNeoVortexId, MotorType.kBrushless);
   //private final SparkFlex m_neoVortexMotor = new SparkFlex(Constants.CanIds.kNeoVortexId, MotorType.kBrushless);
 
+  private final SimpleMotorFeedforward m_armFeedforward = new SimpleMotorFeedforward(0.001, 0.001);
+  private final PIDController m_PID_NEOController = new PIDController(0.001, 0.0, 0.0);
+  private final double m_arm_Velocity = 70.0;
+
+  private final ShuffleboardTab m_shuffleboardTab = Shuffleboard.getTab("PID Tuning");
+  private final GenericEntry m_neoVortexMotorVelocity, m_newVortexMotorAngle;
+
   /** Creates a new NeoTestSub. */
   public NeoTestSub() {
+
+    m_neoVortexMotorVelocity = m_shuffleboardTab.add("NEO Velocity", 0).getEntry();
+
+    m_newVortexMotorAngle = m_shuffleboardTab.add("NEO Angle", 0).getEntry();
+
+
     init();
   }
 
@@ -48,20 +68,48 @@ public class NeoTestSub extends SubsystemBase {
 
   @Override
   public void periodic() {
+    updateShuffleBoard();
     SmartDashboard.putNumber("Encoder", getAngle());
     // This method will be called once per scheduler run
+
+    // double feedForwardVoltage = m_armFeedforward.calculate(m_arm_Velocity, 0.0);
+    // accelaration has been depreciated in 2025 WPILIB.
+    double feedForwardVoltage = m_armFeedforward.calculate(m_arm_Velocity);
+    // double Feedforward = m_armFeedforward.calculate(m_arm_Velocity, new SIUnit<Acceleration> 0.0);
+
+    // So far, we don't need the PID control.  Feedforward is doing well on its own
+    double pidVoltage = m_PID_NEOController.calculate(getArmVelocity(), m_arm_Velocity);
+
+    setArmVoltage(feedForwardVoltage + pidVoltage);
   }
 
   public double getAngle() {
     return m_neoVortexMotor.getEncoder().getPosition();
   }
 
-  public void drive(double power) {
+  public void setPower(double power) {
     m_neoVortexMotor.set(power);
   }
 
   public void resetEncoder() {
     m_logger.warning("Resetting Sparkmax encoder");
     m_neoVortexMotor.getEncoder().setPosition(0.0);
+  }
+
+  public double getArmVelocity() {
+    return m_neoVortexMotor.getEncoder().getVelocity();
+  }
+
+  public void setArmVoltage(double voltage) {
+    m_neoVortexMotor.setVoltage(voltage);
+
+  }
+
+  private void updateShuffleBoard() {
+    m_neoVortexMotorVelocity.setDouble(getArmVelocity());
+
+
+    m_newVortexMotorAngle.setDouble(getAngle());
+
   }
 }
