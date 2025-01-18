@@ -55,6 +55,8 @@ public class RobotContainer {
   // RobotContainer constants
   public static boolean disableShuffleboardPrint = true;
 
+  private final TestManager m_testManager = new TestManager();
+
   // The robot's subsystems and commands are defined here...
   public final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
   private final ArduinoSub m_arduinoSub = new ArduinoSub();
@@ -64,7 +66,6 @@ public class RobotContainer {
   private final IntakeSub m_intakeSub = new IntakeSub();
   private final LedSub m_ledSub = new LedSub(m_arduinoSub);
 
-  private final TestManager m_testManager = new TestManager();
 
   private final CommandPS4Controller m_driverController =
       new CommandPS4Controller(OperatorConstants.kDriverControllerPort);
