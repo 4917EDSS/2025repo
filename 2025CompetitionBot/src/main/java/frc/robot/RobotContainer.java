@@ -74,7 +74,7 @@ public class RobotContainer {
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
-    m_testManager.setTestCommand(new RunTestsGrp(m_climbSub, m_testManager));
+    m_testManager.setTestCommand(new RunTestsGrp(m_climbSub, m_intakeSub, m_testManager));
 
 
     // Configure the trigger bindings
