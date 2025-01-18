@@ -1,0 +1,24 @@
+{
+  "Clients": {
+    "open": true
+  },
+  "NetworkTables Settings": {
+    "mode": "Client (NT4)",
+    "serverTeam": "4917"
+  },
+  "Persistent Values": {
+    "open": false
+  },
+  "Retained Values": {
+    "open": false
+  },
+  "Transitory Values": {
+    "open": false
+  },
+  "limelight@2": {
+    "Publishers": {
+      "open": true
+    },
+    "open": true
+  }
+}
