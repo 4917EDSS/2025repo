@@ -4,15 +4,24 @@
 
 package frc.robot;
 
-import frc.robot.Constants.OperatorConstants;
-import frc.robot.commands.Autos;
-import frc.robot.commands.KillAllCmd;
-import frc.robot.generated.TunerConstants;
+// Copyright (c) FIRST and other WPILib contributors.
+// Open Source Software; you can modify and/or share it under the terms of
+// the WPILib BSD license file in the root directory of this project.
+import static edu.wpi.first.units.Units.MetersPerSecond;
+import static edu.wpi.first.units.Units.RadiansPerSecond;
+import static edu.wpi.first.units.Units.RotationsPerSecond;
+import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.swerve.SwerveRequest;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.CommandPS4Controller;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
+import frc.robot.Constants.OperatorConstants;
+import frc.robot.commands.KillAllCmd;
+import frc.robot.commands.tests.RunTestsGrp;
+import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.ArduinoSub;
 import frc.robot.subsystems.ClimbSub;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
@@ -20,24 +29,7 @@ import frc.robot.subsystems.DrivetrainSub;
 import frc.robot.subsystems.ElevatorSub;
 import frc.robot.subsystems.IntakeSub;
 import frc.robot.subsystems.LedSub;
-
-// Copyright (c) FIRST and other WPILib contributors.
-// Open Source Software; you can modify and/or share it under the terms of
-// the WPILib BSD license file in the root directory of this project.
-
-import static edu.wpi.first.units.Units.*;
-
-import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
-import com.ctre.phoenix6.swerve.SwerveRequest;
-
-import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.button.CommandPS4Controller;
-import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
-
-import frc.robot.generated.TunerConstants;
-import frc.robot.subsystems.CommandSwerveDrivetrain;
+import frc.robot.utils.TestManager;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -46,10 +38,11 @@ import frc.robot.subsystems.CommandSwerveDrivetrain;
  * subsystems, commands, and trigger mappings) should be declared here.
  */
 public class RobotContainer {
+  // Swerve constants and objects
   private double MaxSpeed = TunerConstants.kSpeedAt12Volts.in(MetersPerSecond); // kSpeedAt12Volts desired top speed
   private double MaxAngularRate = RotationsPerSecond.of(0.75).in(RadiansPerSecond); // 3/4 of a rotation per second max angular velocity
 
-  /* Setting up bindings for necessary control of the swerve drive platform */
+  // Setting up bindings for necessary control of the swerve drive platform
   private final SwerveRequest.FieldCentric drive = new SwerveRequest.FieldCentric()
       .withDeadband(MaxSpeed * 0.1).withRotationalDeadband(MaxAngularRate * 0.1) // Add a 10% deadband
       .withDriveRequestType(DriveRequestType.OpenLoopVoltage); // Use open-loop control for drive motors
@@ -59,10 +52,11 @@ public class RobotContainer {
   private final Telemetry logger = new Telemetry(MaxSpeed);
 
 
-  public final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
-
+  // RobotContainer constants
+  public static boolean disableShuffleboardPrint = true;
 
   // The robot's subsystems and commands are defined here...
+  public final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
   private final ArduinoSub m_arduinoSub = new ArduinoSub();
   private final ClimbSub m_climbSub = new ClimbSub();
   private final DrivetrainSub m_drivetrainSub = new DrivetrainSub();
@@ -70,15 +64,19 @@ public class RobotContainer {
   private final IntakeSub m_intakeSub = new IntakeSub();
   private final LedSub m_ledSub = new LedSub(m_arduinoSub);
 
-  public static boolean disableShuffleboardPrint = true;
+  private final TestManager m_testManager = new TestManager();
 
   private final CommandPS4Controller m_driverController =
       new CommandPS4Controller(OperatorConstants.kDriverControllerPort);
   private final CommandPS4Controller m_operatorController =
       new CommandPS4Controller(OperatorConstants.kOperatorControllerPort);
 
+
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
+    m_testManager.setTestCommand(new RunTestsGrp(m_climbSub, m_testManager));
+
+
     // Configure the trigger bindings
     configureBindings();
   }

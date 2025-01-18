@@ -23,7 +23,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 
-public class KrakenSub extends MotorSub {
+public class KrakenSub extends TestableSubsystem {
   private final TalonFX m_testMotor = new TalonFX(Constants.CanIds.kKrakenMotor);
   private final StatusSignal<Angle> m_testMotorPosition = m_testMotor.getPosition();
   private final StatusSignal<AngularVelocity> m_testMotorVelocity = m_testMotor.getVelocity();
