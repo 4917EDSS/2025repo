@@ -35,16 +35,16 @@ public class PivotToAngleCmd extends Command {
   @Override
   public void execute() {
     if((m_neotestSub.getAngle() - m_angle) < 0) {
-      m_neotestSub.drive(0.1);
+      m_neotestSub.setPower(0.5);
     } else {
-      m_neotestSub.drive(-0.1);
+      m_neotestSub.setPower(-0.5);
     }
   }
 
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    m_neotestSub.drive(0);
+    m_neotestSub.setPower(0);
   }
 
   // Returns true when the command should end.
