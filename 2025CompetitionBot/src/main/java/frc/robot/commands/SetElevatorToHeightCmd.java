@@ -42,7 +42,7 @@ public class SetElevatorToHeightCmd extends Command {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    if(m_elevatorSub.getElevatorPosition().gte(m_targetHeight)) {
+    if(m_elevatorSub.getHeight().gte(m_targetHeight)) {
       return true;
     }
     return false;

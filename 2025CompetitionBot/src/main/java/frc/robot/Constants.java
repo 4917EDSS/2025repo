@@ -14,17 +14,33 @@ package frc.robot;
  * constants are needed, to reduce verbosity.
  */
 public final class Constants {
-
-  public static class CanIds {
-    public static final int kElevatorMotor = 9;
-    public static final int kClimbMotor = 10;
-    public static final int kIntakeMotor = 11;
-    public static final int kKrakenMotor = 1;
-    public static final int kKrakenMotor2 = 2;
-  }
   public static class OperatorConstants {
     public static final int kDriverControllerPort = 0;
     public static final int kOperatorControllerPort = 1;
+  }
+
+  public static class CanIds {
+    // CTRE Swerve drivetrain uses CAN IDs 1-13 on CANivore bus
+    // This does not conflict with the roboRIO bus which can also use these IDs
+
+    public static final int kElevatorMotor = 1;
+    public static final int kElevatorMotor2 = 2;
+    public static final int kClimbMotor = 10;
+    public static final int kIntakeMotor = 11;
+  }
+
+  public static class DioIds {
+    public static final int kElevatorLowerLimit = 0;
+    public static final int kElevatorUpperLimit = 1;
+  }
+
+  public final static class PwmIds {
+    public final static int kLedStripPwmPort = 0;
+  }
+
+  public final static class Elevator {
+    public final static double kMinHeight = 0.0; // In mm
+    public final static double kMaxHeight = 2000.0; // In mm
   }
 
   public final static class Arduino {
@@ -34,10 +50,6 @@ public final class Constants {
     public static final int kBufferSize = kReadMessageLength * 2;
     public static final int kSensorDataLength = 16;
     public static final byte kMessageHeader = (byte) 0xA5;
-  }
-
-  public final static class PwmIds {
-    public final static int kLedStripPwmPort = 0;
   }
 
   // Subsystem Constants
