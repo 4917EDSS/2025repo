@@ -6,7 +6,6 @@ package frc.robot.commands.tests;
 
 import java.time.Duration;
 import java.time.Instant;
-import com.ctre.phoenix6.StatusCode;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants;
 import frc.robot.subsystems.ClimbSub;
@@ -17,15 +16,14 @@ import frc.robot.utils.TestManager.Result;
  * You should consider using the more terse Command factories API instead
  * https://docs.wpilib.org/en/stable/docs/software/commandbased/organizing-command-based.html#defining-commands
  */
-public class TestClimbSub extends Command {
+public class TestClimbSubCmd extends Command {
   private final ClimbSub m_climbSub;
   private final TestManager m_testManager;
   private final int m_testId;
   private Instant m_startTime;
-  private boolean m_abortTest = false;
 
   /** Creates a new TestClimbSub. */
-  public TestClimbSub(ClimbSub climbSub, TestManager testManager) {
+  public TestClimbSubCmd(ClimbSub climbSub, TestManager testManager) {
     m_climbSub = climbSub;
     m_testManager = testManager;
 
@@ -53,11 +51,6 @@ public class TestClimbSub extends Command {
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    if(m_abortTest) {
-      // Already stopped the motor and reported the test results, just quit
-      return;
-    }
-
     if(interrupted) {
       m_climbSub.moveClimb(0.0);
       m_testManager.updateTestStatus(m_testId, Result.kFail, "Test interrupted");
@@ -72,7 +65,7 @@ public class TestClimbSub extends Command {
     m_climbSub.moveClimb(0.0);
 
     // Check to see if the measured current is good, ok or bad
-    TestManager.Result ampResult = m_testManager.determineResult(currentAmps, Constants.Tests.kDriveMotorExpectedAmps,
+    TestManager.Result ampsResult = m_testManager.determineResult(currentAmps, Constants.Tests.kDriveMotorExpectedAmps,
         Constants.Tests.kDriveMotorAmpsTolerance, Constants.Tests.kDriveMotorAmpsMinimum);
     String ampsText = "Amps=" + currentAmps + " (Target=" + Constants.Tests.kDriveMotorExpectedAmps + "+/-"
         + Constants.Tests.kDriveMotorAmpsTolerance + ")";
@@ -86,11 +79,25 @@ public class TestClimbSub extends Command {
         "Position=" + currentPosition + " (Target=" + Constants.Tests.kDriveMotorExpectedPosition + "+/-"
             + Constants.Tests.kDriveMotorPositionTolerance + ")";
     System.out.println("ClimbSub " + positionText);
+
+    // Figure out the overall test result
+    TestManager.Result testResult = TestManager.Result.kPass;
+    if((ampsResult == TestManager.Result.kFail) || (positionResult == TestManager.Result.kFail)) {
+      testResult = TestManager.Result.kFail;
+    } else if((ampsResult == TestManager.Result.kWarn) || (positionResult == TestManager.Result.kWarn)) {
+      testResult = TestManager.Result.kWarn;
+    }
+
+    // Update the test results
+    m_testManager.updateTestStatus(m_testId, testResult, ampsText + " " + positionText);
   }
 
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
+    if(Duration.between(m_startTime, Instant.now()).toMillis() > Constants.Tests.kDriveMotorTimeMs) {
+      return true;
+    }
     return false;
   }
 }
