@@ -21,6 +21,7 @@ public final class Constants {
     public static final int kIntakeMotor = 11;
     public static final int kKrakenMotor = 1;
     public static final int kKrakenMotor2 = 2;
+    public static final int kArmMotor = 12;
   }
   public static class OperatorConstants {
     public static final int kDriverControllerPort = 0;
@@ -70,5 +71,16 @@ public final class Constants {
     public static final double kIntakeMotorExpectedAmps = 0.06; // How much current we expect it to pull just before the end of the test
     public static final double kIntakeMotorAmpsTolerance = 0.03; // How far off the amps can be (+ or -) and still be considered OK
     public static final double kIntakeMotorAmpsMinimum = 0.02; // Minimum current to be considered a partial pass
+  }
+
+
+  public static class DioIds {
+    public static final int kArmUpperLimit = 0;
+    public static final int kArmLowerLimit = 1;
+  }
+
+  public static class ArmSub {
+    public static final double kArmEncoderPositionConversionFactor = 0.00; //in mm
+    public static final double kArmEncoderVelocityConversionFactor = 0.00; //in mm
   }
 }
