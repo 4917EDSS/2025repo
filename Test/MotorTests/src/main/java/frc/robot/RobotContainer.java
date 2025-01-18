@@ -14,7 +14,7 @@ import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandPS4Controller;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
-import frc.robot.comands.DriveCmd;
+import frc.robot.comands.MoveNEOMotorCmd;
 import frc.robot.comands.PivotToAngleCmd;
 
 /**
@@ -42,7 +42,7 @@ public class RobotContainer {
     //     .setDefaultCommand(new RunCommand(() -> m_neoTestSub.drive(m_driverController.getRightY()), m_neoTestSub));
 
     m_neoTestSub.setDefaultCommand(
-        new DriveCmd(m_driverController, m_neoTestSub, m_krakenSub));
+        new MoveNEOMotorCmd(m_driverController, m_neoTestSub, m_krakenSub));
   }
 
   /**

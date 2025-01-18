@@ -18,15 +18,15 @@ import edu.wpi.first.wpilibj2.command.button.CommandPS4Controller;
 
 // Called when the command is initially scheduled.
 
-public class DriveCmd extends InstantCommand {
-  private static Logger m_logger = Logger.getLogger(DriveCmd.class.getName());
+public class MoveNEOMotorCmd extends InstantCommand {
+  private static Logger m_logger = Logger.getLogger(MoveNEOMotorCmd.class.getName());
 
   private final CommandPS4Controller m_controller;
   private final NeoTestSub m_neotestSub;
   private final KrakenTestSub m_krakenTestSub;
 
 
-  public DriveCmd(CommandPS4Controller controller, NeoTestSub neotestSub, KrakenTestSub krakentestSub) {
+  public MoveNEOMotorCmd(CommandPS4Controller controller, NeoTestSub neotestSub, KrakenTestSub krakentestSub) {
     m_controller = controller;
     m_neotestSub = neotestSub;
     m_krakenTestSub = krakentestSub;
@@ -37,14 +37,14 @@ public class DriveCmd extends InstantCommand {
   @Override
   public void execute() {
     // get controller joystick value
-    double pivotPowerLeft = -m_controller.getLeftY();
-    double pivotPowerRight = -m_controller.getRightY();
+    double pivotPowerLeft = -m_controller.getLeftY(); // NEO motor
+    double pivotPowerRight = -m_controller.getRightY(); // Kraken motor
     //Deadband
     m_logger.info("pivot power" + pivotPowerLeft);
     if(Math.abs(pivotPowerLeft) > 0.05) {
-      m_neotestSub.drive(pivotPowerLeft);
+      m_neotestSub.setPower(pivotPowerLeft); // (pivotPowerLeft);
     } else {
-      m_neotestSub.drive(0.0);
+      m_neotestSub.setPower(0.0);
     }
 
     //Deadband
