@@ -6,7 +6,8 @@ package frc.robot.commands.tests;
 
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
-import frc.robot.subsystems.KrakenSub;
+import frc.robot.subsystems.IntakeSub;
+import frc.robot.subsystems.ClimbSub;
 import frc.robot.utils.TestManager;
 
 // NOTE: Consider using this command inline, rather than writing a subclass. For more
@@ -15,12 +16,13 @@ import frc.robot.utils.TestManager;
 public class RunTestsGrp extends SequentialCommandGroup {
 
   /** Creates a new RunTestsGrp. */
-  public RunTestsGrp(KrakenSub krakenSub, TestManager testManager) {
+  public RunTestsGrp(ClimbSub climbSub, IntakeSub intakeSub, TestManager testManager) {
     // Add your commands in the addCommands() call, e.g.
     // addCommands(new FooCommand(), new BarCommand());
     addCommands(
         new InstantCommand(() -> testManager.resetTestStatuses()),
-        new TestKrakenSubCmd(krakenSub, testManager),
+        new TestIntakeSub(intakeSub, testManager),
+        new TestClimbSubCmd(climbSub, testManager),
         new InstantCommand(() -> testManager.updateOverallStatus()));
   }
 }

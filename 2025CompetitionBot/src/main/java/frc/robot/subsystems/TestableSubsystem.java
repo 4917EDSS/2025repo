@@ -7,9 +7,9 @@ package frc.robot.subsystems;
 import com.ctre.phoenix6.StatusCode;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
-public class MotorSub extends SubsystemBase {
+public class TestableSubsystem extends SubsystemBase {
   /** Creates a new MotorSub. */
-  public MotorSub() {}
+  public TestableSubsystem() {}
 
   public double getPosition() {
     return 0;
