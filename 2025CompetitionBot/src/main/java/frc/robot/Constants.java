@@ -77,10 +77,24 @@ public final class Constants {
   public static class DioIds {
     public static final int kArmUpperLimit = 0;
     public static final int kArmLowerLimit = 1;
+
+    public static final int kIntakeUpperLimit = 2;
+    public static final int kIntakeLowerLimit = 3;
   }
 
   public static class ArmSub {
     public static final double kArmEncoderPositionConversionFactor = 0.00; //in mm
     public static final double kArmEncoderVelocityConversionFactor = 0.00; //in mm
+  }
+
+  public static class IntakeSub {
+
+    public static final double kIntakeMotorEncoderPositionConversionFactor = 0.00; //in mm
+    public static final double kIntakeMotorEncoderVelocityConversionFactor = 0.00; //in mm
+
+
+    public static final double kIntakeRaiseMotorEncoderPositionConversionFactor = 0.00; //in mm
+    public static final double kIntakeRaiseMotorEncoderVelocityConversionFactor = 0.00; //in mm
+
   }
 }

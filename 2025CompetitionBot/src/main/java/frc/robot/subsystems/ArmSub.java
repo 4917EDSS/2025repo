@@ -17,7 +17,7 @@ import edu.wpi.first.wpilibj.DigitalInput;
 
 public class ArmSub extends SubsystemBase {
   // Create limit switches
-  private final DigitalInput m_armUpperLimit = new DigitalInput(Constants.DioIds.kArmLowerLimit);
+  private final DigitalInput m_armUpperLimit = new DigitalInput(Constants.DioIds.kArmUpperLimit);
   private final DigitalInput m_armLowerLimit = new DigitalInput(Constants.DioIds.kArmLowerLimit);
   // Create the intake motor
   private final SparkMax m_armMotor = new SparkMax(Constants.CanIds.kArmMotor, MotorType.kBrushless);
