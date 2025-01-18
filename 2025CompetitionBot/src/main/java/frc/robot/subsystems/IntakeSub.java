@@ -25,11 +25,11 @@ public class IntakeSub extends SubsystemBase {
     SparkMaxConfig config = new SparkMaxConfig();
 
     config
-      .inverted(true) // Set to true to invert the forward motor direction
-      .smartCurrentLimit(5) // Current limit in amps
-      .idleMode(IdleMode.kBrake); // Set to kCoast to allow the motor to coast when power is 0.0
+        .inverted(true) // Set to true to invert the forward motor direction
+        .smartCurrentLimit(5) // Current limit in amps
+        .idleMode(IdleMode.kBrake); // Set to kCoast to allow the motor to coast when power is 0.0
 
-    
+
     // Save the configuration to the motor
     // Only persist parameters when configuring the motors on start up as this operation can be slow
     m_intakeMotor.configure(config, SparkBase.ResetMode.kResetSafeParameters, SparkBase.PersistMode.kPersistParameters);
@@ -47,7 +47,7 @@ public class IntakeSub extends SubsystemBase {
   }
 
   // Control the intake
-  public void moveClimb(double power) {
+  public void startIntake(double power) {
     m_intakeMotor.set(power);
   }
 
@@ -55,11 +55,15 @@ public class IntakeSub extends SubsystemBase {
     m_intakeMotor.getEncoder().setPosition(0);
   }
 
-  public double getDistance() {
+  public double getPosition() {
     return m_intakeMotor.getEncoder().getPosition();
   }
 
   public double getVelocity() {
     return m_intakeMotor.getEncoder().getVelocity();
+  }
+
+  public double getAmps() {
+    return m_intakeMotor.getOutputCurrent();
   }
 }
