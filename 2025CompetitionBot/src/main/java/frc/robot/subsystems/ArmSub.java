@@ -14,6 +14,9 @@ import com.revrobotics.spark.config.SparkMaxConfig;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.math.controller.ArmFeedforward;
+import edu.wpi.first.math.controller.PIDController;
+import frc.robot.Constants.Arm;
 
 public class ArmSub extends SubsystemBase {
   // Create limit switches
@@ -23,6 +26,10 @@ public class ArmSub extends SubsystemBase {
   private final SparkMax m_armMotor = new SparkMax(Constants.CanIds.kArmMotor, MotorType.kBrushless);
 
   private final SparkAbsoluteEncoder m_armEncoder = m_armMotor.getAbsoluteEncoder();
+
+  private final ArmFeedforward m_armFeedforward = new ArmFeedforward(0.001, 0.001, 0.0);
+  private final PIDController m_PID_NEOController = new PIDController(0.01, 0.001, 0.001); // really needs some tuning
+  private double m_targetAngle = 0;
 
   // private final SparkAbsoluteEncoder m_armAbsoluteEncoder = m_armMotor.getAbsoluteEncoder();
 
@@ -46,13 +53,28 @@ public class ArmSub extends SubsystemBase {
 
   @Override
   public void periodic() {
+    runPIDControl();
     // This method will be called once per scheduler run
   }
 
   public void moveArm(double power) {
     m_armMotor.set(power);
+    System.out.println(power);
   }
 
+  public double getAngle() {
+    return m_armMotor.getEncoder().getPosition();
+  }
+
+  public void setAngle(double targetAngle) {
+    if(targetAngle > Constants.Arm.kMaxArmAngle) {
+      targetAngle = Constants.Arm.kMaxArmAngle;
+    }
+    if(targetAngle < Constants.Arm.kMinArmAngle) {
+      targetAngle = Constants.Arm.kMinArmAngle;
+    }
+    m_targetAngle = targetAngle;
+  }
 
   public void resetEncoder() {
     m_armMotor.getEncoder().setPosition(0);
@@ -74,5 +96,15 @@ public class ArmSub extends SubsystemBase {
   public boolean isAtLowerLimit() {
     return m_armLowerLimit.get(); // If switch is normally closed, return !m_armLowerLimit.get()
     // to return a true when switch is false and false when it's true
+  }
+
+  public void runPIDControl() {
+    double pidPower = m_PID_NEOController.calculate(getAngle(), m_targetAngle);
+    double fedPower = m_armFeedforward.calculate(Math.toRadians(getAngle()), pidPower); // Feed forward expects 0 degrees as horizontal
+
+
+    double pivotPower = pidPower + fedPower;
+    // moveArm(pivotPower);
+
   }
 }

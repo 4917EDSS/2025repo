@@ -63,7 +63,7 @@ public class ElevatorSub extends SubsystemBase {
     if(m_areWeTryingToHold) {
       runHeightControl(false);
     }
-    if(isAtBottom() && Math.abs(getHeight().magnitude()) > 5.0) {
+    if(isAtBottom() && Math.abs(getHeight()) > 5.0) {
       m_hitLimitCounter++;
     } else {
       m_hitLimitCounter = 0;
@@ -91,9 +91,9 @@ public class ElevatorSub extends SubsystemBase {
     m_elevatorMotor.set(power);
   }
 
-  public Distance getHeight() {
+  public Double getHeight() {
     // TODO: We need to fix this properly, the conversion is not working
-    return (Distance) kConversionToHeight.timesDivisor(m_elevatorMotor.getPosition().getValue());
+    return m_elevatorMotor.getPosition().getValueAsDouble();
   }
 
   public void resetEncoder() {
@@ -109,7 +109,7 @@ public class ElevatorSub extends SubsystemBase {
     return m_elevatorUpperLimit.get();
   }
 
-  private void runHeightControl(boolean justCalculate) {
+  public void runHeightControl(boolean justCalculate) {
     // TODO: Create and configure PID and Feedforward controllers
     double pidPower = 0;//m_pivotPID.calculate(getPivotAngle(), m_targetAngle);
     double fedPower = 0;//m_pivotFeedforward.calculate(Math.toRadians(getPivotAngle() - 90.0), pidPower); // Feed forward expects 0 degrees as horizontal

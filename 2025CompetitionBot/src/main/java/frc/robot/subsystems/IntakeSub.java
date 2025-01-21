@@ -20,11 +20,11 @@ import frc.robot.RobotContainer;
 
 public class IntakeSub extends SubsystemBase {
   // Create limit switches
-  private final DigitalInput m_intakeUpperLimit = new DigitalInput(Constants.DioIds.kIntakeLowerLimit);
+  private final DigitalInput m_intakeUpperLimit = new DigitalInput(Constants.DioIds.kIntakeUpperLimit);
   private final DigitalInput m_intakeLowerLimit = new DigitalInput(Constants.DioIds.kIntakeLowerLimit);
   // Create the intake motors
   private final SparkMax m_intakeMotor = new SparkMax(Constants.CanIds.kIntakeMotor, MotorType.kBrushless); //motor that intakes coral from field
-  private final SparkMax m_intakeRaiseMotor = new SparkMax(Constants.CanIds.kIntakeMotor, MotorType.kBrushless); //motor that intakes coral into robot
+  private final SparkMax m_intakeRaiseMotor = new SparkMax(Constants.CanIds.kIntakeMotor2, MotorType.kBrushless); //motor that intakes coral into robot
 
   /** Creates a new IntakeSub. */
   public IntakeSub() {
