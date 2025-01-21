@@ -19,7 +19,9 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.Constants.OperatorConstants;
+import frc.robot.commands.ElevatorWithJoystickCmd;
 import frc.robot.commands.KillAllCmd;
+import frc.robot.commands.SetElevatorToHeightCmd;
 import frc.robot.commands.tests.RunTestsGrp;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
@@ -28,7 +30,7 @@ import frc.robot.subsystems.DrivetrainSub;
 import frc.robot.subsystems.ElevatorSub;
 import frc.robot.subsystems.IntakeSub;
 import frc.robot.subsystems.LedSub;
-import frc.robot.subsystems.VisionSub;
+// import frc.robot.subsystems.VisionSub;
 import frc.robot.subsystems.ArduinoSub;
 import frc.robot.subsystems.ClimbSub;
 import frc.robot.subsystems.ArmSub;
@@ -51,6 +53,7 @@ import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.utils.TestManager;
+
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -86,7 +89,7 @@ public class RobotContainer {
   private final ElevatorSub m_elevatorSub = new ElevatorSub();
   private final IntakeSub m_intakeSub = new IntakeSub();
   private final LedSub m_ledSub = new LedSub(m_arduinoSub);
-  private final VisionSub m_visionSub = new VisionSub();
+  // private final VisionSub m_visionSub = new VisionSub();
   private final ArmSub m_armSub = new ArmSub();
 
 
@@ -99,6 +102,7 @@ public class RobotContainer {
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
     m_testManager.setTestCommand(new RunTestsGrp(m_climbSub, m_intakeSub, m_testManager));
+    m_elevatorSub.setDefaultCommand(new ElevatorWithJoystickCmd(m_operatorController, m_elevatorSub));
 
 
     // Configure the trigger bindings
@@ -152,6 +156,8 @@ public class RobotContainer {
     m_driverController.R3()
         .onTrue(new KillAllCmd(m_climbSub, m_drivetrainSub, m_intakeSub, m_elevatorSub));
 
+    // Operator Controller Bindings
+    m_operatorController.cross().onTrue(new SetElevatorToHeightCmd(10, m_elevatorSub));
 
     // Schedule `exampleMethodCommand` when the Xbox controller's B button is pressed,
     // cancelling on release.

@@ -28,6 +28,7 @@ public final class Constants {
     public static final int kArmMotor = 3;
     public static final int kClimbMotor = 10;
     public static final int kIntakeMotor = 11;
+    public static final int kIntakeMotor2 = 12;
   }
 
   public static class DioIds {
