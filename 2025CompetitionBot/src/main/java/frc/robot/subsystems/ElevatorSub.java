@@ -118,4 +118,10 @@ public class ElevatorSub extends SubsystemBase {
       setElevatorMotor(pidPower + fedPower);
     }
   }
+
+  public void testElevatorMotor(double power) {
+    m_elevatorMotor.set(power);
+    m_elevatorMotor2.set(power);
+  }
+
 }
