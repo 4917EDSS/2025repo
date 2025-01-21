@@ -20,7 +20,10 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.commands.AutoDriveCmd;
+import frc.robot.commands.ElevatorWithJoystickCmd;
 import frc.robot.commands.KillAllCmd;
+import frc.robot.commands.SetElevatorToHeightCmd;
+import frc.robot.commands.ArmMoveWithJoystickCmd;
 import frc.robot.commands.tests.RunTestsGrp;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
@@ -52,6 +55,7 @@ import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.utils.TestManager;
+
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -101,6 +105,7 @@ public class RobotContainer {
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
     m_testManager.setTestCommand(new RunTestsGrp(m_climbSub, m_intakeSub, m_testManager));
+    m_elevatorSub.setDefaultCommand(new ElevatorWithJoystickCmd(m_operatorController, m_elevatorSub));
 
 
     // Configure the trigger bindings
@@ -117,7 +122,7 @@ public class RobotContainer {
    * joysticks}.
    */
   private void configureBindings() {
-
+    m_armSub.setDefaultCommand(new ArmMoveWithJoystickCmd(m_operatorController, m_armSub));
     // Note that X is defined as forward according to WPILib convention,
     // and Y is defined as to the left according to WPILib convention.
     drivetrain.setDefaultCommand(
@@ -154,6 +159,8 @@ public class RobotContainer {
     m_driverController.R3()
         .onTrue(new KillAllCmd(m_climbSub, m_drivetrainSub, m_intakeSub, m_elevatorSub));
 
+    // Operator Controller Bindings
+    m_operatorController.cross().onTrue(new SetElevatorToHeightCmd(10, m_elevatorSub));
 
     m_driverController.L1()
         .onTrue(new AutoDriveCmd(m_visionSub));

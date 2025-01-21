@@ -4,49 +4,49 @@
 
 package frc.robot.commands;
 
-// import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.subsystems.ElevatorSub;
+import edu.wpi.first.wpilibj2.command.button.CommandPS4Controller;
+import frc.robot.subsystems.ArmSub;
 
 /*
  * You should consider using the more terse Command factories API instead
  * https://docs.wpilib.org/en/stable/docs/software/commandbased/organizing-command-based.html#defining-commands
  */
-public class SetElevatorToHeightCmd extends Command {
-  private final Double m_targetHeight;
-  private final ElevatorSub m_elevatorSub;
+public class ArmMoveWithJoystickCmd extends Command {
 
-  /** Creates a new SetElevatorToHeightCmd. */
-  public SetElevatorToHeightCmd(double height, ElevatorSub elevatorSub) {
+  private final ArmSub m_armSub;
+  private final CommandPS4Controller m_controller;
+
+  /** Creates a new MoveArmWithJoystickCmd. */
+  public ArmMoveWithJoystickCmd(CommandPS4Controller controller, ArmSub armSub) {
+    m_controller = controller;
+    m_armSub = armSub;
     // Use addRequirements() here to declare subsystem dependencies.
-    m_targetHeight = height;
-    m_elevatorSub = elevatorSub;
+    addRequirements(armSub);
   }
 
   // Called when the command is initially scheduled.
   @Override
-  public void initialize() {
-    m_elevatorSub.setElevatorMotor(0.25);
-    System.out.println("*********SetElevatorHeightCmd Run*********");
-  }
+  public void initialize() {}
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
-  public void execute() {}
+  public void execute() {
+    double pivotPower = -m_controller.getRightY();
+    if(Math.abs(pivotPower) > 0.05) {
+      m_armSub.moveArm(pivotPower); // (pivotPower);
+    } else {
+      m_armSub.moveArm(0.0); // look at elevatorwithjoystickcmd to see how to get deadband to work properly without blocking everything
+    }
+  }
 
   // Called once the command ends or is interrupted.
   @Override
-  public void end(boolean interrupted) {
-    m_elevatorSub.setElevatorMotor(0);
-  }
+  public void end(boolean interrupted) {}
 
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    //  if(m_elevatorSub.getHeight().gte(m_targetHeight)) {
-    if(m_elevatorSub.getHeight() > (m_targetHeight)) {
-      return true;
-    }
     return false;
   }
 }

@@ -34,11 +34,7 @@ public class PivotToAngleCmd extends Command {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    if((m_neotestSub.getAngle() - m_angle) < 0) {
-      m_neotestSub.setPower(0.5);
-    } else {
-      m_neotestSub.setPower(-0.5);
-    }
+    m_neotestSub.setAngle(m_angle);
   }
 
   // Called once the command ends or is interrupted.
