@@ -98,18 +98,18 @@ public final class Constants {
   }
 
   public static class ArmSub {
-    public static final double kArmEncoderPositionConversionFactor = 0.00; //in mm
-    public static final double kArmEncoderVelocityConversionFactor = 0.00; //in mm
+    public static final double kArmEncoderPositionConversionFactor = 1.00; //in mm
+    public static final double kArmEncoderVelocityConversionFactor = 1.00; //in mm
   }
 
   public static class IntakeSub {
 
-    public static final double kIntakeMotorEncoderPositionConversionFactor = 0.00; //in mm
-    public static final double kIntakeMotorEncoderVelocityConversionFactor = 0.00; //in mm
+    public static final double kIntakeMotorEncoderPositionConversionFactor = 1.00; //in mm
+    public static final double kIntakeMotorEncoderVelocityConversionFactor = 1.00; //in mm
 
 
-    public static final double kIntakeRaiseMotorEncoderPositionConversionFactor = 0.00; //in mm
-    public static final double kIntakeRaiseMotorEncoderVelocityConversionFactor = 0.00; //in mm
+    public static final double kIntakeRaiseMotorEncoderPositionConversionFactor = 1.00; //in mm
+    public static final double kIntakeRaiseMotorEncoderVelocityConversionFactor = 1.00; //in mm
 
   }
 }

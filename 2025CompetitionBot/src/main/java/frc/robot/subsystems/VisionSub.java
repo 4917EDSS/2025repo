@@ -8,6 +8,8 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
@@ -27,6 +29,17 @@ public class VisionSub extends SubsystemBase {
   NetworkTableEntry m_pipeline;
   NetworkTableEntry m_pipetype;
   NetworkTableEntry m_botposeTarget;
+  NetworkTableEntry m_botpose;
+
+  long id;
+  boolean tv;
+  double x;
+  double y;
+  double a;
+  long pipeline;
+  String pipetype;
+  double[] botposeTarget;
+  double[] botpose;
 
 
   /** Creates a new VisionSub. */
@@ -40,6 +53,7 @@ public class VisionSub extends SubsystemBase {
     m_pipeline = m_networkTable.getEntry("getpipe");
     m_pipetype = m_networkTable.getEntry("getpipetype");
     m_botposeTarget = m_networkTable.getEntry("botpose_targetspace");
+    m_botpose = m_networkTable.getEntry("botpose");
 
     m_shuffleboardID = m_ShuffleboardTab.add("ID", 0).getEntry();
     m_shuffleboardTv = m_ShuffleboardTab.add("Sees tag?", 0).getEntry();
@@ -48,19 +62,21 @@ public class VisionSub extends SubsystemBase {
     m_shuffleboardTa = m_ShuffleboardTab.add("Area of tag", 0).getEntry();
     m_shuffleboardPipeline = m_ShuffleboardTab.add("Pipeline", 0).getEntry();
     m_shuffleboardPipetype = m_ShuffleboardTab.add("Pipetype", 0).getEntry();
+
   }
 
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
-    long id = m_tid.getInteger(0);
-    boolean tv = m_tv.getBoolean(false);
-    double x = m_tx.getDouble(0.0);
-    double y = m_ty.getDouble(0.0);
-    double a = m_ta.getDouble(0.0);
-    long pipeline = m_pipeline.getInteger(0);
-    String pipetype = m_pipetype.getString(null);
-    double[] botpose = m_botposeTarget.getDoubleArray(new double[8]);
+    id = m_tid.getInteger(0);
+    tv = m_tv.getBoolean(false);
+    x = m_tx.getDouble(0.0);
+    y = m_ty.getDouble(0.0);
+    a = m_ta.getDouble(0.0);
+    pipeline = m_pipeline.getInteger(0);
+    pipetype = m_pipetype.getString(null);
+    botposeTarget = m_botposeTarget.getDoubleArray(new double[8]);
+    botpose = m_botpose.getDoubleArray(new double[8]);
 
     m_shuffleboardID.setInteger(id);
     m_shuffleboardTv.setBoolean(tv);
@@ -71,5 +87,12 @@ public class VisionSub extends SubsystemBase {
     m_shuffleboardPipetype.setString(pipetype);
   }
 
+  public Pose2d getTagPose2d() {
+    return new Pose2d(botposeTarget[0], botposeTarget[2], new Rotation2d(botposeTarget[4]));
+  }
+
+  public boolean getTv() {
+    return tv;
+  }
 
 }

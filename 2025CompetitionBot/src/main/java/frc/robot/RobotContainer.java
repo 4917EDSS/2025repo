@@ -19,6 +19,7 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.Constants.OperatorConstants;
+import frc.robot.commands.AutoDriveCmd;
 import frc.robot.commands.ElevatorWithJoystickCmd;
 import frc.robot.commands.KillAllCmd;
 import frc.robot.commands.SetElevatorToHeightCmd;
@@ -31,7 +32,7 @@ import frc.robot.subsystems.DrivetrainSub;
 import frc.robot.subsystems.ElevatorSub;
 import frc.robot.subsystems.IntakeSub;
 import frc.robot.subsystems.LedSub;
-// import frc.robot.subsystems.VisionSub;
+import frc.robot.subsystems.VisionSub;
 import frc.robot.subsystems.ArduinoSub;
 import frc.robot.subsystems.ClimbSub;
 import frc.robot.subsystems.ArmSub;
@@ -71,6 +72,7 @@ public class RobotContainer {
   private final SwerveRequest.FieldCentric drive = new SwerveRequest.FieldCentric()
       .withDeadband(MaxSpeed * 0.1).withRotationalDeadband(MaxAngularRate * 0.1) // Add a 10% deadband
       .withDriveRequestType(DriveRequestType.OpenLoopVoltage); // Use open-loop control for drive motors
+
   private final SwerveRequest.SwerveDriveBrake brake = new SwerveRequest.SwerveDriveBrake();
   private final SwerveRequest.PointWheelsAt point = new SwerveRequest.PointWheelsAt();
 
@@ -83,14 +85,14 @@ public class RobotContainer {
   private final TestManager m_testManager = new TestManager();
 
   // The robot's subsystems and commands are defined here...
-  public final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
+  public static final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
   private final ArduinoSub m_arduinoSub = new ArduinoSub();
   private final ClimbSub m_climbSub = new ClimbSub();
   private final DrivetrainSub m_drivetrainSub = new DrivetrainSub();
   private final ElevatorSub m_elevatorSub = new ElevatorSub();
   private final IntakeSub m_intakeSub = new IntakeSub();
   private final LedSub m_ledSub = new LedSub(m_arduinoSub);
-  // private final VisionSub m_visionSub = new VisionSub();
+  private final VisionSub m_visionSub = new VisionSub();
   private final ArmSub m_armSub = new ArmSub();
 
 
@@ -159,6 +161,12 @@ public class RobotContainer {
 
     // Operator Controller Bindings
     m_operatorController.cross().onTrue(new SetElevatorToHeightCmd(100, m_elevatorSub));
+
+    m_driverController.L1()
+        .onTrue(new AutoDriveCmd(m_visionSub));
+
+    m_driverController.R1()
+        .onTrue(new AutoDriveCmd(m_visionSub));
 
     // Schedule `exampleMethodCommand` when the Xbox controller's B button is pressed,
     // cancelling on release.

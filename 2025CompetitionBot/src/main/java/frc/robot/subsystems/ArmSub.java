@@ -59,6 +59,7 @@ public class ArmSub extends SubsystemBase {
 
   public void moveArm(double power) {
     m_armMotor.set(power);
+    System.out.println(power);
   }
 
   public double getAngle() {
@@ -103,7 +104,7 @@ public class ArmSub extends SubsystemBase {
 
 
     double pivotPower = pidPower + fedPower;
-    moveArm(pivotPower);
+    // moveArm(pivotPower);
 
   }
 }
