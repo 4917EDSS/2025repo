@@ -50,6 +50,11 @@ public final class Constants {
     public final static double kMaxHeight = 2000.0; // In mm
   }
 
+  public final static class Arm {
+    public static final double kMaxArmAngle = 170.0; // In degrees
+    public static final double kMinArmAngle = 0.0; // In degrees
+  }
+
   public final static class Arduino {
     public static final int kBaudRate = 38400;
     public static final double kTimeOutLength = 0.0;
