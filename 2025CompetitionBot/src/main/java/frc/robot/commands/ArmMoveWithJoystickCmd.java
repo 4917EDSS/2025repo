@@ -36,7 +36,7 @@ public class ArmMoveWithJoystickCmd extends Command {
     if(Math.abs(pivotPower) > 0.05) {
       m_armSub.moveArm(pivotPower); // (pivotPower);
     } else {
-      // m_armSub.moveArm(0.0); // put in if you want to stop moving if joystick not moving
+      m_armSub.moveArm(0.0); // look at elevatorwithjoystickcmd to see how to get deadband to work properly without blocking everything
     }
   }
 
