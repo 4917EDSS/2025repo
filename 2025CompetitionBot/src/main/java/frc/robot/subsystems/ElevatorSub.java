@@ -12,6 +12,7 @@ import com.ctre.phoenix6.configs.TalonFXConfigurator;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.units.AngleUnit;
 import edu.wpi.first.units.DistanceUnit;
 import edu.wpi.first.units.PerUnit;
@@ -33,6 +34,8 @@ public class ElevatorSub extends SubsystemBase {
   private double m_targetHeight = 0.0;
   private boolean m_areWeTryingToHold = true;
   private int m_hitLimitCounter = 0;
+
+  private final PIDController m_elevatorPID = new PIDController(0.002, 0.0, 0.0);
 
   /** Creates a new ElevatorSub. */
   public ElevatorSub() {
@@ -111,7 +114,7 @@ public class ElevatorSub extends SubsystemBase {
 
   public void runHeightControl(boolean justCalculate) {
     // TODO: Create and configure PID and Feedforward controllers
-    double pidPower = 0;//m_pivotPID.calculate(getPivotAngle(), m_targetAngle);
+    double pidPower = m_elevatorPID.calculate(getHeight(), m_targetHeight);
     double fedPower = 0;//m_pivotFeedforward.calculate(Math.toRadians(getPivotAngle() - 90.0), pidPower); // Feed forward expects 0 degrees as horizontal
 
     if(!justCalculate) {

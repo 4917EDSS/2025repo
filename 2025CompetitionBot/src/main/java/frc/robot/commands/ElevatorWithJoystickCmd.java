@@ -29,11 +29,14 @@ public class ElevatorWithJoystickCmd extends Command {
 
   // Called when the command is initially scheduled.
   @Override
-  public void initialize() {}
+  public void initialize() {
+    System.out.println("*********ElevatorWithJoystickCmd Run*********");
+  }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
+    System.out.println("ElevatorWithJoystickCmd " + m_elevatorSub.getHeight());
     // get controller joystick value
     double elevatorPower = -m_controller.getLeftY();
 

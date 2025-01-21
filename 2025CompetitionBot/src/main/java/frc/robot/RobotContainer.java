@@ -158,7 +158,7 @@ public class RobotContainer {
         .onTrue(new KillAllCmd(m_climbSub, m_drivetrainSub, m_intakeSub, m_elevatorSub));
 
     // Operator Controller Bindings
-    m_operatorController.cross().onTrue(new SetElevatorToHeightCmd(10, m_elevatorSub));
+    m_operatorController.cross().onTrue(new SetElevatorToHeightCmd(100, m_elevatorSub));
 
     // Schedule `exampleMethodCommand` when the Xbox controller's B button is pressed,
     // cancelling on release.
