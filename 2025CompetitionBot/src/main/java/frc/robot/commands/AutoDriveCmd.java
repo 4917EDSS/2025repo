@@ -11,6 +11,8 @@ import com.ctre.phoenix6.swerve.SwerveRequest;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.RobotContainer;
+import frc.robot.generated.TunerConstants;
+import frc.robot.subsystems.DrivetrainSub;
 import frc.robot.subsystems.VisionSub;
 
 /*
@@ -24,6 +26,7 @@ public class AutoDriveCmd extends Command {
   double xDist;
   double yDist;
   int counter;
+  public final DrivetrainSub m_drivetrainSub = TunerConstants.createDrivetrain();
 
   /** Creates a new AutoDriveCmd. */
   public AutoDriveCmd(VisionSub visionSub) {
@@ -45,25 +48,36 @@ public class AutoDriveCmd extends Command {
     m_apriltagPos = m_visionSub.getTagPose2d();
     //check if angle is positive or negative
 
+    System.out.println(m_visionSub.getTx());
 
-    if(m_apriltagPos.getRotation().getRadians() > 0.05 && m_apriltagPos.getRotation().getRadians() < -0.05) {
-      if(m_apriltagPos.getRotation().getRadians() > 0) {
-        RobotContainer.m_drivetrainSub
-            .applyRequest(() -> autoDrive.withRotationalRate(RotationsPerSecond.of(-0.75).in(RadiansPerSecond)));
+    if(m_visionSub.getTx() > 5 || m_visionSub.getTx() < -5) {
+      System.out.println("aa");
+      if(m_visionSub.getTx() > 0) {
+        System.out.println("bb");
+        m_drivetrainSub
+            .applyRequest(() -> autoDrive.withVelocityX(0).withVelocityY(0)
+                .withRotationalRate(RotationsPerSecond.of(-0.75).in(RadiansPerSecond)));
       } else {
-        RobotContainer.m_drivetrainSub
-            .applyRequest(() -> autoDrive.withRotationalRate(RotationsPerSecond.of(0.75).in(RadiansPerSecond)));
+        System.out.println("cc");
+        m_drivetrainSub
+            .applyRequest(() -> autoDrive.withVelocityX(0).withVelocityY(0)
+                .withRotationalRate(RotationsPerSecond.of(0.75).in(RadiansPerSecond)));
       }
     } else {
+      System.out.println("dd");
       xDist = m_apriltagPos.getX();
       yDist = m_apriltagPos.getY();
       double totalDist = Math.sqrt((xDist * xDist) + (yDist * yDist));
       xDist /= totalDist;
       yDist /= totalDist;
-      RobotContainer.m_drivetrainSub.applyRequest(() -> autoDrive.withVelocityX(xDist).withVelocityY(yDist));
+      m_drivetrainSub.applyRequest(() -> autoDrive.withVelocityX(xDist).withVelocityY(yDist));
 
     }
-    if(m_visionSub.getTv() == false) {
+
+    System.out.println(xDist);
+    System.out.println(yDist);
+
+    if(m_visionSub.getTv() == 0) {
       counter++;
     } else {
       counter = 0;
@@ -77,7 +91,8 @@ public class AutoDriveCmd extends Command {
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    RobotContainer.m_drivetrainSub
+    System.out.println("end");
+    m_drivetrainSub
         .applyRequest(() -> autoDrive.withVelocityX(0).withVelocityY(0).withRotationalRate(0));
   }
 

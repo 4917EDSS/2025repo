@@ -58,7 +58,7 @@ public class ArmSub extends SubsystemBase {
    */
   public void setPower(double power) {
     m_armMotor.set(power);
-    System.out.println(power);
+    //System.out.println(power);
   }
 
   /**

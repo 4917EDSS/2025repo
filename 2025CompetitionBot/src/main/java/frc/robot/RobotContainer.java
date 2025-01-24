@@ -61,7 +61,7 @@ public class RobotContainer {
   // Robot subsystems
   //private final ArduinoSub m_arduinoSub = new ArduinoSub();   // TODO:  Implement new CAN Arduino
   private final ClimbSub m_climbSub = new ClimbSub();
-  public static final DrivetrainSub m_drivetrainSub = TunerConstants.createDrivetrain();
+  public final DrivetrainSub m_drivetrainSub = TunerConstants.createDrivetrain();
   private final ElevatorSub m_elevatorSub = new ElevatorSub();
   private final IntakeSub m_intakeSub = new IntakeSub();
   //private final LedSub m_ledSub = new LedSub(m_arduinoSub);  // TODO:  Implement with new Arduino
@@ -84,6 +84,7 @@ public class RobotContainer {
 
     // Default commands
     m_drivetrainSub.setDefaultCommand(
+
         // Note: X is defined as forward and Y as left according to WPILib convention
         m_drivetrainSub.applyRequest(() -> drive.withVelocityX(-m_driverController.getLeftY() * MaxSpeed) // Drive forward with negative Y (forward)
             .withVelocityY(-m_driverController.getLeftX() * MaxSpeed) // Drive left with negative X (left)
