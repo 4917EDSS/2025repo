@@ -35,7 +35,7 @@ public class ElevatorSub extends SubsystemBase {
   private final PIDController m_elevatorPID = new PIDController(0.002, 0.0, 0.0);
 
   private double m_targetHeight = 0.0;
-  private boolean m_areWeTryingToHold = true;
+  private boolean m_enableAutomation = false;
   private int m_hitLimitSwitchCounter = 0;
 
 
@@ -65,9 +65,11 @@ public class ElevatorSub extends SubsystemBase {
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
-    if(m_areWeTryingToHold) {
+    if(m_enableAutomation) {
       runHeightControl(false);
     }
+
+    // Reset encoder if we hit the limit switch and the position doesn't read close to zero
     if(isAtLowerLimit() && Math.abs(getPosition()) > 5.0) {
       m_hitLimitSwitchCounter++;
     } else {
@@ -128,8 +130,22 @@ public class ElevatorSub extends SubsystemBase {
     }
 
     m_targetHeight = targetHeight;
-    m_areWeTryingToHold = true;
+    enableAutomation();
     runHeightControl(true);
+  }
+
+  /**
+   * Enables closed loop control of elevator height
+   */
+  public void enableAutomation() {
+    m_enableAutomation = true;
+  }
+
+  /**
+   * Disables closed loop control of elevator height
+   */
+  public void disableAutomation() {
+    m_enableAutomation = false;
   }
 
   /**
@@ -172,14 +188,14 @@ public class ElevatorSub extends SubsystemBase {
    * 
    * @param justCalculate set to true to update the Feedforward and PID controllers without changing the motor power
    */
-  // TODO:  This should not be public.  Should be able to use a flag to turn it off instead.
-  public void runHeightControl(boolean justCalculate) {
+  private void runHeightControl(boolean justCalculate) {
     // TODO: Create and configure PID and Feedforward controllers
     double pidPower = m_elevatorPID.calculate(getPosition(), m_targetHeight);
     double fedPower = 0;//m_pivotFeedforward.calculate(Math.toRadians(getPivotAngle() - 90.0), pidPower); // Feed forward expects 0 degrees as horizontal
 
     if(!justCalculate) {
-      setPower(pidPower + fedPower);
+      //setPower(pidPower + fedPower);
+      setPower(0.1);
     }
   }
 }
