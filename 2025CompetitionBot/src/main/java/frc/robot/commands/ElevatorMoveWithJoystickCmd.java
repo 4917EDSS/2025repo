@@ -49,7 +49,7 @@ public class ElevatorMoveWithJoystickCmd extends Command {
     // Turns off automatic height control to allow joystick use.
     if(!m_wasInDeadZone) {
       m_elevatorSub.runHeightControl(false); // TODO: Consider using a flag to turn this on/off and letting the subsystem's periodic() call this method
-      m_elevatorSub.setPower(elevatorPower);
+      m_elevatorSub.setPower(elevatorPower * elevatorPower);
     }
   }
 
