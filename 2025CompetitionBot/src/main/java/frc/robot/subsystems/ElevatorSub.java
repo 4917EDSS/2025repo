@@ -35,7 +35,7 @@ public class ElevatorSub extends SubsystemBase {
   private final PIDController m_elevatorPID = new PIDController(0.002, 0.0, 0.0);
 
   private double m_targetHeight = 0.0;
-  private boolean m_enableAutomation = true;
+  private boolean m_enableAutomation = false;
   private int m_hitLimitSwitchCounter = 0;
 
 
@@ -194,7 +194,8 @@ public class ElevatorSub extends SubsystemBase {
     double fedPower = 0;//m_pivotFeedforward.calculate(Math.toRadians(getPivotAngle() - 90.0), pidPower); // Feed forward expects 0 degrees as horizontal
 
     if(!justCalculate) {
-      setPower(pidPower + fedPower);
+      //setPower(pidPower + fedPower);
+      setPower(0.1);
     }
   }
 }

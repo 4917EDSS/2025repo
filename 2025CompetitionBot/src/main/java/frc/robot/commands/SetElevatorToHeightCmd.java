@@ -26,7 +26,6 @@ public class SetElevatorToHeightCmd extends Command {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    m_elevatorSub.setPower(0.25);
     //System.out.println("*********SetElevatorToHeightCmd Run*********");   // Debug only
   }
 

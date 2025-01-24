@@ -34,12 +34,9 @@ public class ArmMoveWithJoystickCmd extends Command {
   @Override
   public void execute() {
     double pivotPower = -m_controller.getRightY();
-
-    //if we moved out of deadband, disable automation
     if(Math.abs(pivotPower) > 0.05 && m_wasInDeadBand) {
-      m_armSub.setPower(pivotPower * pivotPower); // (pivotPower);
-      m_armSub.disableAutomation();
-      m_wasInDeadBand = false;
+      double direction = (pivotPower >= 0.0) ? 1.0 : -1.0;
+      m_armSub.setPower(pivotPower * pivotPower * direction); // (pivotPower);
     }
     //else if we went into deadband, enable automation
     else if(Math.abs(pivotPower) < 0.05 && !m_wasInDeadBand) {
