@@ -30,6 +30,7 @@ import frc.robot.generated.TunerConstants.TunerSwerveDrivetrain;
  * If the robot is saying that the storage is low then check if a usb is plugged in to the
  * robot and restart the robot.
  * 
+ * NOTE: Was called CommandSwerveDrivetrain but renamed to fit our convention
  */
 public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Subsystem {
   private static final double kSimLoopPeriod = 0.005; // 5 ms

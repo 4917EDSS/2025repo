@@ -12,13 +12,13 @@ import frc.robot.subsystems.ElevatorSub;
  * You should consider using the more terse Command factories API instead
  * https://docs.wpilib.org/en/stable/docs/software/commandbased/organizing-command-based.html#defining-commands
  */
-public class ElevatorWithJoystickCmd extends Command {
+public class ElevatorMoveWithJoystickCmd extends Command {
   private final CommandPS4Controller m_controller;
   private final ElevatorSub m_elevatorSub;
   private boolean m_wasInDeadZone = true;
 
   /** Creates a new ElevatorWithJoystickCmd. */
-  public ElevatorWithJoystickCmd(CommandPS4Controller controller, ElevatorSub elevatorSub) {
+  public ElevatorMoveWithJoystickCmd(CommandPS4Controller controller, ElevatorSub elevatorSub) {
     m_controller = controller;
     m_elevatorSub = elevatorSub;
 
@@ -30,13 +30,13 @@ public class ElevatorWithJoystickCmd extends Command {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    System.out.println("*********ElevatorWithJoystickCmd Run*********");
+    //System.out.println("*********ElevatorWithJoystickCmd Run*********"); // Debug only
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    System.out.println("ElevatorWithJoystickCmd " + m_elevatorSub.getHeight());
+    //System.out.println("ElevatorWithJoystickCmd " + m_elevatorSub.getPosition()); // Debug only
     // get controller joystick value
     double elevatorPower = -m_controller.getLeftY();
 
@@ -48,8 +48,8 @@ public class ElevatorWithJoystickCmd extends Command {
     }
     // Turns off automatic height control to allow joystick use.
     if(!m_wasInDeadZone) {
-      m_elevatorSub.runHeightControl(false);
-      m_elevatorSub.setElevatorMotor(elevatorPower);
+      m_elevatorSub.runHeightControl(false); // TODO: Consider using a flag to turn this on/off and letting the subsystem's periodic() call this method
+      m_elevatorSub.setPower(elevatorPower);
     }
   }
 

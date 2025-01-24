@@ -26,27 +26,27 @@ public class SetElevatorToHeightCmd extends Command {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    m_elevatorSub.setElevatorMotor(0.25);
-    System.out.println("*********SetElevatorToHeightCmd Run*********");
+    m_elevatorSub.setPower(0.25);
+    //System.out.println("*********SetElevatorToHeightCmd Run*********");   // Debug only
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    System.out.println("SetElevatorToHeightCmd " + m_elevatorSub.getHeight());
+    System.out.println("SetElevatorToHeightCmd " + m_elevatorSub.getPosition());
   }
 
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    m_elevatorSub.setElevatorMotor(0);
+    m_elevatorSub.setPower(0);
   }
 
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
     //  if(m_elevatorSub.getHeight().gte(m_targetHeight)) {
-    if(m_elevatorSub.getHeight() < (m_targetHeight)) {
+    if(m_elevatorSub.getPosition() < (m_targetHeight)) {
       return true;
     }
     return false;

@@ -4,34 +4,28 @@
 
 package frc.robot.subsystems;
 
-import com.revrobotics.spark.SparkAbsoluteEncoder;
 import com.revrobotics.spark.SparkBase;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
-import com.revrobotics.spark.SparkLowLevel;
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.SparkMaxConfig;
-import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.Constants;
-import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.math.controller.ArmFeedforward;
 import edu.wpi.first.math.controller.PIDController;
-import frc.robot.Constants.Arm;
+import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants;
 
 public class ArmSub extends SubsystemBase {
-  // Create limit switches
-  private final DigitalInput m_armUpperLimit = new DigitalInput(Constants.DioIds.kArmUpperLimit);
-  private final DigitalInput m_armLowerLimit = new DigitalInput(Constants.DioIds.kArmLowerLimit);
-  // Create the intake motor
   private final SparkMax m_armMotor = new SparkMax(Constants.CanIds.kArmMotor, MotorType.kBrushless);
-
-  private final SparkAbsoluteEncoder m_armEncoder = m_armMotor.getAbsoluteEncoder();
+  private final DigitalInput m_armLowerLimit = new DigitalInput(Constants.DioIds.kArmLowerLimit);
+  private final DigitalInput m_armUpperLimit = new DigitalInput(Constants.DioIds.kArmUpperLimit);
+  //private final SparkAbsoluteEncoder m_armEncoder = m_armMotor.getAbsoluteEncoder();  // TODO: Figure out if we'll have one of these or not
 
   private final ArmFeedforward m_armFeedforward = new ArmFeedforward(0.001, 0.001, 0.0);
-  private final PIDController m_PID_NEOController = new PIDController(0.01, 0.001, 0.001); // really needs some tuning
+  private final PIDController m_armPid = new PIDController(0.01, 0.001, 0.001); // really needs some tuning
+
   private double m_targetAngle = 0;
 
-  // private final SparkAbsoluteEncoder m_armAbsoluteEncoder = m_armMotor.getAbsoluteEncoder();
 
   /** Creates a new ArmSub. */
   public ArmSub() {
@@ -48,25 +42,60 @@ public class ArmSub extends SubsystemBase {
     m_armMotor.configure(config, SparkBase.ResetMode.kResetSafeParameters,
         SparkBase.PersistMode.kPersistParameters);
 
-    resetEncoder();
+    resetPosition();
   }
 
   @Override
   public void periodic() {
-    runPIDControl();
     // This method will be called once per scheduler run
+    runAngleControl();
   }
 
-  public void moveArm(double power) {
+  /**
+   * Manually set the power of the arm motor(s).
+   * 
+   * @param power power value -1.0 to 1.0
+   */
+  public void setPower(double power) {
     m_armMotor.set(power);
     System.out.println(power);
   }
 
-  public double getAngle() {
+  /**
+   * Sets the current angle as the zero angle
+   */
+  public void resetPosition() {
+    // TODO:  If we have an absolute encoder, use that instead of the motor's internal encoder
+    // Would need to save an offset to permit resetting the position
+    m_armMotor.getEncoder().setPosition(0);
+  }
+
+  /**
+   * Returns the current angular position of the arm
+   * 
+   * @return position in degrees
+   */
+  public double getPosition() {
+    // TODO:  If we have an absolute encoder, use that instead of the motor's internal encoder
     return m_armMotor.getEncoder().getPosition();
   }
 
-  public void setAngle(double targetAngle) {
+  /**
+   * Returns the current angular velocity of the arm
+   * 
+   * @return velocity in degrees per second
+   */
+  public double getVelocity() {
+    // TODO:  If we have an absolute encoder, use that instead of the motor's internal encoder
+    return m_armMotor.getEncoder().getVelocity();
+  }
+
+  /**
+   * Sets the target angle that the arm should move to
+   * 
+   * @param targetAngle target angle in degrees
+   */
+  public void setTargetAngle(double targetAngle) {
     if(targetAngle > Constants.Arm.kMaxArmAngle) {
       targetAngle = Constants.Arm.kMaxArmAngle;
     }
@@ -76,35 +105,44 @@ public class ArmSub extends SubsystemBase {
     m_targetAngle = targetAngle;
   }
 
-  public void resetEncoder() {
-    m_armMotor.getEncoder().setPosition(0);
-  }
-
-  public double getDistance() {
-    return m_armMotor.getEncoder().getPosition();
-  }
-
-  public double getVelocity() {
-    return m_armMotor.getEncoder().getVelocity();
-  }
-
-  public boolean isAtUpperLimit() {
-    return m_armUpperLimit.get(); // If switch is normally closed, return !m_armUpperLimit.get()
-    // to return a true when switch is false and false when it's true
-  }
-
+  /**
+   * Returns if the arm is at its lower limit or not
+   * 
+   * @return true when it's at the limit, false otherwise
+   */
   public boolean isAtLowerLimit() {
     return m_armLowerLimit.get(); // If switch is normally closed, return !m_armLowerLimit.get()
     // to return a true when switch is false and false when it's true
   }
 
-  public void runPIDControl() {
-    double pidPower = m_PID_NEOController.calculate(getAngle(), m_targetAngle);
-    double fedPower = m_armFeedforward.calculate(Math.toRadians(getAngle()), pidPower); // Feed forward expects 0 degrees as horizontal
+  /**
+   * Returns if the arm is at its upper limit or not
+   * 
+   * @return true when it's at the limit, false otherwise
+   */
+  public boolean isAtUpperLimit() {
+    return m_armUpperLimit.get(); // If switch is normally closed, return !m_armUpperLimit.get()
+    // to return a true when switch is false and false when it's true
+  }
+
+  /**
+   * Returns how much current the motor is currently drawing
+   * 
+   * @return current in amps or -1.0 if motor can't measure current
+   */
+  public double getElectricalCurrent() {
+    return -1.0;
+  }
 
 
-    double pivotPower = pidPower + fedPower;
-    // moveArm(pivotPower);
+  /**
+   * Calculates and sets the current power to apply to the arm to get to or stay at its target
+   */
+  private void runAngleControl() {
+    // TODO:  Fix this
+    double pidPower = m_armPid.calculate(getPosition(), m_targetAngle);
+    double fedPower = m_armFeedforward.calculate(Math.toRadians(getPosition()), pidPower); // Feed forward expects 0 degrees as horizontal
 
+    //setPower(pidPower + fedPower);
   }
 }

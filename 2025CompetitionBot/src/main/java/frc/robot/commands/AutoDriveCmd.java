@@ -4,15 +4,13 @@
 
 package frc.robot.commands;
 
-import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import static edu.wpi.first.units.Units.RadiansPerSecond;
 import static edu.wpi.first.units.Units.RotationsPerSecond;
+import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.RobotContainer;
-import frc.robot.Constants;
-import frc.robot.Robot;
 import frc.robot.subsystems.VisionSub;
 
 /*
@@ -50,10 +48,10 @@ public class AutoDriveCmd extends Command {
 
     if(m_apriltagPos.getRotation().getRadians() > 0.05 && m_apriltagPos.getRotation().getRadians() < -0.05) {
       if(m_apriltagPos.getRotation().getRadians() > 0) {
-        RobotContainer.drivetrain
+        RobotContainer.m_drivetrainSub
             .applyRequest(() -> autoDrive.withRotationalRate(RotationsPerSecond.of(-0.75).in(RadiansPerSecond)));
       } else {
-        RobotContainer.drivetrain
+        RobotContainer.m_drivetrainSub
             .applyRequest(() -> autoDrive.withRotationalRate(RotationsPerSecond.of(0.75).in(RadiansPerSecond)));
       }
     } else {
@@ -62,7 +60,7 @@ public class AutoDriveCmd extends Command {
       double totalDist = Math.sqrt((xDist * xDist) + (yDist * yDist));
       xDist /= totalDist;
       yDist /= totalDist;
-      RobotContainer.drivetrain.applyRequest(() -> autoDrive.withVelocityX(xDist).withVelocityY(yDist));
+      RobotContainer.m_drivetrainSub.applyRequest(() -> autoDrive.withVelocityX(xDist).withVelocityY(yDist));
 
     }
     if(m_visionSub.getTv() == false) {
@@ -79,7 +77,8 @@ public class AutoDriveCmd extends Command {
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    RobotContainer.drivetrain.applyRequest(() -> autoDrive.withVelocityX(0).withVelocityY(0).withRotationalRate(0));
+    RobotContainer.m_drivetrainSub
+        .applyRequest(() -> autoDrive.withVelocityX(0).withVelocityY(0).withRotationalRate(0));
   }
 
   // Returns true when the command should end.

@@ -39,7 +39,7 @@ public class TestClimbSubCmd extends Command {
     // Reset the encoder and run the motor for a given time
     m_startTime = Instant.now();
     m_climbSub.resetPosition();
-    m_climbSub.moveClimb(Constants.Tests.kDriveMotorPower);
+    m_climbSub.setPower(Constants.Tests.kDriveMotorPower);
   }
 
   // Called every time the scheduler runs while the command is scheduled.
@@ -52,17 +52,17 @@ public class TestClimbSubCmd extends Command {
   @Override
   public void end(boolean interrupted) {
     if(interrupted) {
-      m_climbSub.moveClimb(0.0);
+      m_climbSub.setPower(0.0);
       m_testManager.updateTestStatus(m_testId, Result.kFail, "Test interrupted");
       return;
     }
 
     // Before turning off the motor, read the current current (amps) and position
-    double currentAmps = m_climbSub.getAmps();
-    double currentPosition = m_climbSub.getDistance();
+    double currentAmps = m_climbSub.getElectricalCurrent();
+    double currentPosition = m_climbSub.getPosition();
 
     // Stop the motor
-    m_climbSub.moveClimb(0.0);
+    m_climbSub.setPower(0.0);
 
     // Check to see if the measured current is good, ok or bad
     TestManager.Result ampsResult = m_testManager.determineResult(currentAmps, Constants.Tests.kDriveMotorExpectedAmps,

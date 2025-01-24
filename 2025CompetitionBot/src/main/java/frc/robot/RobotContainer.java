@@ -7,6 +7,9 @@ package frc.robot;
 // Copyright (c) FIRST and other WPILib contributors.
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
+// Copyright (c) FIRST and other WPILib contributors.
+// Open Source Software; you can modify and/or share it under the terms of
+// the WPILib BSD license file in the root directory of this project.
 import static edu.wpi.first.units.Units.MetersPerSecond;
 import static edu.wpi.first.units.Units.RadiansPerSecond;
 import static edu.wpi.first.units.Units.RotationsPerSecond;
@@ -15,45 +18,22 @@ import com.ctre.phoenix6.swerve.SwerveRequest;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.CommandPS4Controller;
-import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
-import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.Constants.OperatorConstants;
+import frc.robot.commands.ArmMoveWithJoystickCmd;
 import frc.robot.commands.AutoDriveCmd;
-import frc.robot.commands.ElevatorWithJoystickCmd;
+import frc.robot.commands.ElevatorMoveWithJoystickCmd;
 import frc.robot.commands.KillAllCmd;
 import frc.robot.commands.SetElevatorToHeightCmd;
-import frc.robot.commands.ArmMoveWithJoystickCmd;
 import frc.robot.commands.tests.RunTestsGrp;
 import frc.robot.generated.TunerConstants;
+import frc.robot.subsystems.ArmSub;
+import frc.robot.subsystems.ClimbSub;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
-// Subsystems
-import frc.robot.subsystems.DrivetrainSub;
 import frc.robot.subsystems.ElevatorSub;
 import frc.robot.subsystems.IntakeSub;
-import frc.robot.subsystems.LedSub;
 import frc.robot.subsystems.VisionSub;
-import frc.robot.subsystems.ArduinoSub;
-import frc.robot.subsystems.ClimbSub;
-import frc.robot.subsystems.ArmSub;
-
-// Copyright (c) FIRST and other WPILib contributors.
-// Open Source Software; you can modify and/or share it under the terms of
-// the WPILib BSD license file in the root directory of this project.
-
-import static edu.wpi.first.units.Units.*;
-
-import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
-import com.ctre.phoenix6.swerve.SwerveRequest;
-
-import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.button.CommandPS4Controller;
-import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
-
-import frc.robot.generated.TunerConstants;
-import frc.robot.subsystems.CommandSwerveDrivetrain;
+import frc.robot.utils.SwerveTelemetry;
 import frc.robot.utils.TestManager;
 
 
@@ -64,113 +44,142 @@ import frc.robot.utils.TestManager;
  * subsystems, commands, and trigger mappings) should be declared here.
  */
 public class RobotContainer {
-  // Swerve constants and objects
+  // Swerve constants and objects (from CTRE Phoenix Tuner X)
   private double MaxSpeed = TunerConstants.kSpeedAt12Volts.in(MetersPerSecond); // kSpeedAt12Volts desired top speed
   private double MaxAngularRate = RotationsPerSecond.of(0.75).in(RadiansPerSecond); // 3/4 of a rotation per second max angular velocity
-
   // Setting up bindings for necessary control of the swerve drive platform
   private final SwerveRequest.FieldCentric drive = new SwerveRequest.FieldCentric()
       .withDeadband(MaxSpeed * 0.1).withRotationalDeadband(MaxAngularRate * 0.1) // Add a 10% deadband
       .withDriveRequestType(DriveRequestType.OpenLoopVoltage); // Use open-loop control for drive motors
-
   private final SwerveRequest.SwerveDriveBrake brake = new SwerveRequest.SwerveDriveBrake();
   private final SwerveRequest.PointWheelsAt point = new SwerveRequest.PointWheelsAt();
-
-  private final Telemetry logger = new Telemetry(MaxSpeed);
-
+  private final SwerveTelemetry swerveLogger = new SwerveTelemetry(MaxSpeed);
 
   // RobotContainer constants
-  public static boolean disableShuffleboardPrint = true;
-
   private final TestManager m_testManager = new TestManager();
 
-  // The robot's subsystems and commands are defined here...
-  public static final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
-  private final ArduinoSub m_arduinoSub = new ArduinoSub();
+  // Robot subsystems
+  //private final ArduinoSub m_arduinoSub = new ArduinoSub();   // TODO:  Implement new CAN Arduino
   private final ClimbSub m_climbSub = new ClimbSub();
-  private final DrivetrainSub m_drivetrainSub = new DrivetrainSub();
+  public static final CommandSwerveDrivetrain m_drivetrainSub = TunerConstants.createDrivetrain();
   private final ElevatorSub m_elevatorSub = new ElevatorSub();
   private final IntakeSub m_intakeSub = new IntakeSub();
-  private final LedSub m_ledSub = new LedSub(m_arduinoSub);
+  //private final LedSub m_ledSub = new LedSub(m_arduinoSub);  // TODO:  Implement with new Arduino
   private final VisionSub m_visionSub = new VisionSub();
   private final ArmSub m_armSub = new ArmSub();
 
-
+  // Controllers
   private final CommandPS4Controller m_driverController =
       new CommandPS4Controller(OperatorConstants.kDriverControllerPort);
   private final CommandPS4Controller m_operatorController =
       new CommandPS4Controller(OperatorConstants.kOperatorControllerPort);
 
+  // RobotContainer member variables
+  public static boolean disableShuffleboardPrint = true;
+
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
     m_testManager.setTestCommand(new RunTestsGrp(m_climbSub, m_intakeSub, m_testManager));
-    m_elevatorSub.setDefaultCommand(new ElevatorWithJoystickCmd(m_operatorController, m_elevatorSub));
 
+    // Default commands
+    m_drivetrainSub.setDefaultCommand(
+        // Note: X is defined as forward and Y as left according to WPILib convention
+        m_drivetrainSub.applyRequest(() -> drive.withVelocityX(-m_driverController.getLeftY() * MaxSpeed) // Drive forward with negative Y (forward)
+            .withVelocityY(-m_driverController.getLeftX() * MaxSpeed) // Drive left with negative X (left)
+            .withRotationalRate(-m_driverController.getRightX() * MaxAngularRate) // Drive counterclockwise with negative X (left)
+        ));
+    m_armSub.setDefaultCommand(new ArmMoveWithJoystickCmd(m_operatorController, m_armSub));
+    m_elevatorSub.setDefaultCommand(new ElevatorMoveWithJoystickCmd(m_operatorController, m_elevatorSub));
+
+    // Register Swerve telemetry
+    m_drivetrainSub.registerTelemetry(swerveLogger::telemeterize);
 
     // Configure the trigger bindings
     configureBindings();
   }
 
   /**
-   * Use this method to define your trigger->command mappings. Triggers can be created via the
-   * {@link Trigger#Trigger(java.util.function.BooleanSupplier)} constructor with an arbitrary
-   * predicate, or via the named factories in {@link
-   * edu.wpi.first.wpilibj2.command.button.CommandGenericHID}'s subclasses for {@link
-   * CommandXboxController Xbox}/{@link edu.wpi.first.wpilibj2.command.button.CommandPS4Controller
-   * PS4} controllers or {@link edu.wpi.first.wpilibj2.command.button.CommandJoystick Flight
-   * joysticks}.
+   * Use this method to define your trigger->command mappings.
    */
   private void configureBindings() {
-    m_armSub.setDefaultCommand(new ArmMoveWithJoystickCmd(m_operatorController, m_armSub));
-    // Note that X is defined as forward according to WPILib convention,
-    // and Y is defined as to the left according to WPILib convention.
-    drivetrain.setDefaultCommand(
-        // Drivetrain will execute this command periodically
-        drivetrain.applyRequest(() -> drive.withVelocityX(-m_driverController.getLeftY() * MaxSpeed) // Drive forward with negative Y (forward)
-            .withVelocityY(-m_driverController.getLeftX() * MaxSpeed) // Drive left with negative X (left)
-            .withRotationalRate(-m_driverController.getRightX() * MaxAngularRate) // Drive counterclockwise with negative X (left)
-        ));
+    // Drive controller bindings ////////////////////////////////////////////////////////////////////////////////////////////////
 
-    m_driverController.cross().whileTrue(drivetrain.applyRequest(() -> brake));
-    m_driverController.circle().whileTrue(drivetrain
+    // Square - unused
+
+    m_driverController.cross().whileTrue(m_drivetrainSub.applyRequest(() -> brake));
+
+    m_driverController.circle().whileTrue(m_drivetrainSub
         .applyRequest(() -> point
             .withModuleDirection(new Rotation2d(-m_driverController.getLeftY(), -m_driverController.getLeftX()))));
 
+    // Triange - unused
+
+    m_driverController.L1().onTrue(new AutoDriveCmd(m_visionSub));
+
+    m_driverController.R1().onTrue(new AutoDriveCmd(m_visionSub));
+
+    // L2 - unused
+
+    // R2 - unused
+
+    // Share - unused
+
+    // Options - unused
+
+    // Reset the field-centric heading
+    m_driverController.PS().onTrue(m_drivetrainSub.runOnce(() -> m_drivetrainSub.seedFieldCentric()));
+
+    // Touchpad - unused
+
+    // 'Kill All' commands
+    m_driverController.L3().onTrue(new KillAllCmd(m_climbSub, m_drivetrainSub, m_elevatorSub, m_intakeSub));
+
+    m_driverController.R3().onTrue(new KillAllCmd(m_climbSub, m_drivetrainSub, m_elevatorSub, m_intakeSub));
+
+    // Combination buttons for diagnostics
     // Run SysId routines when holding share/options and square/triangle.
     // Note that each routine should be run exactly once in a single log.
     m_driverController.share().and(m_driverController.triangle())
-        .whileTrue(drivetrain.sysIdDynamic(Direction.kForward));
-    m_driverController.share().and(m_driverController.square()).whileTrue(drivetrain.sysIdDynamic(Direction.kReverse));
+        .whileTrue(m_drivetrainSub.sysIdDynamic(Direction.kForward));
+    m_driverController.share().and(m_driverController.square())
+        .whileTrue(m_drivetrainSub.sysIdDynamic(Direction.kReverse));
     m_driverController.options().and(m_driverController.triangle())
-        .whileTrue(drivetrain.sysIdQuasistatic(Direction.kForward));
+        .whileTrue(m_drivetrainSub.sysIdQuasistatic(Direction.kForward));
     m_driverController.options().and(m_driverController.square())
-        .whileTrue(drivetrain.sysIdQuasistatic(Direction.kReverse));
+        .whileTrue(m_drivetrainSub.sysIdQuasistatic(Direction.kReverse));
 
-    // reset the field-centric heading on L1 press
-    m_driverController.L1().onTrue(drivetrain.runOnce(() -> drivetrain.seedFieldCentric()));
 
-    drivetrain.registerTelemetry(logger::telemeterize);
+    // Operator Controller Bindings /////////////////////////////////////////////////////////////////////////////////////////////
 
-    // 'Kill All' command
-    m_driverController.L3()
-        .onTrue(new KillAllCmd(m_climbSub, m_drivetrainSub, m_intakeSub, m_elevatorSub));
+    // Square - unused
 
-    m_driverController.R3()
-        .onTrue(new KillAllCmd(m_climbSub, m_drivetrainSub, m_intakeSub, m_elevatorSub));
-
-    // Operator Controller Bindings
     m_operatorController.cross().onTrue(new SetElevatorToHeightCmd(100, m_elevatorSub));
 
-    m_driverController.L1()
-        .onTrue(new AutoDriveCmd(m_visionSub));
+    // Circle - unused
 
-    m_driverController.R1()
-        .onTrue(new AutoDriveCmd(m_visionSub));
+    // Triange - unused
 
-    // Schedule `exampleMethodCommand` when the Xbox controller's B button is pressed,
-    // cancelling on release.
+    // L1 - unused
 
+    // R1 - unused
+
+    // L2 - unused
+
+    // R2 - unused
+
+    // Share - unused
+
+    // Options - unused
+
+    // PS - unused
+
+    // Touchpad - unused
+
+    // 'Kill All' commands
+    m_driverController.L3().onTrue(new KillAllCmd(m_climbSub, m_drivetrainSub, m_elevatorSub, m_intakeSub));
+
+    m_driverController.R3().onTrue(new KillAllCmd(m_climbSub, m_drivetrainSub, m_elevatorSub, m_intakeSub));
   }
 
   /**
@@ -180,6 +189,5 @@ public class RobotContainer {
    */
   public Command getAutonomousCommand() {
     return null;
-
   }
 }

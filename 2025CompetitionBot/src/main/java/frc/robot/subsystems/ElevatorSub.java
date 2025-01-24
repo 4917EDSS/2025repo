@@ -16,7 +16,6 @@ import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.units.AngleUnit;
 import edu.wpi.first.units.DistanceUnit;
 import edu.wpi.first.units.PerUnit;
-import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.units.measure.Per;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -28,19 +27,22 @@ public class ElevatorSub extends SubsystemBase {
   private final DigitalInput m_elevatorLowerLimit = new DigitalInput(Constants.DioIds.kElevatorLowerLimit);
   private final DigitalInput m_elevatorUpperLimit = new DigitalInput(Constants.DioIds.kElevatorUpperLimit);
 
+  // TODO:  Either finish off the proper units implementation or get rid of it
   private static final PerUnit<DistanceUnit, AngleUnit> MetersPerDegrees = Meters.per(Degrees);
   private static final Per<DistanceUnit, AngleUnit> kConversionToHeight = MetersPerDegrees.ofNative(0.000416);
 
+  // TOOD:  Need a feed-forward controller here
+  private final PIDController m_elevatorPID = new PIDController(0.002, 0.0, 0.0);
+
   private double m_targetHeight = 0.0;
   private boolean m_areWeTryingToHold = true;
-  private int m_hitLimitCounter = 0;
+  private int m_hitLimitSwitchCounter = 0;
 
-  private final PIDController m_elevatorPID = new PIDController(0.002, 0.0, 0.0);
 
   /** Creates a new ElevatorSub. */
   public ElevatorSub() {
-    TalonFXConfigurator talonFxConfiguarator = m_elevatorMotor.getConfigurator(); // Need this to change anything
-    TalonFXConfigurator talonFxConfiguarator2 = m_elevatorMotor2.getConfigurator(); // Need this to change anything
+    TalonFXConfigurator talonFxConfiguarator = m_elevatorMotor.getConfigurator();
+    TalonFXConfigurator talonFxConfiguarator2 = m_elevatorMotor2.getConfigurator();
 
     // This is how you set a current limit inside the motor (vs on the input power supply)
     CurrentLimitsConfigs limitConfigs = new CurrentLimitsConfigs();
@@ -57,7 +59,7 @@ public class ElevatorSub extends SubsystemBase {
     outputConfigs.Inverted = InvertedValue.Clockwise_Positive; // Invert = Clockwise
     talonFxConfiguarator2.apply(outputConfigs);
 
-    resetEncoder();
+    resetPosition();
   }
 
   @Override
@@ -66,60 +68,97 @@ public class ElevatorSub extends SubsystemBase {
     if(m_areWeTryingToHold) {
       runHeightControl(false);
     }
-    if(isAtBottom() && Math.abs(getHeight()) > 5.0) {
-      m_hitLimitCounter++;
+    if(isAtLowerLimit() && Math.abs(getPosition()) > 5.0) {
+      m_hitLimitSwitchCounter++;
     } else {
-      m_hitLimitCounter = 0;
+      m_hitLimitSwitchCounter = 0;
     }
 
-    if(m_hitLimitCounter >= 5) {
-      resetEncoder();
-      m_hitLimitCounter = 0;
+    if(m_hitLimitSwitchCounter >= 5) {
+      resetPosition();
+      m_hitLimitSwitchCounter = 0;
     }
   }
 
-  public void setTargetHeight(double height) {
-    if(height >= Constants.Elevator.kMaxHeight) {
-      height = Constants.Elevator.kMaxHeight;
-    } else if(height <= Constants.Elevator.kMinHeight) {
-      height = Constants.Elevator.kMinHeight;
-    }
-
-    m_targetHeight = height;
-    m_areWeTryingToHold = true;
-    runHeightControl(true);
-  }
-
-  public void setElevatorMotor(double power) {
+  /**
+   * Manually set the power of the elevator motor(s).
+   * 
+   * @param power power value -1.0 to 1.0
+   */
+  public void setPower(double power) {
     m_elevatorMotor.set(power);
   }
 
-  public Double getHeight() {
-    // TODO: We need to fix this properly, the conversion is not working
-    return m_elevatorMotor.getPosition().getValueAsDouble();
-  }
-
-  public void resetEncoder() {
+  /**
+   * Sets the current height as the zero height
+   */
+  public void resetPosition() {
     m_elevatorMotor.setPosition(0);
     m_elevatorMotor2.setPosition(0);
   }
 
-  public boolean isAtBottom() {
+  /**
+   * Returns the current angular position of the arm
+   * 
+   * @return position in degrees
+   */
+  public double getPosition() {
+    return m_elevatorMotor.getPosition().getValueAsDouble();
+  }
+
+  /**
+   * Returns the current velocity of the elevator
+   * 
+   * @return velocity in degrees per second
+   */
+  public double getVelocity() {
+    return m_elevatorMotor.getVelocity().getValueAsDouble();
+  }
+
+  /**
+   * Sets the target height that the elevator should move to
+   * 
+   * @param targetAngle target angle in degrees
+   */
+  public void setTargetHeight(double targetHeight) {
+    if(targetHeight >= Constants.Elevator.kMaxHeight) {
+      targetHeight = Constants.Elevator.kMaxHeight;
+    } else if(targetHeight <= Constants.Elevator.kMinHeight) {
+      targetHeight = Constants.Elevator.kMinHeight;
+    }
+
+    m_targetHeight = targetHeight;
+    m_areWeTryingToHold = true;
+    runHeightControl(true);
+  }
+
+  /**
+   * Returns if the elevator is at its lower limit or not
+   * 
+   * @return true when it's at the limit, false otherwise
+   */
+  public boolean isAtLowerLimit() {
     return m_elevatorLowerLimit.get();
   }
 
-  public boolean isAtTop() {
+  /**
+   * Returns if the elevator is at its upper limit or not
+   * 
+   * @return true when it's at the limit, false otherwise
+   */
+  public boolean isAtUpperLimit() {
     return m_elevatorUpperLimit.get();
   }
 
-  public void runHeightControl(boolean justCalculate) {
-    // TODO: Create and configure PID and Feedforward controllers
-    double pidPower = m_elevatorPID.calculate(getHeight(), m_targetHeight);
-    double fedPower = 0;//m_pivotFeedforward.calculate(Math.toRadians(getPivotAngle() - 90.0), pidPower); // Feed forward expects 0 degrees as horizontal
 
-    if(!justCalculate) {
-      setElevatorMotor(pidPower + fedPower);
-    }
+  /**
+   * Returns how much current the motor is currently drawing
+   * 
+   * @return current in amps or -1.0 if motor can't measure current
+   */
+  public double getElectricalCurrent() {
+    // TODO:  Need to figure this out for multiple motors
+    return -1.0;
   }
 
   public void testElevatorMotor(double power) {
@@ -127,4 +166,20 @@ public class ElevatorSub extends SubsystemBase {
     m_elevatorMotor2.set(power);
   }
 
+
+  /**
+   * Calculates and sets the current power to apply to the elevator to get to or stay at its target
+   * 
+   * @param justCalculate set to true to update the Feedforward and PID controllers without changing the motor power
+   */
+  // TODO:  This should not be public.  Should be able to use a flag to turn it off instead.
+  public void runHeightControl(boolean justCalculate) {
+    // TODO: Create and configure PID and Feedforward controllers
+    double pidPower = m_elevatorPID.calculate(getPosition(), m_targetHeight);
+    double fedPower = 0;//m_pivotFeedforward.calculate(Math.toRadians(getPivotAngle() - 90.0), pidPower); // Feed forward expects 0 degrees as horizontal
+
+    if(!justCalculate) {
+      setPower(pidPower + fedPower);
+    }
+  }
 }

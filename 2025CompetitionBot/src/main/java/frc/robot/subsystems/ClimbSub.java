@@ -10,17 +10,13 @@ import com.ctre.phoenix6.configs.TalonFXConfigurator;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
-import com.revrobotics.spark.SparkBase;
-import com.revrobotics.spark.SparkLowLevel.MotorType;
-import com.revrobotics.spark.SparkMax;
-import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
-import com.revrobotics.spark.config.SparkMaxConfig;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 
 public class ClimbSub extends SubsystemBase {
   // Create the climb motor
   private final TalonFX m_climbMotor = new TalonFX(Constants.CanIds.kClimbMotor);
+  // TODO:  Add limit switches and/or absolute encoder
 
   /** Creates a new ClimbSub. */
   public ClimbSub() {
@@ -43,7 +39,7 @@ public class ClimbSub extends SubsystemBase {
     //boolean turnOppositeDirectionFromMaster = true; // False if both motors turn in same direction, true to make them turn in opposite directions
     //m_testMotor2.setControl(new Follower(m_testMotor.getDeviceID(), turnOppositeDirectionFromMaster));
 
-    resetEncoder();
+    resetPosition();
   }
 
   @Override
@@ -51,28 +47,46 @@ public class ClimbSub extends SubsystemBase {
     // This method will be called once per scheduler run
   }
 
-  // Control the climb
-  public void moveClimb(double power) {
+  /**
+   * Manually set the power of the climb motor(s).
+   * 
+   * @param power power value -1.0 to 1.0
+   */
+  public void setPower(double power) {
     m_climbMotor.set(power);
   }
 
-  public void resetEncoder() {
+  /**
+   * Sets the current angle as the zero angle
+   */
+  public void resetPosition() {
     m_climbMotor.setPosition(0);
   }
 
-  public double getDistance() {
+  /**
+   * Returns the current angular position of the climb arm
+   * 
+   * @return position in degrees
+   */
+  public double getPosition() {
     return m_climbMotor.getPosition().getValueAsDouble();
   }
 
-  public void resetPosition() {
-
-  }
-
+  /**
+   * Returns the current angular velocity of the climb arm
+   * 
+   * @return velocity in degrees per second
+   */
   public double getVelocity() {
     return m_climbMotor.getRotorVelocity().getValueAsDouble();
   }
 
-  public double getAmps() {
+  /**
+   * Returns how much current the motor is currently drawing
+   * 
+   * @return current in amps or -1.0 if motor can't measure current
+   */
+  public double getElectricalCurrent() {
     return m_climbMotor.getStatorCurrent().getValueAsDouble();
   }
 }

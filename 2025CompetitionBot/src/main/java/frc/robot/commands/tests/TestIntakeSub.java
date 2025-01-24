@@ -6,12 +6,11 @@ package frc.robot.commands.tests;
 
 import java.time.Duration;
 import java.time.Instant;
-import com.ctre.phoenix6.StatusCode;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants;
 import frc.robot.subsystems.IntakeSub;
 import frc.robot.utils.TestManager;
-import frc.robot.utils.TestManager.*;
+import frc.robot.utils.TestManager.Result;
 
 /*
  * You should consider using the more terse Command factories API instead
@@ -56,17 +55,17 @@ public class TestIntakeSub extends Command {
     }
 
     if(interrupted) {
-      m_intakeSub.startIntake(0.0);
+      m_intakeSub.setDeployPower(0.0);
       m_testManager.updateTestStatus(m_testId, Result.kFail, "Test interrupted");
       return;
     }
 
     // Before turning off the motor, read the current current (amps) and position
-    double currentAmps = m_intakeSub.getAmps();
+    double currentAmps = m_intakeSub.getElectricalCurrent();
     double currentPosition = m_intakeSub.getPosition();
 
     // Stop the motor
-    m_intakeSub.startIntake(0.0);
+    m_intakeSub.setDeployPower(0.0);
 
     // Check to see if the measured current is good, ok or bad
     TestManager.Result ampResult = m_testManager.determineResult(currentAmps, Constants.Tests.kIntakeMotorExpectedAmps,
