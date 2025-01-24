@@ -17,6 +17,7 @@ import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandPS4Controller;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.Constants.OperatorConstants;
@@ -154,15 +155,21 @@ public class RobotContainer {
 
     // Square - unused
 
-    m_operatorController.cross().onTrue(new SetElevatorToHeightCmd(100, m_elevatorSub));
+    m_operatorController.triangle().whileTrue(
+        new StartEndCommand(() -> m_intakeSub.setRollersPower(1.0), () -> m_intakeSub.setRollersPower(0.0),
+            m_intakeSub));
 
     // Circle - unused
 
-    // Triange - unused
+    m_operatorController.cross().onTrue(new SetElevatorToHeightCmd(100, m_elevatorSub));
 
-    // L1 - unused
+    m_operatorController.L1()
+        .whileTrue(
+            new StartEndCommand(() -> m_climbSub.setPower(1.0), () -> m_climbSub.setPower(0.0), m_climbSub));
 
-    // R1 - unused
+    m_operatorController.R1()
+        .whileTrue(
+            new StartEndCommand(() -> m_climbSub.setPower(-1.0), () -> m_climbSub.setPower(0.0), m_climbSub));
 
     // L2 - unused
 

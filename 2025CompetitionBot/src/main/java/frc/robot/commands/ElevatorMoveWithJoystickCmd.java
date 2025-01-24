@@ -55,7 +55,7 @@ public class ElevatorMoveWithJoystickCmd extends Command {
 
     // Only set the motor if the joystick is currently outside the deadzone
     if(!m_wasInDeadZone) {
-      m_elevatorSub.setPower(elevatorPower);
+      m_elevatorSub.setPower(elevatorPower * elevatorPower);
     }
   }
 
