@@ -31,7 +31,7 @@ public class VisionSub extends SubsystemBase {
   NetworkTableEntry m_botpose;
 
   long id;
-  boolean tv;
+  long tv;
   double x;
   double y;
   double a;
@@ -59,8 +59,8 @@ public class VisionSub extends SubsystemBase {
     m_shuffleboardTx = m_ShuffleboardTab.add("tag x", 0).getEntry();
     m_shuffleboardTy = m_ShuffleboardTab.add("tag y", 0).getEntry();
     m_shuffleboardTa = m_ShuffleboardTab.add("Area of tag", 0).getEntry();
-    m_shuffleboardPipeline = m_ShuffleboardTab.add("Pipeline", 0).getEntry();
-    m_shuffleboardPipetype = m_ShuffleboardTab.add("Pipetype", 0).getEntry();
+    m_shuffleboardPipeline = m_ShuffleboardTab.add("Pipeline", -1).getEntry();
+    m_shuffleboardPipetype = m_ShuffleboardTab.add("Pipetype", "unknown").getEntry();
 
   }
 
@@ -68,7 +68,7 @@ public class VisionSub extends SubsystemBase {
   public void periodic() {
     // This method will be called once per scheduler run
     id = m_tid.getInteger(0);
-    tv = m_tv.getBoolean(false);
+    tv = m_tv.getInteger(0);
     x = m_tx.getDouble(0.0);
     y = m_ty.getDouble(0.0);
     a = m_ta.getDouble(0.0);
@@ -78,7 +78,7 @@ public class VisionSub extends SubsystemBase {
     botpose = m_botpose.getDoubleArray(new double[8]);
 
     m_shuffleboardID.setInteger(id);
-    m_shuffleboardTv.setBoolean(tv);
+    m_shuffleboardTv.setInteger(tv);
     m_shuffleboardTx.setDouble(x);
     m_shuffleboardTy.setDouble(y);
     m_shuffleboardTa.setDouble(a);
@@ -90,8 +90,12 @@ public class VisionSub extends SubsystemBase {
     return new Pose2d(botposeTarget[0], botposeTarget[2], new Rotation2d(botposeTarget[4]));
   }
 
-  public boolean getTv() {
-    return tv;
+  public int getTv() {
+    return (int) tv;
+  }
+
+  public int getTx() {
+    return (int) x;
   }
 
 }
