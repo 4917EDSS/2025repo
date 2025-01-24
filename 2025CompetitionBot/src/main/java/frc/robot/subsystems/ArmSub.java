@@ -4,6 +4,7 @@
 
 package frc.robot.subsystems;
 
+import org.opencv.core.Mat;
 import com.revrobotics.spark.SparkBase;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.SparkMax;
@@ -25,6 +26,7 @@ public class ArmSub extends SubsystemBase {
   private final PIDController m_armPid = new PIDController(0.01, 0.001, 0.001); // really needs some tuning
 
   private double m_targetAngle = 0;
+  private boolean m_automationEnabled = true;
 
 
   /** Creates a new ArmSub. */
@@ -48,7 +50,12 @@ public class ArmSub extends SubsystemBase {
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
-    runAngleControl();
+
+    if(m_automationEnabled) {
+      runAngleControl(false);
+    } else {
+      runAngleControl(true);
+    }
   }
 
   /**
@@ -134,15 +141,31 @@ public class ArmSub extends SubsystemBase {
     return -1.0;
   }
 
+  /**
+   * enables automation
+   */
+  public void enableAutomation() {
+    m_automationEnabled = true;
+  }
+
+  /**
+   * disables automation
+   */
+  public void disableAutomation() {
+    m_automationEnabled = false;
+  }
 
   /**
    * Calculates and sets the current power to apply to the arm to get to or stay at its target
    */
-  private void runAngleControl() {
+  private void runAngleControl(boolean justCalculate) {
     // TODO:  Fix this
     double pidPower = m_armPid.calculate(getPosition(), m_targetAngle);
     double fedPower = m_armFeedforward.calculate(Math.toRadians(getPosition()), pidPower); // Feed forward expects 0 degrees as horizontal
 
-    //setPower(pidPower + fedPower);
+
+    if(!justCalculate) {
+      setPower(pidPower + fedPower);
+    }
   }
 }

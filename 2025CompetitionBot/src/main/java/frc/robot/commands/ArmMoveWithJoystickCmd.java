@@ -16,6 +16,7 @@ public class ArmMoveWithJoystickCmd extends Command {
 
   private final ArmSub m_armSub;
   private final CommandPS4Controller m_controller;
+  private boolean m_wasInDeadBand = true;
 
   /** Creates a new MoveArmWithJoystickCmd. */
   public ArmMoveWithJoystickCmd(CommandPS4Controller controller, ArmSub armSub) {
@@ -33,11 +34,21 @@ public class ArmMoveWithJoystickCmd extends Command {
   @Override
   public void execute() {
     double pivotPower = -m_controller.getRightY();
-    if(Math.abs(pivotPower) > 0.05) {
+
+    //if we moved out of deadband, disable automation
+    if(Math.abs(pivotPower) > 0.05 && m_wasInDeadBand) {
       m_armSub.setPower(pivotPower * pivotPower); // (pivotPower);
-    } else {
-      m_armSub.setPower(0.0); // look at elevatorwithjoystickcmd to see how to get deadband to work properly without blocking everything
+      m_armSub.disableAutomation();
+      m_wasInDeadBand = false;
     }
+    //else if we went into deadband, enable automation
+    else if(Math.abs(pivotPower) < 0.05 && !m_wasInDeadBand) {
+      m_armSub.setPower(0.0);
+      m_armSub.enableAutomation();
+      m_wasInDeadBand = true;
+    }
+
+
   }
 
   // Called once the command ends or is interrupted.
