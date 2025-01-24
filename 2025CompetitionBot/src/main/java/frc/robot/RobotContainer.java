@@ -29,7 +29,7 @@ import frc.robot.commands.tests.RunTestsGrp;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.ArmSub;
 import frc.robot.subsystems.ClimbSub;
-import frc.robot.subsystems.CommandSwerveDrivetrain;
+import frc.robot.subsystems.DrivetrainSub;
 import frc.robot.subsystems.ElevatorSub;
 import frc.robot.subsystems.IntakeSub;
 import frc.robot.subsystems.VisionSub;
@@ -61,7 +61,7 @@ public class RobotContainer {
   // Robot subsystems
   //private final ArduinoSub m_arduinoSub = new ArduinoSub();   // TODO:  Implement new CAN Arduino
   private final ClimbSub m_climbSub = new ClimbSub();
-  public static final CommandSwerveDrivetrain m_drivetrainSub = TunerConstants.createDrivetrain();
+  public static final DrivetrainSub m_drivetrainSub = TunerConstants.createDrivetrain();
   private final ElevatorSub m_elevatorSub = new ElevatorSub();
   private final IntakeSub m_intakeSub = new IntakeSub();
   //private final LedSub m_ledSub = new LedSub(m_arduinoSub);  // TODO:  Implement with new Arduino
