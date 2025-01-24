@@ -29,8 +29,8 @@ public class IntakeSub extends SubsystemBase {
         .smartCurrentLimit(5) // Current limit in amps
         .idleMode(IdleMode.kBrake) // Set to kCoast to allow the motor to coast when power is 0.0
             .encoder
-                .positionConversionFactor(Constants.IntakeSub.kIntakeMotorEncoderPositionConversionFactor)
-                .velocityConversionFactor(Constants.IntakeSub.kIntakeMotorEncoderVelocityConversionFactor); // Set to kCoast to allow the motor to coast when power is 0.0
+                .positionConversionFactor(Constants.Intake.kDeployEncoderPositionConversionFactor)
+                .velocityConversionFactor(Constants.Intake.kDeployEncoderVelocityConversionFactor); // Set to kCoast to allow the motor to coast when power is 0.0
 
     SparkMaxConfig configIntakeRollersMotor = new SparkMaxConfig();
     configIntakeRollersMotor
@@ -38,8 +38,8 @@ public class IntakeSub extends SubsystemBase {
         .smartCurrentLimit(5) // Current limit in amps
         .idleMode(IdleMode.kBrake) // Set to kCoast to allow the motor to coast when power is 0.0
             .encoder
-                .positionConversionFactor(Constants.IntakeSub.kIntakeRaiseMotorEncoderPositionConversionFactor)
-                .velocityConversionFactor(Constants.IntakeSub.kIntakeRaiseMotorEncoderVelocityConversionFactor); // Set to kCoast to allow the motor to coast when power is 0.0
+                .positionConversionFactor(Constants.Intake.kRollersEncoderPositionConversionFactor)
+                .velocityConversionFactor(Constants.Intake.kRollersEncoderVelocityConversionFactor); // Set to kCoast to allow the motor to coast when power is 0.0
 
     // Save the configuration to the motor
     // Only persist parameters when configuring the motors on start up as this operation can be slow

@@ -19,43 +19,36 @@ public final class Constants {
     public static final int kOperatorControllerPort = 1;
   }
 
+  ////////// Hardware mapping /////////////////////////////////////////////////////////////////////
   public static class CanIds {
+    // These are the roboRIO CAN bus IDs
     // CTRE Swerve drivetrain uses CAN IDs 1-13 on CANivore bus
     // This does not conflict with the roboRIO bus which can also use these IDs
-
     public static final int kElevatorMotor = 1;
     public static final int kElevatorMotor2 = 2;
     public static final int kArmMotor = 3;
-    public static final int kClimbMotor = 10;
-    public static final int kIntakeDeployMotor = 11;
-    public static final int kIntakeRollersMotor = 12;
+    public static final int kIntakeDeployMotor = 4;
+    public static final int kIntakeRollersMotor = 5;
+    public static final int kClimbMotor = 6;
   }
 
   public static class DioIds {
     public static final int kElevatorLowerLimit = 0;
     public static final int kElevatorUpperLimit = 1;
 
-    public static final int kArmUpperLimit = 2;
-    public static final int kArmLowerLimit = 3;
+    public static final int kArmLowerLimit = 2;
+    public static final int kArmUpperLimit = 3;
 
-    public static final int kIntakeUpperLimit = 4;
-    public static final int kIntakeLowerLimit = 5;
+    public static final int kIntakeLowerLimit = 4;
+    public static final int kIntakeUpperLimit = 5;
   }
 
   public final static class PwmIds {
     public final static int kLedStripPwmPort = 0;
   }
 
-  public final static class Elevator {
-    public final static double kMinHeight = 0.0; // In mm
-    public final static double kMaxHeight = 2000.0; // In mm
-  }
 
-  public final static class Arm {
-    public static final double kMaxArmAngle = 170.0; // In degrees
-    public static final double kMinArmAngle = 0.0; // In degrees
-  }
-
+  ////////// Subsystem constants /////////////////////////////////////////////////////////////////////
   public final static class Arduino {
     public static final int kBaudRate = 38400;
     public static final double kTimeOutLength = 0.0;
@@ -65,7 +58,30 @@ public final class Constants {
     public static final byte kMessageHeader = (byte) 0xA5;
   }
 
-  // Subsystem Constants
+  public final static class Arm {
+    public static final double kEncoderPositionConversionFactor = 1.00; // From rotations to degrees
+    public static final double kEncoderVelocityConversionFactor = 1.00; // From rotations per minute? to degrees per second
+    public static final double kMinArmAngle = 0.0; // In degrees
+    public static final double kMaxArmAngle = 170.0; // In degrees
+  }
+
+  public final static class Climb {
+
+  }
+
+  public final static class Elevator {
+    public final static double kMinHeight = 0.0; // In mm
+    public final static double kMaxHeight = 2000.0; // In mm
+  }
+
+  public static class Intake {
+    public static final double kDeployEncoderPositionConversionFactor = 1.00; // From rotations to degrees
+    public static final double kDeployEncoderVelocityConversionFactor = 1.00; // From rotations per minute? to degrees per second
+
+    public static final double kRollersEncoderPositionConversionFactor = 1.00; // From rotations to degrees
+    public static final double kRollersEncoderVelocityConversionFactor = 1.00; // From rotations per minute? to degrees per second
+  }
+
   public final static class Vision {
     //TODO: change apriltag heights to actual heights, as well as the offsets. This is from last year.
     public static final double kApriltagOffset = 0.0825; // Apriltag height + bot height (Will need to be changed in the future)
@@ -73,6 +89,8 @@ public final class Constants {
         {1.22, 1.22, 1.32, 1.32, 1.22, 1.22, 1.32, 1.32, 1.22, 1.22, 1.24, 1.24, 1.24, 1.24, 1.24, 1.24};
   }
 
+
+  ////////// Test pass/fail/warn parameters ///////////////////////////////////////////////////////
   public static final class Tests {
     public static final String kTabName = "Tests";
     public static final int kDashboardRows = 5; // Max rows that we can use to display tests (start new column after this row)
@@ -97,19 +115,4 @@ public final class Constants {
     public static final double kIntakeMotorAmpsMinimum = 0.02; // Minimum current to be considered a partial pass
   }
 
-  public static class ArmSub {
-    public static final double kArmEncoderPositionConversionFactor = 1.00; //in mm
-    public static final double kArmEncoderVelocityConversionFactor = 1.00; //in mm
-  }
-
-  public static class IntakeSub {
-
-    public static final double kIntakeMotorEncoderPositionConversionFactor = 1.00; //in mm
-    public static final double kIntakeMotorEncoderVelocityConversionFactor = 1.00; //in mm
-
-
-    public static final double kIntakeRaiseMotorEncoderPositionConversionFactor = 1.00; //in mm
-    public static final double kIntakeRaiseMotorEncoderVelocityConversionFactor = 1.00; //in mm
-
-  }
 }
