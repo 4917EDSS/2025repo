@@ -57,8 +57,14 @@ public class ArmSub extends SubsystemBase {
    * @param power power value -1.0 to 1.0
    */
   public void setPower(double power) {
+    // Prevent motor from moving past limit switch
+    if((power < 0.0) && isAtLowerLimit()) {
+      power = 0.0;
+    } else if((power > 0.0) && isAtUpperLimit()) {
+      power = 0.0;
+    }
+
     m_armMotor.set(power);
-    System.out.println(power);
   }
 
   /**
