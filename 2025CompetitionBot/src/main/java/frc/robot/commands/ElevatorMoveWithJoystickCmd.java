@@ -40,15 +40,21 @@ public class ElevatorMoveWithJoystickCmd extends Command {
     // get controller joystick value
     double elevatorPower = -m_controller.getLeftY();
 
-    // create deadband if power is less than 5%
-    if(Math.abs(elevatorPower) < 0.05) {
-      m_wasInDeadZone = true;
-    } else {
+    // When we leave the deadzone, disable automation
+    if((Math.abs(elevatorPower) > 0.05) && m_wasInDeadZone) {
+      m_elevatorSub.disableAutomation();
       m_wasInDeadZone = false;
     }
-    // Turns off automatic height control to allow joystick use.
+
+    // When we enter the deadzone, enable automation
+    else if((Math.abs(elevatorPower) < 0.05) && !m_wasInDeadZone) {
+      m_elevatorSub.setTargetHeight(m_elevatorSub.getPosition());
+      m_elevatorSub.enableAutomation();
+      m_wasInDeadZone = true;
+    }
+
+    // Only set the motor if the joystick is currently outside the deadzone
     if(!m_wasInDeadZone) {
-      m_elevatorSub.runHeightControl(false); // TODO: Consider using a flag to turn this on/off and letting the subsystem's periodic() call this method
       m_elevatorSub.setPower(elevatorPower);
     }
   }
