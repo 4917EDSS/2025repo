@@ -34,7 +34,7 @@ public class ArmMoveWithJoystickCmd extends Command {
   public void execute() {
     double pivotPower = -m_controller.getRightY();
     if(Math.abs(pivotPower) > 0.05) {
-      m_armSub.setPower(pivotPower); // (pivotPower);
+      m_armSub.setPower(pivotPower * pivotPower); // (pivotPower);
     } else {
       m_armSub.setPower(0.0); // look at elevatorwithjoystickcmd to see how to get deadband to work properly without blocking everything
     }
