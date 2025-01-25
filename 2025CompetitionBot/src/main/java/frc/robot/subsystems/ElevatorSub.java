@@ -76,7 +76,7 @@ public class ElevatorSub extends SubsystemBase {
     }
 
     // Reset encoder if we hit the limit switch and the position doesn't read close to zero
-    if(isAtLowerLimit() && Math.abs(getPosition()) > 5.0) {
+    if(isAtLowerLimit() && Math.abs(getPositionMM()) > 5.0) {
       m_hitLimitSwitchCounter++;
     } else {
       m_hitLimitSwitchCounter = 0;
@@ -130,7 +130,7 @@ public class ElevatorSub extends SubsystemBase {
    * 
    * @return position in degrees
    */
-  public double getPosition() {
+  public double getPositionMM() {
     return m_elevatorMotor.getPosition().getValueAsDouble();
   }
 
@@ -216,7 +216,7 @@ public class ElevatorSub extends SubsystemBase {
    */
   private void runHeightControl(boolean justCalculate) {
     // TODO: Create and configure PID and Feedforward controllers
-    double pidPower = m_elevatorPID.calculate(getPosition(), m_targetHeight);
+    double pidPower = m_elevatorPID.calculate(getPositionMM(), m_targetHeight);
     double fedPower = 0;
 
     if(!justCalculate) {

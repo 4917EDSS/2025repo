@@ -41,12 +41,12 @@ public class ElevatorMoveWithJoystickCmd extends Command {
     double elevatorPower = -m_controller.getLeftY();
 
     if((Math.abs(elevatorPower) > 0.05) && m_wasInDeadZone) {
-      // When we leave the deadzone, disable automation
+      // When we leave the deadzone, disable automations
       m_elevatorSub.disableAutomation();
       m_wasInDeadZone = false;
-    } else if((Math.abs(elevatorPower) < 0.05) && !m_wasInDeadZone) {     
+    } else if((Math.abs(elevatorPower) < 0.05) && !m_wasInDeadZone) {
       // When we enter the deadzone, enable automation
-      m_elevatorSub.setTargetHeight(m_elevatorSub.getPosition());
+      m_elevatorSub.setTargetHeight(m_elevatorSub.getPositionMM());
       m_elevatorSub.enableAutomation();
       m_wasInDeadZone = true;
     }
