@@ -13,12 +13,12 @@ import frc.robot.subsystems.ArmSub;
  * https://docs.wpilib.org/en/stable/docs/software/commandbased/organizing-command-based.html#defining-commands
  */
 public class SetArmToPositionCmd extends Command {
-  private final Double m_targetHeight;
+  private final Double m_targetAngle;
   private final ArmSub m_armSub;
 
   /** Creates a new MoveArmWithJoystickCmd. */
   public SetArmToPositionCmd(double height, ArmSub armSub) {
-    m_targetHeight = height;
+    m_targetAngle = height;
     m_armSub = armSub;
     // Use addRequirements() here to declare subsystem dependencies.
     addRequirements(armSub);
@@ -27,7 +27,7 @@ public class SetArmToPositionCmd extends Command {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    m_armSub.setTargetAngle(m_targetHeight);
+    m_armSub.setTargetAngle(m_targetAngle);
     m_armSub.enableAutomation();
 
 
@@ -47,7 +47,7 @@ public class SetArmToPositionCmd extends Command {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    if(Math.abs(m_armSub.getPosition() - m_targetHeight) < Constants.Arm.kTargetAngleDeadband) {
+    if(Math.abs(m_armSub.getPosition() - m_targetAngle) < Constants.Arm.kTargetAngleDeadband) {
       return true;
     }
     return false;

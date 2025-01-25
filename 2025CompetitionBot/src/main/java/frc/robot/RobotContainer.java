@@ -10,6 +10,8 @@ package frc.robot;
 // Copyright (c) FIRST and other WPILib contributors.
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
+import com.pathplanner.lib.auto.NamedCommands;
+import com.pathplanner.lib.commands.PathPlannerAuto;
 import static edu.wpi.first.units.Units.MetersPerSecond;
 import static edu.wpi.first.units.Units.RadiansPerSecond;
 import static edu.wpi.first.units.Units.RotationsPerSecond;
@@ -30,6 +32,7 @@ import frc.robot.commands.ArmMoveWithJoystickCmd;
 import frc.robot.commands.AutoDriveCmd;
 import frc.robot.commands.ElevatorMoveWithJoystickCmd;
 import frc.robot.commands.KillAllCmd;
+import frc.robot.commands.SetArmToPositionCmd;
 import frc.robot.commands.SetElevatorToHeightCmd;
 import frc.robot.commands.tests.RunTestsGrp;
 import frc.robot.generated.TunerConstants;
@@ -87,6 +90,8 @@ public class RobotContainer {
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
+
+
     m_testManager.setTestCommand(new RunTestsGrp(m_climbSub, m_intakeSub, m_testManager));
 
     // Default commands
@@ -106,6 +111,17 @@ public class RobotContainer {
     // Configure the trigger bindings
     configureBindings();
     autoChooserSetup();
+    autoChooserSetup();
+  }
+
+
+  private void registerNamedCommands() {
+
+    NamedCommands.registerCommand("SetArmToPositionCmd",
+        new SetArmToPositionCmd(63, m_armSub)); // put whatever number you want in here, I assume its in degrees
+
+    NamedCommands.registerCommand("SetElevatorToHeightCmd",
+        new SetElevatorToHeightCmd(74, m_elevatorSub)); // put whatever number you want in here
   }
 
   /**
@@ -201,6 +217,7 @@ public class RobotContainer {
     m_driverController.R3().onTrue(new KillAllCmd(m_climbSub, m_drivetrainSub, m_elevatorSub, m_intakeSub));
   }
 
+
   /**
    * Use this to pass the autonomous command to the main {@link Robot} class.
    *
@@ -211,6 +228,7 @@ public class RobotContainer {
   }
 
   void autoChooserSetup() {
+    m_Chooser.addOption("Testing Auto", new PathPlannerAuto("Testing Auto"));
     m_Chooser.addOption("DoNothingAuto", new DoNothingGrp());
     SmartDashboard.putData("auto choices", m_Chooser);
 
