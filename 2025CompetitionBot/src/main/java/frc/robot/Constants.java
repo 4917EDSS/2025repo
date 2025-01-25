@@ -14,10 +14,6 @@ package frc.robot;
  * constants are needed, to reduce verbosity.
  */
 public final class Constants {
-  public static class OperatorConstants {
-    public static final int kDriverControllerPort = 0;
-    public static final int kOperatorControllerPort = 1;
-  }
 
   ////////// Hardware mapping /////////////////////////////////////////////////////////////////////
   public static class CanIds {
@@ -89,7 +85,11 @@ public final class Constants {
         {1.22, 1.22, 1.32, 1.32, 1.22, 1.22, 1.32, 1.32, 1.22, 1.22, 1.24, 1.24, 1.24, 1.24, 1.24, 1.24};
   }
 
-
+  public static class OperatorConstants {
+    public static final int kDriverControllerPort = 0;
+    public static final int kOperatorControllerPort = 1;
+  }
+  
   ////////// Test pass/fail/warn parameters ///////////////////////////////////////////////////////
   public static final class Tests {
     public static final String kTabName = "Tests";
