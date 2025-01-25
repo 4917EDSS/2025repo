@@ -4,8 +4,12 @@
 
 package frc.robot.subsystems;
 
+import com.ctre.phoenix6.swerve.SwerveDrivetrain;
+import com.ctre.phoenix6.swerve.SwerveDrivetrain.SwerveDriveState;
+import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
@@ -13,8 +17,13 @@ import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.utils.LimelightHelpers;
+import frc.robot.subsystems.DrivetrainSub;
 
 public class VisionSub extends SubsystemBase {
+  double m_previousTimestamp;
+  DrivetrainSub m_drivetrainSub;
+
   NetworkTable m_networkTable = NetworkTableInstance.getDefault().getTable("limelight");
   ShuffleboardTab m_ShuffleboardTab = Shuffleboard.getTab("Vision");
   GenericEntry m_shuffleboardID, m_shuffleboardTv, m_shuffleboardTx, m_shuffleboardTy, m_shuffleboardTa,
@@ -40,9 +49,11 @@ public class VisionSub extends SubsystemBase {
   double[] botposeTarget;
   double[] botpose;
 
+  int m_printPosCounter = 0;
+
 
   /** Creates a new VisionSub. */
-  public VisionSub() {
+  public VisionSub(DrivetrainSub drivetrainSub) {
     m_networkTable = NetworkTableInstance.getDefault().getTable("limelight");
     m_tid = m_networkTable.getEntry("tid");
     m_tv = m_networkTable.getEntry("tv");
@@ -62,6 +73,7 @@ public class VisionSub extends SubsystemBase {
     m_shuffleboardPipeline = m_ShuffleboardTab.add("Pipeline", -1).getEntry();
     m_shuffleboardPipetype = m_ShuffleboardTab.add("Pipetype", "unknown").getEntry();
 
+    m_drivetrainSub = drivetrainSub;
   }
 
   @Override
@@ -84,6 +96,8 @@ public class VisionSub extends SubsystemBase {
     m_shuffleboardTa.setDouble(a);
     m_shuffleboardPipeline.setInteger(pipeline);
     m_shuffleboardPipetype.setString(pipetype);
+
+    updateOdometry(m_drivetrainSub.getState());
   }
 
   public Pose2d getTagPose2d() {
@@ -96,6 +110,38 @@ public class VisionSub extends SubsystemBase {
 
   public double getTx() {
     return x;
+  }
+
+  public void updateOdometry(SwerveDriveState swerveDriveState) {
+    LimelightHelpers.PoseEstimate mt2 = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2("limelight");
+    double timestamp = mt2.timestampSeconds;
+
+    if(timestamp != m_previousTimestamp) {
+      boolean doRejectUpdate = false;
+
+      LimelightHelpers.SetRobotOrientation("limelight", swerveDriveState.Pose.getRotation().getDegrees(), 0, 0, 0, 0,
+          0);
+      if(Math.abs(swerveDriveState.Speeds.omegaRadiansPerSecond) > 4 * Math.PI) // if our angular velocity is greater than 720 degrees per second, ignore vision updates
+      {
+        doRejectUpdate = true;
+      }
+      if(mt2.tagCount == 0) {
+        doRejectUpdate = true;
+      }
+      if(!doRejectUpdate) {
+        m_drivetrainSub.addVisionMeasurement(
+            mt2.pose,
+            com.ctre.phoenix6.Utils.fpgaToCurrentTime(timestamp), VecBuilder.fill(0.00001, 0.00001, 0.00001)); //.7, .7, 9999999
+      }
+      m_previousTimestamp = timestamp;
+    }
+
+    if(m_printPosCounter > 50) {
+      System.out.println(mt2.pose.toString());
+      m_printPosCounter = 0;
+    }
+    m_printPosCounter++;
+
   }
 
 }
