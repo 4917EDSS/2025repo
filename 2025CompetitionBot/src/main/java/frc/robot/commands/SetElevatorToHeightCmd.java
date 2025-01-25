@@ -6,6 +6,7 @@ package frc.robot.commands;
 
 // import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.wpilibj2.command.Command;
+import frc.robot.Constants;
 import frc.robot.subsystems.ElevatorSub;
 
 /*
@@ -26,13 +27,14 @@ public class SetElevatorToHeightCmd extends Command {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
+    m_elevatorSub.setTargetHeight(m_targetHeight);
     //System.out.println("*********SetElevatorToHeightCmd Run*********");   // Debug only
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    System.out.println("SetElevatorToHeightCmd " + m_elevatorSub.getPosition());
+    System.out.println("SetElevatorToHeightCmd " + m_elevatorSub.getPositionMM());
   }
 
   // Called once the command ends or is interrupted.
@@ -44,8 +46,9 @@ public class SetElevatorToHeightCmd extends Command {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
+
     //  if(m_elevatorSub.getHeight().gte(m_targetHeight)) {
-    if(m_elevatorSub.getPosition() < (m_targetHeight)) {
+    if(Math.abs(m_elevatorSub.getPositionMM() - m_targetHeight) < Constants.Elevator.kTargetHeightDeadbandMM) {
       return true;
     }
     return false;

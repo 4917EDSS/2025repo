@@ -19,6 +19,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.commands.DoNothingGrp;
+import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.StartEndCommand;
@@ -83,6 +84,7 @@ public class RobotContainer {
   public static boolean disableShuffleboardPrint = true;
 
   SendableChooser<Command> m_Chooser = new SendableChooser<>();
+
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
     m_testManager.setTestCommand(new RunTestsGrp(m_climbSub, m_intakeSub, m_testManager));
@@ -167,7 +169,7 @@ public class RobotContainer {
 
     // Circle - unused
 
-    
+
     m_operatorController.cross().onTrue(new InstantCommand(() -> m_elevatorSub.setTargetHeight(100), m_elevatorSub));
 
     m_operatorController.L1()
@@ -204,9 +206,10 @@ public class RobotContainer {
   public Command getAutonomousCommand() {
     return m_Chooser.getSelected();
   }
+
   void autoChooserSetup() {
-  m_Chooser.addOption("DoNothingAuto", new DoNothingGrp());
-  SmartDashboard.putData("auto choices", m_Chooser);
+    m_Chooser.addOption("DoNothingAuto", new DoNothingGrp());
+    SmartDashboard.putData("auto choices", m_Chooser);
 
   }
 }

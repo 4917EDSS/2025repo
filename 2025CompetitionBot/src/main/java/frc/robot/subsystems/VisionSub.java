@@ -73,7 +73,7 @@ public class VisionSub extends SubsystemBase {
     y = m_ty.getDouble(0.0);
     a = m_ta.getDouble(0.0);
     pipeline = m_pipeline.getInteger(0);
-    pipetype = m_pipetype.getString(null);
+    pipetype = m_pipetype.getString("");
     botposeTarget = m_botposeTarget.getDoubleArray(new double[8]);
     botpose = m_botpose.getDoubleArray(new double[8]);
 
