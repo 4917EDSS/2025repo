@@ -118,9 +118,9 @@ public class RobotContainer {
 
     // Triange - unused
 
-    m_driverController.L1().onTrue(new AutoDriveCmd(m_visionSub));
+    m_driverController.L1().onTrue(new AutoDriveCmd(m_visionSub, m_drivetrainSub));
 
-    m_driverController.R1().onTrue(new AutoDriveCmd(m_visionSub));
+    m_driverController.R1().onTrue(new AutoDriveCmd(m_visionSub, m_drivetrainSub));
 
     // L2 - unused
 
@@ -163,7 +163,7 @@ public class RobotContainer {
 
     // Circle - unused
 
-    
+
     m_operatorController.cross().onTrue(new InstantCommand(() -> m_elevatorSub.setTargetHeight(100), m_elevatorSub));
 
     m_operatorController.L1()

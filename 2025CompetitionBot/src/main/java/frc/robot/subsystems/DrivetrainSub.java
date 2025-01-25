@@ -159,7 +159,7 @@ public class DrivetrainSub extends TunerSwerveDrivetrain implements Subsystem {
    * @param odometryStandardDeviation The standard deviation for odometry calculation
    *        in the form [x, y, theta]ᵀ, with units in meters
    *        and radians
-   * @param visionStandardDeviation The standard deviation for vision calculation
+   * @param visionStandardDeviation The standard deviation for vision calculationn
    *        in the form [x, y, theta]ᵀ, with units in meters
    *        and radians
    * @param modules Constants for each specific module

@@ -90,12 +90,12 @@ public class VisionSub extends SubsystemBase {
     return new Pose2d(botposeTarget[0], botposeTarget[2], new Rotation2d(botposeTarget[4]));
   }
 
-  public int getTv() {
-    return (int) tv;
+  public long getTv() {
+    return tv;
   }
 
-  public int getTx() {
-    return (int) x;
+  public double getTx() {
+    return x;
   }
 
 }
