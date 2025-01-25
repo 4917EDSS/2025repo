@@ -9,6 +9,7 @@ import static edu.wpi.first.units.Units.Meters;
 import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
 import com.ctre.phoenix6.configs.MotorOutputConfigs;
 import com.ctre.phoenix6.configs.TalonFXConfigurator;
+import com.ctre.phoenix6.controls.DutyCycleOut;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
@@ -59,6 +60,11 @@ public class ElevatorSub extends SubsystemBase {
     outputConfigs.Inverted = InvertedValue.Clockwise_Positive;
     talonFxConfiguarator2.apply(outputConfigs);
 
+    //final DutyCycleOut m_dutyCycle = new DutyCycleOut(0.0);
+    // m_elevatorMotor.setControl(m_dutyCycle.withOutput(0.5)
+    //.withLimitForwardMotion(m_elevatorLowerLimit.get())
+    //.withLimitReverseMotion(m_elevatorUpperLimit.get()));
+
     resetPosition();
   }
 
@@ -70,12 +76,13 @@ public class ElevatorSub extends SubsystemBase {
     }
 
     // Reset encoder if we hit the limit switch and the position doesn't read close to zero
-    if(isAtLowerLimit() && Math.abs(getPosition()) > 5.0) {
+    if(isAtLowerLimit() && Math.abs(getPositionMM()) > 5.0) {
       m_hitLimitSwitchCounter++;
     } else {
       m_hitLimitSwitchCounter = 0;
     }
 
+    // Resets encoder when the limit switch is hit
     if(m_hitLimitSwitchCounter >= 5) {
       resetPosition();
       m_hitLimitSwitchCounter = 0;
@@ -88,7 +95,26 @@ public class ElevatorSub extends SubsystemBase {
    * @param power power value -1.0 to 1.0
    */
   public void setPower(double power) {
-    m_elevatorMotor.set(power);
+    // If lower limit switch is set and the motor is going down, stop.
+    // If we are too close to the limit switch, set a max power of 0.25
+    // Otherwise, set power
+    double powerValue;
+    if(isAtLowerLimit() && power < 0.0) {
+      powerValue = 0.0;
+    } else if((getPositionMM() < Constants.Elevator.kSlowDownLowerStageHeight)
+        && (power < Constants.Elevator.kSlowDownLowerStagePower)) {
+      powerValue = -0.25;
+    } else {
+      powerValue = power;
+    }
+    m_elevatorMotor.set(powerValue);
+    m_elevatorMotor2.set(powerValue);
+    System.out.println("Current power is " + powerValue);
+    System.out.println("Position is " + getPositionMM());
+  }
+
+  public void getPower() {
+    m_elevatorMotor.get();
   }
 
   /**
@@ -104,7 +130,7 @@ public class ElevatorSub extends SubsystemBase {
    * 
    * @return position in degrees
    */
-  public double getPosition() {
+  public double getPositionMM() {
     return m_elevatorMotor.getPosition().getValueAsDouble();
   }
 
@@ -190,7 +216,7 @@ public class ElevatorSub extends SubsystemBase {
    */
   private void runHeightControl(boolean justCalculate) {
     // TODO: Create and configure PID and Feedforward controllers
-    double pidPower = m_elevatorPID.calculate(getPosition(), m_targetHeight);
+    double pidPower = m_elevatorPID.calculate(getPositionMM(), m_targetHeight);
     double fedPower = 0;
 
     if(!justCalculate) {

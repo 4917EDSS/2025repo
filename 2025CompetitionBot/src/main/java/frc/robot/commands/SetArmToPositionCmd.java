@@ -4,51 +4,50 @@
 
 package frc.robot.commands;
 
-// import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants;
-import frc.robot.subsystems.ElevatorSub;
+import frc.robot.subsystems.ArmSub;
 
 /*
  * You should consider using the more terse Command factories API instead
  * https://docs.wpilib.org/en/stable/docs/software/commandbased/organizing-command-based.html#defining-commands
  */
-public class SetElevatorToHeightCmd extends Command {
+public class SetArmToPositionCmd extends Command {
   private final Double m_targetHeight;
-  private final ElevatorSub m_elevatorSub;
+  private final ArmSub m_armSub;
 
-  /** Creates a new SetElevatorToHeightCmd. */
-  public SetElevatorToHeightCmd(double height, ElevatorSub elevatorSub) {
-    // Use addRequirements() here to declare subsystem dependencies.
+  /** Creates a new MoveArmWithJoystickCmd. */
+  public SetArmToPositionCmd(double height, ArmSub armSub) {
     m_targetHeight = height;
-    m_elevatorSub = elevatorSub;
+    m_armSub = armSub;
+    // Use addRequirements() here to declare subsystem dependencies.
+    addRequirements(armSub);
   }
 
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    m_elevatorSub.setTargetHeight(m_targetHeight);
-    //System.out.println("*********SetElevatorToHeightCmd Run*********");   // Debug only
+    m_armSub.setTargetAngle(m_targetHeight);
+    m_armSub.enableAutomation();
+
+
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    System.out.println("SetElevatorToHeightCmd " + m_elevatorSub.getPositionMM());
+
   }
+
 
   // Called once the command ends or is interrupted.
   @Override
-  public void end(boolean interrupted) {
-    m_elevatorSub.setPower(0);
-  }
+  public void end(boolean interrupted) {}
 
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-
-    //  if(m_elevatorSub.getHeight().gte(m_targetHeight)) {
-    if(Math.abs(m_elevatorSub.getPositionMM() - m_targetHeight) < Constants.Elevator.kTargetHeightDeadbandMM) {
+    if(Math.abs(m_armSub.getPosition() - m_targetHeight) < Constants.Arm.kTargetAngleDeadband) {
       return true;
     }
     return false;
