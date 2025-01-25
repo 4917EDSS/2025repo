@@ -32,6 +32,7 @@ import frc.robot.generated.TunerConstants.TunerSwerveDrivetrain;
  * 
  * NOTE: This was called CommandSwerveDrivetrain but we renamed it to fit our convention
  */
+
 public class DrivetrainSub extends TunerSwerveDrivetrain implements Subsystem {
   private static final double kSimLoopPeriod = 0.005; // 5 ms
   private Notifier m_simNotifier = null;
@@ -120,6 +121,7 @@ public class DrivetrainSub extends TunerSwerveDrivetrain implements Subsystem {
     if(Utils.isSimulation()) {
       startSimThread();
     }
+
   }
 
   /**
