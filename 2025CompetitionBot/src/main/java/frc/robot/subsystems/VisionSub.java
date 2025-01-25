@@ -131,7 +131,7 @@ public class VisionSub extends SubsystemBase {
       if(!doRejectUpdate) {
         m_drivetrainSub.addVisionMeasurement(
             mt2.pose,
-            com.ctre.phoenix6.Utils.fpgaToCurrentTime(timestamp), VecBuilder.fill(0.00001, 0.00001, 0.00001)); //.7, .7, 9999999
+            com.ctre.phoenix6.Utils.fpgaToCurrentTime(timestamp), VecBuilder.fill(0.7, 0.7, 9999999)); //
       }
       m_previousTimestamp = timestamp;
     }
