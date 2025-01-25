@@ -71,7 +71,7 @@ public class RobotContainer {
   private final ElevatorSub m_elevatorSub = new ElevatorSub();
   private final IntakeSub m_intakeSub = new IntakeSub();
   //private final LedSub m_ledSub = new LedSub(m_arduinoSub);  // TODO:  Implement with new Arduino
-  private final VisionSub m_visionSub = new VisionSub();
+  private final VisionSub m_visionSub = new VisionSub(m_drivetrainSub);
   private final ArmSub m_armSub = new ArmSub();
 
   // Controllers
