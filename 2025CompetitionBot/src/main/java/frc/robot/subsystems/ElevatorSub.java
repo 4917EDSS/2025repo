@@ -53,10 +53,10 @@ public class ElevatorSub extends SubsystemBase {
 
     // This is how you can set a deadband, invert the motor rotoation and set brake/coast
     MotorOutputConfigs outputConfigs = new MotorOutputConfigs();
-    outputConfigs.Inverted = InvertedValue.CounterClockwise_Positive; // Invert = Clockwise
+    outputConfigs.Inverted = InvertedValue.CounterClockwise_Positive;
     outputConfigs.NeutralMode = NeutralModeValue.Brake;
     talonFxConfiguarator.apply(outputConfigs);
-    outputConfigs.Inverted = InvertedValue.Clockwise_Positive; // Invert = Clockwise
+    outputConfigs.Inverted = InvertedValue.Clockwise_Positive;
     talonFxConfiguarator2.apply(outputConfigs);
 
     resetPosition();
@@ -191,11 +191,10 @@ public class ElevatorSub extends SubsystemBase {
   private void runHeightControl(boolean justCalculate) {
     // TODO: Create and configure PID and Feedforward controllers
     double pidPower = m_elevatorPID.calculate(getPosition(), m_targetHeight);
-    double fedPower = 0;//m_pivotFeedforward.calculate(Math.toRadians(getPivotAngle() - 90.0), pidPower); // Feed forward expects 0 degrees as horizontal
+    double fedPower = 0;
 
     if(!justCalculate) {
-      //setPower(pidPower + fedPower);
-      setPower(0.1);
+      setPower(pidPower + fedPower);
     }
   }
 }
