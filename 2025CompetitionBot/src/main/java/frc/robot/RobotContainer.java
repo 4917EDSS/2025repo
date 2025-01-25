@@ -181,11 +181,6 @@ public class RobotContainer {
         .whileTrue(
             new StartEndCommand(() -> m_climbSub.setPower(-1.0), () -> m_climbSub.setPower(0.0), m_climbSub));
 
-    m_driverController.L2()
-        .whileTrue(new StartEndCommand(() -> m_climbSub.setPower(0.25), () -> m_climbSub.setPower(0), m_intakeSub));
-
-    m_driverController.R2()
-        .whileTrue(new StartEndCommand(() -> m_climbSub.setPower(-0.25), () -> m_climbSub.setPower(0), m_climbSub));
 
     // Share - unused
 
