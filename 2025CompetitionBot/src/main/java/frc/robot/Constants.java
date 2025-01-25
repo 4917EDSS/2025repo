@@ -68,6 +68,9 @@ public final class Constants {
   public final static class Elevator {
     public final static double kMinHeight = 0.0; // In mm
     public final static double kMaxHeight = 2000.0; // In mm
+    // Sets a max power if we are close to the lower limit switch
+    public final static double kSlowDownLowerStagePower = -0.25;
+    public final static double kSlowDownLowerStageHeight = 20.0;
   }
 
   public static class Intake {
@@ -89,7 +92,7 @@ public final class Constants {
     public static final int kDriverControllerPort = 0;
     public static final int kOperatorControllerPort = 1;
   }
-  
+
   ////////// Test pass/fail/warn parameters ///////////////////////////////////////////////////////
   public static final class Tests {
     public static final String kTabName = "Tests";

@@ -9,6 +9,7 @@ import static edu.wpi.first.units.Units.Meters;
 import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
 import com.ctre.phoenix6.configs.MotorOutputConfigs;
 import com.ctre.phoenix6.configs.TalonFXConfigurator;
+import com.ctre.phoenix6.controls.DutyCycleOut;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
@@ -59,6 +60,11 @@ public class ElevatorSub extends SubsystemBase {
     outputConfigs.Inverted = InvertedValue.Clockwise_Positive;
     talonFxConfiguarator2.apply(outputConfigs);
 
+    //final DutyCycleOut m_dutyCycle = new DutyCycleOut(0.0);
+    // m_elevatorMotor.setControl(m_dutyCycle.withOutput(0.5)
+    //.withLimitForwardMotion(m_elevatorLowerLimit.get())
+    //.withLimitReverseMotion(m_elevatorUpperLimit.get()));
+
     resetPosition();
   }
 
@@ -76,6 +82,7 @@ public class ElevatorSub extends SubsystemBase {
       m_hitLimitSwitchCounter = 0;
     }
 
+    // Resets encoder when the limit switch is hit
     if(m_hitLimitSwitchCounter >= 5) {
       resetPosition();
       m_hitLimitSwitchCounter = 0;
@@ -88,7 +95,26 @@ public class ElevatorSub extends SubsystemBase {
    * @param power power value -1.0 to 1.0
    */
   public void setPower(double power) {
-    m_elevatorMotor.set(power);
+    // If lower limit switch is set and the motor is going down, stop.
+    // If we are too close to the limit switch, set a max power of 0.25
+    // Otherwise, set power
+    double powerValue;
+    if(isAtLowerLimit() && power < 0.0) {
+      powerValue = 0.0;
+    } else if((getPosition() < Constants.Elevator.kSlowDownLowerStageHeight)
+        && (power < Constants.Elevator.kSlowDownLowerStagePower)) {
+      powerValue = -0.25;
+    } else {
+      powerValue = power;
+    }
+    m_elevatorMotor.set(powerValue);
+    m_elevatorMotor2.set(powerValue);
+    System.out.println("Current power is " + powerValue);
+    System.out.println("Position is " + getPosition());
+  }
+
+  public void getPower() {
+    m_elevatorMotor.get();
   }
 
   /**
