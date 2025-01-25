@@ -181,9 +181,6 @@ public class RobotContainer {
         .whileTrue(
             new StartEndCommand(() -> m_climbSub.setPower(-1.0), () -> m_climbSub.setPower(0.0), m_climbSub));
 
-    // L2 - unused
-
-    // R2 - unused
 
     // Share - unused
 
