@@ -118,6 +118,7 @@ public class VisionSub extends SubsystemBase {
 
     if(timestamp != m_previousTimestamp) {
       boolean doRejectUpdate = false;
+      double standardDeviation = 0.7; // 0.7 is a good starting value according to limelight docs.
 
       LimelightHelpers.SetRobotOrientation("limelight", swerveDriveState.Pose.getRotation().getDegrees(), 0, 0, 0, 0,
           0);
@@ -131,7 +132,9 @@ public class VisionSub extends SubsystemBase {
       if(!doRejectUpdate) {
         m_drivetrainSub.addVisionMeasurement(
             mt2.pose,
-            com.ctre.phoenix6.Utils.fpgaToCurrentTime(timestamp), VecBuilder.fill(0.7, 0.7, 9999999)); //
+            // Always pass 999999 as the last argument, as megatag 2 requires heading as input, so it does not actually calculate heading.
+            // Passing in a very large number to that parameter basically tells the Kalman filter to ignore our calculated heading.
+            com.ctre.phoenix6.Utils.fpgaToCurrentTime(timestamp), VecBuilder.fill(standardDeviation, standardDeviation, 9999999));
       }
       m_previousTimestamp = timestamp;
     }
