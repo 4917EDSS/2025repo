@@ -16,6 +16,7 @@ public class ArmMoveWithJoystickCmd extends Command {
 
   private final ArmSub m_armSub;
   private final CommandPS4Controller m_controller;
+  private boolean m_wasInDeadZone = true;
 
   /** Creates a new MoveArmWithJoystickCmd. */
   public ArmMoveWithJoystickCmd(CommandPS4Controller controller, ArmSub armSub) {
@@ -33,16 +34,22 @@ public class ArmMoveWithJoystickCmd extends Command {
   @Override
   public void execute() {
     double pivotPower = -m_controller.getRightY();
-    if(Math.abs(pivotPower) > 0.05) {
-      double direction = (pivotPower >= 0.0) ? 1.0 : -1.0;
-      m_armSub.setPower(pivotPower * pivotPower * direction); // (pivotPower);
+
+    if((Math.abs(pivotPower) > 0.05) && m_wasInDeadZone) {
+      m_armSub.disableAutomation();
+      m_wasInDeadZone = false;
     }
     //else if we went into deadband, enable automation
-    else if(Math.abs(pivotPower) < 0.05) {
-      m_armSub.setPower(0.0);
+    else if((Math.abs(pivotPower) < 0.05) && !m_wasInDeadZone) {
+      m_armSub.setTargetAngle(m_armSub.getPosition());
       m_armSub.enableAutomation();
+      m_wasInDeadZone = true;
     }
 
+    if(!m_wasInDeadZone) {
+      double direction = (pivotPower >= 0.0) ? 1.0 : -1.0;
+      m_armSub.setPower(pivotPower * pivotPower * direction);
+    }
 
   }
 

@@ -27,6 +27,9 @@ public class ElevatorSub extends SubsystemBase {
   private final TalonFX m_elevatorMotor2 = new TalonFX(Constants.CanIds.kElevatorMotor2);
   private final DigitalInput m_elevatorLowerLimit = new DigitalInput(Constants.DioIds.kElevatorLowerLimit);
   private final DigitalInput m_elevatorUpperLimit = new DigitalInput(Constants.DioIds.kElevatorUpperLimit);
+  private final DigitalInput m_elevatorEncoderResetSwitch =
+      new DigitalInput(Constants.DioIds.kElevatorEncoderResetSwitch);
+  private final DigitalInput m_elevatorStageTwoLimit = new DigitalInput(Constants.DioIds.kElevatorStageTwoLimit);
 
   // TODO:  Either finish off the proper units implementation or get rid of it
   private static final PerUnit<DistanceUnit, AngleUnit> MetersPerDegrees = Meters.per(Degrees);
@@ -73,6 +76,8 @@ public class ElevatorSub extends SubsystemBase {
     // This method will be called once per scheduler run
     if(m_enableAutomation) {
       runHeightControl(false);
+    } else {
+      runHeightControl(true);
     }
 
     // Reset encoder if we hit the limit switch and the position doesn't read close to zero
@@ -87,6 +92,29 @@ public class ElevatorSub extends SubsystemBase {
       resetPosition();
       m_hitLimitSwitchCounter = 0;
     }
+
+    // Sets encoder position when Encoder Reset Switch is hit
+    if((encoderResetSwitchHit()) && (m_elevatorMotor.get() > 0.0)) {
+      m_elevatorMotor.setPosition(5);
+      m_elevatorMotor2.setPosition(5);
+    } else if((encoderResetSwitchHit()) && (m_elevatorMotor.get() < 0.0)) {
+      m_elevatorMotor.setPosition(10);
+      m_elevatorMotor2.setPosition(10);
+    }
+
+    // Sets encoder position when Stage 2 Limit is hit
+    if((isAtStageTwoLimit()) && (m_elevatorMotor.get() > 0.0)) {
+      m_elevatorMotor.setPosition(1000);
+      m_elevatorMotor2.setPosition(1000);
+    } else if((isAtStageTwoLimit()) && (m_elevatorMotor.get() < 0.0)) {
+      m_elevatorMotor.setPosition(1005);
+      m_elevatorMotor.setPosition(1005);
+    }
+
+    // Sets encoder position when Upper Limit is hit
+    if(isAtUpperLimit()) {
+      m_elevatorMotor.setPosition(2000);
+    }
   }
 
   /**
@@ -95,15 +123,19 @@ public class ElevatorSub extends SubsystemBase {
    * @param power power value -1.0 to 1.0
    */
   public void setPower(double power) {
-    // If lower limit switch is set and the motor is going down, stop.
-    // If we are too close to the limit switch, set a max power of 0.25
-    // Otherwise, set power
+    // If lower limit switch is hit and the motor is going down, stop.
+    // If we are too close to the lower limit, set a max power of 0.25
+    // If we are too close to the upper limit, set a max power of 0.25
+    // Otherwise, set power normally
     double powerValue;
     if(isAtLowerLimit() && power < 0.0) {
       powerValue = 0.0;
     } else if((getPositionMM() < Constants.Elevator.kSlowDownLowerStageHeight)
         && (power < Constants.Elevator.kSlowDownLowerStagePower)) {
       powerValue = -0.25;
+    } else if((getPositionMM() > Constants.Elevator.kSlowDownUpperStageHeight)
+        && (power > Constants.Elevator.kSlowDownUpperStagePower)) {
+      powerValue = 0.25;
     } else {
       powerValue = power;
     }
@@ -192,6 +224,23 @@ public class ElevatorSub extends SubsystemBase {
     return m_elevatorUpperLimit.get();
   }
 
+  /**
+   * Returns if the elevator is at its upper limit or not
+   * 
+   * @return true when it's at the limit, false otherwise
+   */
+  public boolean encoderResetSwitchHit() {
+    return m_elevatorEncoderResetSwitch.get();
+  }
+
+  /**
+   * Returns if the elevator is at the stage 2 limit or not
+   * 
+   * @return true when it's at the limit, false otherwise
+   */
+  public boolean isAtStageTwoLimit() {
+    return m_elevatorStageTwoLimit.get();
+  }
 
   /**
    * Returns how much current the motor is currently drawing
