@@ -26,10 +26,12 @@ public class VisionSub extends SubsystemBase {
 
   NetworkTable m_networkTable = NetworkTableInstance.getDefault().getTable("limelight");
   ShuffleboardTab m_ShuffleboardTab = Shuffleboard.getTab("Vision");
-  GenericEntry m_shuffleboardID, m_shuffleboardTv, m_shuffleboardTx, m_shuffleboardTy, m_shuffleboardTa,
+  GenericEntry m_shuffleboardID, m_shuffleboardTv, m_shuffleboardT2d, m_shuffleboardTx, m_shuffleboardTy,
+      m_shuffleboardTa,
       m_shuffleboardPipeline, m_shuffleboardPipetype;
 
   NetworkTableEntry m_tid;
+  NetworkTableEntry m_t2d;
   NetworkTableEntry m_tv;
   NetworkTableEntry m_tx;
   NetworkTableEntry m_ty;
@@ -40,6 +42,7 @@ public class VisionSub extends SubsystemBase {
   NetworkTableEntry m_botpose;
 
   long id;
+  double[] t2d;
   long tv;
   double x;
   double y;
@@ -55,6 +58,7 @@ public class VisionSub extends SubsystemBase {
   /** Creates a new VisionSub. */
   public VisionSub(DrivetrainSub drivetrainSub) {
     m_networkTable = NetworkTableInstance.getDefault().getTable("limelight");
+    m_t2d = m_networkTable.getEntry("t2d");
     m_tid = m_networkTable.getEntry("tid");
     m_tv = m_networkTable.getEntry("tv");
     m_tx = m_networkTable.getEntry("tx");
@@ -65,8 +69,9 @@ public class VisionSub extends SubsystemBase {
     m_botposeTarget = m_networkTable.getEntry("botpose_targetspace");
     m_botpose = m_networkTable.getEntry("botpose");
 
-    m_shuffleboardID = m_ShuffleboardTab.add("ID", 0).getEntry();
+    m_shuffleboardID = m_ShuffleboardTab.add("Primary ID", 0).getEntry();
     m_shuffleboardTv = m_ShuffleboardTab.add("Sees tag?", 0).getEntry();
+    m_shuffleboardT2d = m_ShuffleboardTab.add("# of Tags", 0).getEntry();
     m_shuffleboardTx = m_ShuffleboardTab.add("tag x", 0).getEntry();
     m_shuffleboardTy = m_ShuffleboardTab.add("tag y", 0).getEntry();
     m_shuffleboardTa = m_ShuffleboardTab.add("Area of tag", 0).getEntry();
@@ -80,6 +85,7 @@ public class VisionSub extends SubsystemBase {
   public void periodic() {
     // This method will be called once per scheduler run
     id = m_tid.getInteger(0);
+    t2d = m_t2d.getDoubleArray(new double[2]);
     tv = m_tv.getInteger(0);
     x = m_tx.getDouble(0.0);
     y = m_ty.getDouble(0.0);
@@ -90,6 +96,7 @@ public class VisionSub extends SubsystemBase {
     botpose = m_botpose.getDoubleArray(new double[8]);
 
     m_shuffleboardID.setInteger(id);
+    m_shuffleboardT2d.setDouble(t2d[1]);
     m_shuffleboardTv.setInteger(tv);
     m_shuffleboardTx.setDouble(x);
     m_shuffleboardTy.setDouble(y);
@@ -134,7 +141,8 @@ public class VisionSub extends SubsystemBase {
             mt2.pose,
             // Always pass 999999 as the last argument, as megatag 2 requires heading as input, so it does not actually calculate heading.
             // Passing in a very large number to that parameter basically tells the Kalman filter to ignore our calculated heading.
-            com.ctre.phoenix6.Utils.fpgaToCurrentTime(timestamp), VecBuilder.fill(standardDeviation, standardDeviation, 9999999));
+            com.ctre.phoenix6.Utils.fpgaToCurrentTime(timestamp),
+            VecBuilder.fill(standardDeviation, standardDeviation, 9999999));
       }
       m_previousTimestamp = timestamp;
     }
