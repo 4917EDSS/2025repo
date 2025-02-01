@@ -116,9 +116,9 @@ public final class Constants {
     public final static double kMinHeight = 0.0; // In mm
     public final static double kMaxHeight = 2000.0; // In mm
     // Sets a max power if we are close to the lower limit switch
-    public final static double kSlowDownLowerStagePower = -0.25;
+    public final static double kSlowDownLowerStagePower = -0.1;
     public final static double kSlowDownLowerStageHeight = 20.0; // In mm
-    public final static double kSlowDownUpperStagePower = 0.25;
+    public final static double kSlowDownUpperStagePower = 0.1;
     public final static double kSlowDownUpperStageHeight = 1880.0; // In mm
     public final static double kTargetHeightDeadbandMM = 5.0; // In mm
   }

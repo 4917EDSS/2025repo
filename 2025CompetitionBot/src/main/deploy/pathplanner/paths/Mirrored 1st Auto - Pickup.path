@@ -3,29 +3,29 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 7.317508561643836,
-        "y": 5.369798801369864
+        "x": 5.3208059210526315,
+        "y": 2.966611842105263
       },
       "prevControl": null,
       "nextControl": {
-        "x": 6.1404041529727085,
-        "y": 5.35772258180207
+        "x": 5.773026315789473,
+        "y": 2.851151315789474
       },
       "isLocked": false,
-      "linkedName": "Start"
+      "linkedName": "Mirrored 1st Auto Score"
     },
     {
       "anchor": {
-        "x": 5.093707191780822,
-        "y": 5.2195419520547945
+        "x": 1.6741776315789472,
+        "y": 0.694
       },
       "prevControl": {
-        "x": 5.3418903101938,
-        "y": 5.189456411760334
+        "x": 1.4325689549335086,
+        "y": 0.6297719113655097
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "1st Score"
+      "linkedName": "Mirrored 1st Pickup"
     }
   ],
   "rotationTargets": [],
@@ -42,13 +42,13 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": -120.96375653207355
+    "rotation": -125.53612903440268
   },
   "reversed": false,
-  "folder": "Example Auto",
+  "folder": "Mirrored Vision Auto",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 180.0
+    "rotation": 120.76101141720856
   },
   "useDefaultConstraints": true
 }
