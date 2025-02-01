@@ -203,11 +203,11 @@ public class RobotContainer {
 
     m_operatorController.L1()
         .whileTrue(
-            new StartEndCommand(() -> m_climbSub.setPower(1.0), () -> m_climbSub.setPower(0.0), m_climbSub));
+            new StartEndCommand(() -> m_climbSub.setPower(0.10), () -> m_climbSub.setPower(0.0), m_climbSub));
 
     m_operatorController.R1()
         .whileTrue(
-            new StartEndCommand(() -> m_climbSub.setPower(-1.0), () -> m_climbSub.setPower(0.0), m_climbSub));
+            new StartEndCommand(() -> m_climbSub.setPower(-0.10), () -> m_climbSub.setPower(0.0), m_climbSub));
 
 
     // Share - unused

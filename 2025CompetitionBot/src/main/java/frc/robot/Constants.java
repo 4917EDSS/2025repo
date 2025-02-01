@@ -56,6 +56,43 @@ public final class Constants {
     public static final byte kMessageHeader = (byte) 0xA5;
   }
 
+  public static final class Breakers {
+    // TODO: All values are from last year. Update to current bot's values
+    public static final int kDriveMotorFrontRight = 4; //6
+    public static final int kDriveMotorFrontLeft = 11; //19
+    public static final int kDriveMotorBackRight = 6; //4
+    public static final int kDriveMotorBackLeft = 1; //0
+    public static final int kSteeringMotorFR = 5; //5
+    public static final int kSteeringMotorFL = 14; //10
+    public static final int kSteeringMotorBR = 7; //3
+    public static final int kSteeringMotorBL = 15; //18
+
+    public static final int kClimbMotorL = 3; //1
+    public static final int kClimbMotorR = 0; //2
+
+    public static final int kLowerFeeder = 12; //12
+    public static final int kUpperFeeder = 9; //11
+    public static final int kPivot = 13; //17
+
+    public static final int kFlywheelL = 2; //8
+    public static final int kFlywheelR = 8; //7
+
+    public static final int kIntakeRollers = 10; //9
+
+    public static final int kLimelightUp = 19; // Not on practice bot
+    public static final int kLimelightDown = 18; // Not on practice bot
+    public static final int kCancoders = 20; // Not on practice bot //they are on the vrm
+    public static final int kVRM = 20; //20
+    public static final int kRoboRio = 21; //21
+    public static final int kArduino = 23; //23 
+    public static final int kRadio = 22; //22
+
+
+  }
+
+
+
+
   public final static class Arm {
     public static final double kEncoderPositionConversionFactor = 1.00; // From rotations to degrees
     public static final double kEncoderVelocityConversionFactor = 1.00; // From rotations per minute? to degrees per second
