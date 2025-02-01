@@ -10,16 +10,38 @@ import com.ctre.phoenix6.configs.TalonFXConfigurator;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
+import com.revrobotics.spark.SparkLimitSwitch;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
+import edu.wpi.first.networktables.GenericEntry;
+import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
+import frc.robot.RobotContainer;
 
 public class ClimbSub extends SubsystemBase {
   // Create the climb motor
   private final TalonFX m_climbMotor = new TalonFX(Constants.CanIds.kClimbMotor);
   // TODO:  Add limit switches and/or absolute encoder
 
+  private final DigitalInput m_climbInLimit = new DigitalInput(Constants.DioIds.kClimbInLimitSwitch);
+  private final DigitalInput m_climbOutLimit = new DigitalInput(Constants.DioIds.kClimbOutLimitSwitch);
+
+  private final ShuffleboardTab m_shuffleboardTab = Shuffleboard.getTab("Climb");
+  private final GenericEntry m_sbClimbPower, m_sbClimbInLimit, m_sbClimbOutLimit; //TODO: create height variables
+
+
+
   /** Creates a new ClimbSub. */
   public ClimbSub() {
+    /* Add motor and limit switche(s) to shuffleboard */
+    m_sbClimbPower = m_shuffleboardTab.add("Climb Motor Power", 0).getEntry(); //power
+    //m_climb = m_shuffleboardTab.add("Climb Left Height", 0).getEntry(); //TODO: add height
+    m_sbClimbInLimit = m_shuffleboardTab.add("Climb In Limit", isAtInLimit()).getEntry(); // in limit
+    m_sbClimbOutLimit = m_shuffleboardTab.add("Climb Out Limit", isAtOutLimit()).getEntry(); // out limit
+
+
+
     TalonFXConfigurator talonFxConfiguarator = m_climbMotor.getConfigurator();
 
     // This is how you set a current limit inside the motor (vs on the input power supply)
@@ -40,12 +62,32 @@ public class ClimbSub extends SubsystemBase {
     //m_testMotor2.setControl(new Follower(m_testMotor.getDeviceID(), turnOppositeDirectionFromMaster));
 
     resetPosition();
+    updateShuffleBoard();
   }
 
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
+    updateShuffleBoard(); //update the shuffleboard
   }
+
+  private void updateShuffleBoard() {
+    if(!RobotContainer.disableShuffleboardPrint) {
+      m_sbClimbPower.setDouble(m_climbMotor.get());
+    }
+    // m_sbClimbLeftheight.setDouble(getLeftHeight()); //TODO: add height
+    m_sbClimbInLimit.setBoolean(isAtInLimit());
+    m_sbClimbOutLimit.setBoolean(isAtOutLimit());
+  }
+
+  public boolean isAtInLimit() {
+    return m_climbInLimit.get(); 
+  }
+
+  public boolean isAtOutLimit() {
+    return m_climbOutLimit.get();
+  }
+
 
   /**
    * Manually set the power of the climb motor(s).

@@ -7,7 +7,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Start - 1st Score"
+            "pathName": "Start - 1st Auto"
           }
         },
         {
@@ -19,7 +19,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Pickup - 2nd Score"
+            "pathName": "Pickup - 2nd & 3rd Auto"
           }
         },
         {
@@ -31,7 +31,13 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Pickup - 3rd Score"
+            "pathName": "Pickup - 2nd & 3rd Auto"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "3rd Score - Pickup"
           }
         }
       ]

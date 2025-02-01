@@ -35,7 +35,7 @@ public class ElevatorSub extends SubsystemBase {
   private static final PerUnit<DistanceUnit, AngleUnit> MetersPerDegrees = Meters.per(Degrees);
   private static final Per<DistanceUnit, AngleUnit> kConversionToHeight = MetersPerDegrees.ofNative(0.000416);
 
-  // TOOD:  Need a feed-forward controller here
+  // TODO:  Need a feed-forward controller here
   private final PIDController m_elevatorPID = new PIDController(0.002, 0.0, 0.0);
 
   private double m_targetHeight = 0.0;
@@ -74,11 +74,11 @@ public class ElevatorSub extends SubsystemBase {
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
-    if(m_enableAutomation) {
-      runHeightControl(false);
-    } else {
-      runHeightControl(true);
-    }
+    // if(m_enableAutomation) {
+    //   runHeightControl(false);
+    // } else {
+    //   runHeightControl(true);
+    // }
 
     // Reset encoder if we hit the limit switch and the position doesn't read close to zero
     if(isAtLowerLimit() && Math.abs(getPositionMM()) > 5.0) {
@@ -124,21 +124,19 @@ public class ElevatorSub extends SubsystemBase {
    */
   public void setPower(double power) {
     // If lower limit switch is hit and the motor is going down, stop.
-    // If we are too close to the lower limit, set a max power of 0.25
-    // If we are too close to the upper limit, set a max power of 0.25
+    // If we are too close to the lower limit, set max power to a low value
+    // If we are too close to the upper limit, set max power to a low value
     // Otherwise, set power normally
-    double powerValue;
-    if(isAtLowerLimit() && power < 0.0) {
-      powerValue = 0.0;
-    } else if((getPositionMM() < Constants.Elevator.kSlowDownLowerStageHeight)
-        && (power < Constants.Elevator.kSlowDownLowerStagePower)) {
-      powerValue = -0.25;
-    } else if((getPositionMM() > Constants.Elevator.kSlowDownUpperStageHeight)
-        && (power > Constants.Elevator.kSlowDownUpperStagePower)) {
-      powerValue = 0.25;
-    } else {
-      powerValue = power;
-    }
+    double powerValue = power;
+    // if(isAtLowerLimit() && power < 0.0) {
+    //   powerValue = 0.0;
+    // } else if((getPositionMM() < Constants.Elevator.kSlowDownLowerStageHeight)
+    //     && (power < Constants.Elevator.kSlowDownLowerStagePower)) {
+    //   powerValue = Constants.Elevator.kSlowDownLowerStagePower;
+    // } else if((getPositionMM() > Constants.Elevator.kSlowDownUpperStageHeight)
+    //     && (power > Constants.Elevator.kSlowDownUpperStagePower)) {
+    //   powerValue = Constants.Elevator.kSlowDownUpperStagePower;
+    // }
     m_elevatorMotor.set(powerValue);
     m_elevatorMotor2.set(powerValue);
     System.out.println("Current power is " + powerValue);
@@ -225,9 +223,9 @@ public class ElevatorSub extends SubsystemBase {
   }
 
   /**
-   * Returns if the elevator is at its upper limit or not
+   * Returns if the elevator is at the encoder reset switch or not
    * 
-   * @return true when it's at the limit, false otherwise
+   * @return true when it's at the switch, false otherwise
    */
   public boolean encoderResetSwitchHit() {
     return m_elevatorEncoderResetSwitch.get();

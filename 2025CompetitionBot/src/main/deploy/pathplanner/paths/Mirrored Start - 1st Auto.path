@@ -3,29 +3,29 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 7.317508561643836,
-        "y": 5.369798801369864
+        "x": 7.19703947368421,
+        "y": 2.532
       },
       "prevControl": null,
       "nextControl": {
-        "x": 6.1404041529727085,
-        "y": 5.35772258180207
+        "x": 6.150734928595977,
+        "y": 2.445169108424223
       },
       "isLocked": false,
-      "linkedName": "Start"
+      "linkedName": "Mirrored Start"
     },
     {
       "anchor": {
-        "x": 5.093707191780822,
-        "y": 5.2195419520547945
+        "x": 5.571,
+        "y": 2.532
       },
       "prevControl": {
-        "x": 5.3418903101938,
-        "y": 5.189456411760334
+        "x": 6.0709855801915165,
+        "y": 2.573952819226243
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "1st Score"
+      "linkedName": null
     }
   ],
   "rotationTargets": [],
@@ -42,10 +42,10 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": -120.96375653207355
+    "rotation": 122.4141435905017
   },
   "reversed": false,
-  "folder": "Example Auto",
+  "folder": "Mirrored Vision Auto",
   "idealStartingState": {
     "velocity": 0,
     "rotation": 180.0

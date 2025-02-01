@@ -8,24 +8,24 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 6.1404041529727085,
-        "y": 5.35772258180207
+        "x": 6.291355007176005,
+        "y": 5.460561781775376
       },
       "isLocked": false,
       "linkedName": "Start"
     },
     {
       "anchor": {
-        "x": 5.093707191780822,
-        "y": 5.2195419520547945
+        "x": 5.570970394736841,
+        "y": 5.4682565789473685
       },
       "prevControl": {
-        "x": 5.3418903101938,
-        "y": 5.189456411760334
+        "x": 5.815236813537627,
+        "y": 5.41502203521645
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "1st Score"
+      "linkedName": "1st Auto Score"
     }
   ],
   "rotationTargets": [],
@@ -42,10 +42,10 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": -120.96375653207355
+    "rotation": -123.69006752597973
   },
   "reversed": false,
-  "folder": "Example Auto",
+  "folder": "Vision Auto",
   "idealStartingState": {
     "velocity": 0,
     "rotation": 180.0

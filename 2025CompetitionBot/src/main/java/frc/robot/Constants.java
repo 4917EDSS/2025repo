@@ -31,14 +31,17 @@ public final class Constants {
   public static class DioIds {
     public static final int kElevatorLowerLimit = 0;
     public static final int kElevatorUpperLimit = 1;
-    public static final int kElevatorEncoderResetSwitch = 6;
-    public static final int kElevatorStageTwoLimit = 7;
+    public static final int kElevatorEncoderResetSwitch = 2;
+    public static final int kElevatorStageTwoLimit = 3;
 
-    public static final int kArmLowerLimit = 2;
-    public static final int kArmUpperLimit = 3;
+    public static final int kArmLowerLimit = 4;
+    public static final int kArmUpperLimit = 5;
 
-    public static final int kIntakeLowerLimit = 4;
-    public static final int kIntakeUpperLimit = 5;
+    public static final int kIntakeLowerLimit = 6;
+    public static final int kIntakeUpperLimit = 7;
+
+    public final static int kClimbInLimitSwitch = 8;
+    public final static int kClimbOutLimitSwitch = 9;
   }
 
   public final static class PwmIds {
@@ -111,9 +114,9 @@ public final class Constants {
     public final static double kMinHeight = 0.0; // In mm
     public final static double kMaxHeight = 2000.0; // In mm
     // Sets a max power if we are close to the lower limit switch
-    public final static double kSlowDownLowerStagePower = -0.25;
+    public final static double kSlowDownLowerStagePower = -0.1;
     public final static double kSlowDownLowerStageHeight = 20.0; // In mm
-    public final static double kSlowDownUpperStagePower = 0.25;
+    public final static double kSlowDownUpperStagePower = 0.1;
     public final static double kSlowDownUpperStageHeight = 1880.0; // In mm
     public final static double kTargetHeightDeadbandMM = 5.0; // In mm
   }
