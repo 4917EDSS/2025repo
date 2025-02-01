@@ -8,20 +8,20 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 1.83663216215068,
-        "y": 7.099207645549605
+        "x": 1.7494615621158334,
+        "y": 7.059360878751191
       },
       "isLocked": false,
       "linkedName": "1st Pickup"
     },
     {
       "anchor": {
-        "x": 2.838404605263158,
-        "y": 4.034621710526316
+        "x": 3.694736842105263,
+        "y": 5.093009868421053
       },
       "prevControl": {
-        "x": 2.6624178011308857,
-        "y": 4.260745593775881
+        "x": 3.550411184210527,
+        "y": 5.4682565789473685
       },
       "nextControl": null,
       "isLocked": false,
@@ -42,7 +42,7 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 0.0
+    "rotation": -60.724745722747436
   },
   "reversed": false,
   "folder": "Example Auto",

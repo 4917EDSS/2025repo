@@ -1,0 +1,49 @@
+{
+  "version": "2025.0",
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Mirrored Start - 1st Auto"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Mirrored 1st Auto - Pickup"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Mirrored Pickup - 2nd & 3rd Auto"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Mirrored 2nd Auto - Pickup"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Mirrored Pickup - 2nd & 3rd Auto"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Mirrored 3rd Auto - Pickup"
+          }
+        }
+      ]
+    }
+  },
+  "resetOdom": true,
+  "folder": null,
+  "choreoAuto": false
+}
