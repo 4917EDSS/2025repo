@@ -4,7 +4,6 @@
 
 package frc.robot.subsystems;
 
-import org.opencv.core.Mat;
 import com.revrobotics.spark.SparkBase;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.SparkMax;
@@ -12,11 +11,17 @@ import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.SparkMaxConfig;
 import edu.wpi.first.math.controller.ArmFeedforward;
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
+import frc.robot.RobotContainer;
 
 public class ArmSub extends SubsystemBase {
+  private final ShuffleboardTab m_shuffleboardTab = Shuffleboard.getTab("Arm");
+  private final GenericEntry m_sbArmPower, m_sbLowerLimit, m_sbUpperLimit, m_sbArmPosition;
   private final SparkMax m_armMotor = new SparkMax(Constants.CanIds.kArmMotor, MotorType.kBrushless);
   private final DigitalInput m_armLowerLimit = new DigitalInput(Constants.DioIds.kArmLowerLimit);
   private final DigitalInput m_armUpperLimit = new DigitalInput(Constants.DioIds.kArmUpperLimit);
@@ -31,12 +36,15 @@ public class ArmSub extends SubsystemBase {
 
   /** Creates a new ArmSub. */
   public ArmSub() {
+    m_sbArmPower = m_shuffleboardTab.add("Arm power", 0).getEntry();
+    m_sbArmPosition = m_shuffleboardTab.add("Arm position", getPosition()).getEntry();
+    m_sbLowerLimit = m_shuffleboardTab.add("Lower limit", isAtLowerLimit()).getEntry();
+    m_sbUpperLimit = m_shuffleboardTab.add("Upper limit", isAtUpperLimit()).getEntry();
     SparkMaxConfig config = new SparkMaxConfig();
     config
-        .inverted(false) // Set to true to invert the forward motor direction
-        .smartCurrentLimit(5) // Current limit in amps
-        .idleMode(IdleMode.kBrake)
-        .encoder
+        .inverted(true) // Set to true to invert the forward motor direction
+        .smartCurrentLimit(40) // Current limit in amps
+        .idleMode(IdleMode.kBrake).encoder
             .positionConversionFactor(Constants.Arm.kEncoderPositionConversionFactor)
             .velocityConversionFactor(Constants.Arm.kEncoderVelocityConversionFactor); // Set to kCoast to allow the motor to coast when power is 0.0
 
@@ -51,11 +59,21 @@ public class ArmSub extends SubsystemBase {
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
+    updateShuffleBoard();
 
     if(m_automationEnabled) {
       runAngleControl(false);
     } else {
       runAngleControl(true);
+    }
+  }
+
+  public void updateShuffleBoard() {
+    if(!RobotContainer.disableShuffleboardPrint) {
+      m_sbArmPower.setDouble(m_armMotor.get());
+      m_sbArmPosition.setDouble(getPosition());
+      m_sbLowerLimit.setBoolean(isAtLowerLimit());
+      m_sbUpperLimit.setBoolean(isAtUpperLimit());
     }
   }
 
@@ -66,14 +84,14 @@ public class ArmSub extends SubsystemBase {
    */
   public void setPower(double power) {
     // Prevent motor from moving past limit switch
-    if((power < 0.0) && isAtLowerLimit()) {
-      power = 0.0;
-    } else if((power > 0.0) && isAtUpperLimit()) {
-      power = 0.0;
-    }
+    // if((power < 0.0) && isAtLowerLimit()) {
+    //   power = 0.0;
+    // } else if((power > 0.0) && isAtUpperLimit()) {
+    //   power = 0.0;
+    // }
 
     m_armMotor.set(power);
-    //System.out.println(power);
+    // System.out.println(power);
   }
 
   /**
@@ -92,7 +110,9 @@ public class ArmSub extends SubsystemBase {
    */
   public double getPosition() {
     // TODO:  If we have an absolute encoder, use that instead of the motor's internal encoder
+
     return m_armMotor.getEncoder().getPosition();
+
   }
 
   /**
