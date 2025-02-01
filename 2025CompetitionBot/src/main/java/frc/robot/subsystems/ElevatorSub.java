@@ -10,6 +10,7 @@ import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
 import com.ctre.phoenix6.configs.MotorOutputConfigs;
 import com.ctre.phoenix6.configs.TalonFXConfigurator;
 import com.ctre.phoenix6.controls.DutyCycleOut;
+import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
@@ -63,6 +64,8 @@ public class ElevatorSub extends SubsystemBase {
     outputConfigs.Inverted = InvertedValue.Clockwise_Positive;
     talonFxConfiguarator2.apply(outputConfigs);
 
+    m_elevatorMotor2.setControl(new Follower(m_elevatorMotor.getDeviceID(), false));
+
     //final DutyCycleOut m_dutyCycle = new DutyCycleOut(0.0);
     // m_elevatorMotor.setControl(m_dutyCycle.withOutput(0.5)
     //.withLimitForwardMotion(m_elevatorLowerLimit.get())
@@ -108,7 +111,7 @@ public class ElevatorSub extends SubsystemBase {
       m_elevatorMotor2.setPosition(1000);
     } else if((isAtStageTwoLimit()) && (m_elevatorMotor.get() < 0.0)) {
       m_elevatorMotor.setPosition(1005);
-      m_elevatorMotor.setPosition(1005);
+      m_elevatorMotor2.setPosition(1005);
     }
 
     // Sets encoder position when Upper Limit is hit
@@ -138,7 +141,6 @@ public class ElevatorSub extends SubsystemBase {
     //   powerValue = Constants.Elevator.kSlowDownUpperStagePower;
     // }
     m_elevatorMotor.set(powerValue);
-    m_elevatorMotor2.set(powerValue);
     System.out.println("Current power is " + powerValue);
     System.out.println("Position is " + getPositionMM());
   }
