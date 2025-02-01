@@ -87,7 +87,7 @@ public class RobotContainer {
       new CommandPS4Controller(OperatorConstants.kOperatorControllerPort);
 
   // RobotContainer member variables
-  public static boolean disableShuffleboardPrint = true;
+  public static boolean disableShuffleboardPrint = false;
 
   SendableChooser<Command> m_Chooser = new SendableChooser<>();
 

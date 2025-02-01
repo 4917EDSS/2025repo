@@ -62,6 +62,7 @@ public class ClimbSub extends SubsystemBase {
     //m_testMotor2.setControl(new Follower(m_testMotor.getDeviceID(), turnOppositeDirectionFromMaster));
 
     resetPosition();
+    updateShuffleBoard();
   }
 
   @Override
