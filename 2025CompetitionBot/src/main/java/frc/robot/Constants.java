@@ -39,6 +39,9 @@ public final class Constants {
 
     public static final int kIntakeLowerLimit = 4;
     public static final int kIntakeUpperLimit = 5;
+
+    public final static int kClimbInLimitSwitch = 6;
+    public final static int kClimbOutLimitSwitch = 7;
   }
 
   public final static class PwmIds {

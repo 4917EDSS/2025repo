@@ -35,7 +35,8 @@ public class ArmSub extends SubsystemBase {
     config
         .inverted(false) // Set to true to invert the forward motor direction
         .smartCurrentLimit(5) // Current limit in amps
-        .idleMode(IdleMode.kBrake).encoder
+        .idleMode(IdleMode.kBrake)
+        .encoder
             .positionConversionFactor(Constants.Arm.kEncoderPositionConversionFactor)
             .velocityConversionFactor(Constants.Arm.kEncoderVelocityConversionFactor); // Set to kCoast to allow the motor to coast when power is 0.0
 
