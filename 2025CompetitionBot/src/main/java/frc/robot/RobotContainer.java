@@ -10,6 +10,7 @@ package frc.robot;
 // Copyright (c) FIRST and other WPILib contributors.
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
+import java.util.*;
 import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.commands.PathPlannerAuto;
 import static edu.wpi.first.units.Units.MetersPerSecond;
@@ -19,6 +20,7 @@ import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.networktables.NetworkTableEvent;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.commands.DoNothingGrp;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
@@ -53,6 +55,7 @@ import frc.robot.utils.TestManager;
  * subsystems, commands, and trigger mappings) should be declared here.
  */
 public class RobotContainer {
+  boolean isLimelight = true;
   // Swerve constants and objects (from CTRE Phoenix Tuner X)
   private double MaxSpeed = TunerConstants.kSpeedAt12Volts.in(MetersPerSecond); // kSpeedAt12Volts desired top speed
   private double MaxAngularRate = RotationsPerSecond.of(0.75).in(RadiansPerSecond); // 3/4 of a rotation per second max angular velocity
@@ -74,7 +77,7 @@ public class RobotContainer {
   private final ElevatorSub m_elevatorSub = new ElevatorSub();
   private final IntakeSub m_intakeSub = new IntakeSub();
   //private final LedSub m_ledSub = new LedSub(m_arduinoSub);  // TODO:  Implement with new Arduino
-  private final VisionSub m_visionSub = new VisionSub(m_drivetrainSub);
+  private final VisionSub m_visionSub;
   private final ArmSub m_armSub = new ArmSub();
 
   // Controllers
@@ -91,6 +94,13 @@ public class RobotContainer {
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
 
+    NetworkTableEvent.Kind[] topicsArray = NetworkTableEvent.Kind.values();
+    if(!Arrays.asList(topicsArray).contains("limelight")) {
+      isLimelight = false;
+      m_visionSub = null;
+    } else {
+      m_visionSub = new VisionSub(m_drivetrainSub);
+    }
 
     m_testManager.setTestCommand(new RunTestsGrp(m_climbSub, m_intakeSub, m_testManager));
 
@@ -140,9 +150,11 @@ public class RobotContainer {
 
     // Triange - unused
 
-    m_driverController.L1().onTrue(new AutoDriveCmd(m_visionSub, m_drivetrainSub));
+    if(isLimelight) {
+      m_driverController.L1().onTrue(new AutoDriveCmd(m_visionSub, m_drivetrainSub));
 
-    m_driverController.R1().onTrue(new AutoDriveCmd(m_visionSub, m_drivetrainSub));
+      m_driverController.R1().onTrue(new AutoDriveCmd(m_visionSub, m_drivetrainSub));
+    }
 
 
     // L2 - unused
@@ -191,11 +203,11 @@ public class RobotContainer {
 
     m_operatorController.L1()
         .whileTrue(
-            new StartEndCommand(() -> m_climbSub.setPower(1.0), () -> m_climbSub.setPower(0.0), m_climbSub));
+            new StartEndCommand(() -> m_climbSub.setPower(0.10), () -> m_climbSub.setPower(0.0), m_climbSub));
 
     m_operatorController.R1()
         .whileTrue(
-            new StartEndCommand(() -> m_climbSub.setPower(-1.0), () -> m_climbSub.setPower(0.0), m_climbSub));
+            new StartEndCommand(() -> m_climbSub.setPower(-0.10), () -> m_climbSub.setPower(0.0), m_climbSub));
 
 
     // Share - unused
