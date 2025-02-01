@@ -3,29 +3,29 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 1.6377996575342464,
-        "y": 6.962521404109589
+        "x": 1.6741776315789472,
+        "y": 7.306003289473683
       },
       "prevControl": null,
       "nextControl": {
-        "x": 1.8181078767123287,
-        "y": 6.571853595890412
+        "x": 2.5211891929846106,
+        "y": 6.595087497206512
       },
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "1st Pickup"
     },
     {
       "anchor": {
-        "x": 3.0351883561643835,
-        "y": 4.032512842465753
+        "x": 3.380779109589041,
+        "y": 5.865646404109588
       },
       "prevControl": {
-        "x": 2.8248287671232877,
-        "y": 4.438206335616439
+        "x": 3.135058390659463,
+        "y": 6.083823692741321
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "2nd & 3rd Auto Score"
     }
   ],
   "rotationTargets": [],
@@ -42,13 +42,13 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 0.0
+    "rotation": -60.52411099675423
   },
   "reversed": false,
-  "folder": null,
+  "folder": "Vision Auto",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": -54.63753811293097
+    "rotation": -52.12501634890181
   },
   "useDefaultConstraints": true
 }

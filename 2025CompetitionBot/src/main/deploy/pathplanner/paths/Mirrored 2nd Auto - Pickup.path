@@ -1,0 +1,54 @@
+{
+  "version": "2025.0",
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 3.954523026315789,
+        "y": 2.7430000000000003
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 4.26250379779249,
+        "y": 2.9248323328495247
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 1.6741776315789472,
+        "y": 0.694
+      },
+      "prevControl": {
+        "x": 1.33865150516242,
+        "y": 0.7674323849769519
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": "Mirrored 1st Pickup"
+    }
+  ],
+  "rotationTargets": [],
+  "constraintZones": [],
+  "pointTowardsZones": [],
+  "eventMarkers": [],
+  "globalConstraints": {
+    "maxVelocity": 3.0,
+    "maxAcceleration": 3.0,
+    "maxAngularVelocity": 540.0,
+    "maxAngularAcceleration": 720.0,
+    "nominalVoltage": 12.0,
+    "unlimited": false
+  },
+  "goalEndState": {
+    "velocity": 0,
+    "rotation": -125.53612903440268
+  },
+  "reversed": false,
+  "folder": "Mirrored Vision Auto",
+  "idealStartingState": {
+    "velocity": 0,
+    "rotation": 58.00867722931003
+  },
+  "useDefaultConstraints": true
+}
