@@ -34,7 +34,7 @@ public final class Constants {
     /*
      * TestMotorParameters are, in order:
      * 
-     * testName - Short test title
+     * testName - Short test title (<12 characters, ideally)
      * motorId - ID of motor to access in the subsystem (starting at 1)
      * power - Power to run motor at, -1.0 to 1.0
      * timeMs - Time test should run for before sampling the results
@@ -46,8 +46,8 @@ public final class Constants {
      * ampsTolerance - Tolerance around the current target that's considered a pass
      */
     public static final TestMotorParameters kElevatorMotor1 =
-        new TestMotorParameters("Elevator Motor 1", 1, 0.1, 1000, 75, 3.0, 10, 1.5, 0.1, 0.5);
+        new TestMotorParameters("ElevatorM1", 1, 0.1, 1000, 75, 3.0, 10, 1.5, 0.1, 0.5);
     public static final TestMotorParameters kElevatorMotor2 =
-        new TestMotorParameters("Elevator Motor 2", 1, 0.1, 1000, 75, 3.0, 10, 1.5, 0.1, 0.5);
+        new TestMotorParameters("ElevatorM2", 2, 0.1, 1000, 75, 3.0, 10, 1.5, 0.1, 0.5);
   }
 }

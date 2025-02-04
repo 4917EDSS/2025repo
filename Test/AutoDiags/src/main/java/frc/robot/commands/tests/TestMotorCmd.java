@@ -69,14 +69,14 @@ public class TestMotorCmd extends Command {
             m_parameters.kPositionTolerance, m_parameters.kPositionMin);
     String positionText = "Position=" + currentPosition + " (Target=" + m_parameters.kPositionTarget + "+/-"
         + m_parameters.kPositionTolerance + ")";
-    System.out.println(m_parameters.kTestName + positionText);
+    System.out.println(m_parameters.kTestName + " " + positionText);
 
     // Check to see if the measured current is good, ok or bad
     TestManager.Result ampsResult = m_testManager.determineResult(currentAmps, m_parameters.kAmpsTarget,
         m_parameters.kAmpsTolerance, m_parameters.kAmpsMin);
     String ampsText = "Amps=" + currentAmps + " (Target=" + m_parameters.kAmpsTarget + "+/-"
         + m_parameters.kAmpsTolerance + ")";
-    System.out.println(m_parameters.kTestName + ampsText);
+    System.out.println(m_parameters.kTestName + " " + ampsText);
 
 
     // Figure out the overall test result

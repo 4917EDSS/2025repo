@@ -101,7 +101,7 @@ public class TestManager {
         .withSize(1, 1)
         .withPosition(1, 0);
 
-    System.out.println("Setting test command");
+    System.out.println("Setting master test command");
   }
 
   /**
@@ -117,7 +117,7 @@ public class TestManager {
     // Now add the test result and status test widgets to the dashboard
     Coordinates testLocation = getNextPosition();
 
-    System.out.println("Registering New Test: " + testLocation.m_x + " " + testLocation.m_y);
+    System.out.println("Registering " + name + " to: " + testLocation.m_x + " " + testLocation.m_y);
 
     TestStatus newTest = m_testStatuses.get(m_nextTestStatusIdx);
     newTest.m_result = Result.kFail;

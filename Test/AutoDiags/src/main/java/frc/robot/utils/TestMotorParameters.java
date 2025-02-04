@@ -22,7 +22,7 @@ public class TestMotorParameters {
   /**
    * Initializes the read-only test parameters
    * 
-   * @param testName Short test title
+   * @param testName Short test title (<12 characters, ideally)
    * @param motorId ID of motor to access in the subsystem (starting at 1)
    * @param power Power to run motor at, -1.0 to 1.0
    * @param timeMs Time test should run for before sampling the results
