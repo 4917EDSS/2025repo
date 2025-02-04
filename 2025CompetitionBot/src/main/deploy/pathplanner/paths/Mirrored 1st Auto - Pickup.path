@@ -45,7 +45,7 @@
     "rotation": -125.53612903440268
   },
   "reversed": false,
-  "folder": "Mirrored Vision Auto",
+  "folder": null,
   "idealStartingState": {
     "velocity": 0,
     "rotation": 120.76101141720856
