@@ -95,7 +95,7 @@ public final class Constants {
 
 
   public final static class Arm {
-    public static final double kEncoderPositionConversionFactor = 1;//1 / 100 * 360; // From rotations to degrees (Gear Ration / 360 deg)
+    public static final double kEncoderPositionConversionFactor = 0.01;//1 / 100 * 360; // From rotations to degrees (Gear Ration / 360 deg)
     public static final double kEncoderVelocityConversionFactor = 1.00; // From rotations per minute? to degrees per second
     public static final double kMinArmAngle = 0.0; // In degrees
     public static final double kMaxArmAngle = 170.0; // In degrees
@@ -119,6 +119,8 @@ public final class Constants {
     public final static double kSlowDownUpperStagePower = 0.1;
     public final static double kSlowDownUpperStageHeight = 1880.0; // In mm
     public final static double kTargetHeightDeadbandMM = 5.0; // In mm
+
+    public final static double kRotationsToMM = 59.847;
   }
 
   public static class Intake {

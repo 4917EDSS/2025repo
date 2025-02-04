@@ -131,15 +131,19 @@ public class ElevatorSub extends SubsystemBase {
     // If we are too close to the upper limit, set max power to a low value
     // Otherwise, set power normally
     double powerValue = power;
-    // if(isAtLowerLimit() && power < 0.0) {
-    //   powerValue = 0.0;
-    // } else if((getPositionMM() < Constants.Elevator.kSlowDownLowerStageHeight)
-    //     && (power < Constants.Elevator.kSlowDownLowerStagePower)) {
-    //   powerValue = Constants.Elevator.kSlowDownLowerStagePower;
-    // } else if((getPositionMM() > Constants.Elevator.kSlowDownUpperStageHeight)
-    //     && (power > Constants.Elevator.kSlowDownUpperStagePower)) {
-    //   powerValue = Constants.Elevator.kSlowDownUpperStagePower;
-    // }
+    if(isAtLowerLimit() && power < 0.0) {
+      powerValue = 0.0;
+      System.out.println("Lower limit hit");
+    } else if(isAtUpperLimit() && power > 0.0) {
+      powerValue = 0.0;
+      System.out.println("Upper limit hit");
+    } else if((getPositionMM() < Constants.Elevator.kSlowDownLowerStageHeight)
+        && (power < Constants.Elevator.kSlowDownLowerStagePower)) {
+      powerValue = Constants.Elevator.kSlowDownLowerStagePower;
+    } else if((getPositionMM() > Constants.Elevator.kSlowDownUpperStageHeight)
+        && (power > Constants.Elevator.kSlowDownUpperStagePower)) {
+      powerValue = Constants.Elevator.kSlowDownUpperStagePower;
+    }
     m_elevatorMotor.set(powerValue);
     System.out.println("Current power is " + powerValue);
     System.out.println("Position is " + getPositionMM());
@@ -163,7 +167,7 @@ public class ElevatorSub extends SubsystemBase {
    * @return position in degrees
    */
   public double getPositionMM() {
-    return m_elevatorMotor.getPosition().getValueAsDouble();
+    return m_elevatorMotor.getPosition().getValueAsDouble() * Constants.Elevator.kRotationsToMM;
   }
 
   /**
