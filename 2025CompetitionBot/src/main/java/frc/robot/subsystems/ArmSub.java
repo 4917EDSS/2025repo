@@ -31,7 +31,7 @@ public class ArmSub extends SubsystemBase {
   private final PIDController m_armPid = new PIDController(0.01, 0.001, 0.001); // really needs some tuning
 
   private double m_targetAngle = 0;
-  private boolean m_automationEnabled = true;
+  private boolean m_automationEnabled = false;
 
 
   /** Creates a new ArmSub. */
@@ -43,7 +43,7 @@ public class ArmSub extends SubsystemBase {
     SparkMaxConfig config = new SparkMaxConfig();
     config
         .inverted(true) // Set to true to invert the forward motor direction
-        .smartCurrentLimit(40) // Current limit in amps
+        .smartCurrentLimit(15) // Current limit in amps
         .idleMode(IdleMode.kBrake).encoder
             .positionConversionFactor(Constants.Arm.kEncoderPositionConversionFactor)
             .velocityConversionFactor(Constants.Arm.kEncoderVelocityConversionFactor); // Set to kCoast to allow the motor to coast when power is 0.0
@@ -111,7 +111,7 @@ public class ArmSub extends SubsystemBase {
   public double getPosition() {
     // TODO:  If we have an absolute encoder, use that instead of the motor's internal encoder
 
-    return m_armMotor.getEncoder().getPosition();
+    return m_armMotor.getEncoder().getPosition() * 360; // returns degrees from revolutions
 
   }
 
@@ -187,7 +187,8 @@ public class ArmSub extends SubsystemBase {
    * Calculates and sets the current power to apply to the arm to get to or stay at its target
    */
   private void runAngleControl(boolean justCalculate) {
-    // TODO:  Fix this
+
+
     double pidPower = m_armPid.calculate(getPosition(), m_targetAngle);
     double fedPower = m_armFeedforward.calculate(Math.toRadians(getPosition()), pidPower); // Feed forward expects 0 degrees as horizontal
 
@@ -195,5 +196,7 @@ public class ArmSub extends SubsystemBase {
     if(!justCalculate) {
       setPower(pidPower + fedPower);
     }
+
+
   }
 }

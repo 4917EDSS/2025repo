@@ -45,7 +45,7 @@
     "rotation": -60.52411099675423
   },
   "reversed": false,
-  "folder": "Vision Auto",
+  "folder": null,
   "idealStartingState": {
     "velocity": 0,
     "rotation": -52.12501634890181
