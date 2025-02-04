@@ -42,6 +42,7 @@ public class ElevatorSub extends TestableSubsystem {
    * 
    * @param motorId 1 for the first motor in the subsystem, 2 for the second, etc.
    */
+  @Override
   public void testEnableMotorTestMode(int motorId) {
     // Disable any mechanism automation (PID, etc.).  Check periodic()
   }
@@ -51,6 +52,7 @@ public class ElevatorSub extends TestableSubsystem {
    * 
    * @param motorId 1 for the first motor in the subsystem, 2 for the second, etc.
    */
+  @Override
   public void testDisableMotorTestMode(int motorId) {
     // Re-ensable any mechanism automation
   }
@@ -60,6 +62,7 @@ public class ElevatorSub extends TestableSubsystem {
    * 
    * @param motorId 1 for the first motor in the subsystem, 2 for the second, etc.
    */
+  @Override
   public void testResetMotorPosition(int motorId) {
     switch(motorId) {
       case 1:
@@ -81,6 +84,7 @@ public class ElevatorSub extends TestableSubsystem {
    * @param motorId 1 for the first motor in the subsystem, 2 for the second, etc.
    * @param power Desired power -1.0 to 1.0
    */
+  @Override
   public void testSetMotorPower(int motorId, double power) {
     switch(motorId) {
       case 1:
@@ -102,6 +106,7 @@ public class ElevatorSub extends TestableSubsystem {
    * @param motorId 1 for the first motor in the subsystem, 2 for the second, etc.
    * @return Encoder value in raw or converted units
    */
+  @Override
   public double testGetMotorPosition(int motorId) {
     double position = 0.0;
 
@@ -127,6 +132,7 @@ public class ElevatorSub extends TestableSubsystem {
    * @param motorId 1 for the first motor in the subsystem, 2 for the second, etc.
    * @return Electrical current draw in amps, or -1 if feature not supported
    */
+  @Override
   public double testGetMotorAmps(int motorId) {
     double current = 0.0;
 
