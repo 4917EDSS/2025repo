@@ -77,11 +77,11 @@ public class ElevatorSub extends SubsystemBase {
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
-    // if(m_enableAutomation) {
-    //   runHeightControl(false);
-    // } else {
-    //   runHeightControl(true);
-    // }
+    if(m_enableAutomation) {
+      runHeightControl(false);
+    } else {
+      runHeightControl(true);
+    }
 
     // Reset encoder if we hit the limit switch and the position doesn't read close to zero
     if(isAtLowerLimit() && Math.abs(getPositionMM()) > 5.0) {
@@ -106,18 +106,20 @@ public class ElevatorSub extends SubsystemBase {
     }
 
     // Sets encoder position when Stage 2 Limit is hit
-    if((isAtStageTwoLimit()) && (m_elevatorMotor.get() > 0.0)) {
-      m_elevatorMotor.setPosition(1000);
-      m_elevatorMotor2.setPosition(1000);
-    } else if((isAtStageTwoLimit()) && (m_elevatorMotor.get() < 0.0)) {
-      m_elevatorMotor.setPosition(1005);
-      m_elevatorMotor2.setPosition(1005);
-    }
+    // if((isAtStageTwoLimit()) && (m_elevatorMotor.get() > 0.0)) {
+    //   m_elevatorMotor.setPosition(1000);
+    //   m_elevatorMotor2.setPosition(1000);
+    //   System.out.println("Stage 2 limit hit");
+    // } else if((isAtStageTwoLimit()) && (m_elevatorMotor.get() < 0.0)) {
+    //   m_elevatorMotor.setPosition(1005);
+    //   m_elevatorMotor2.setPosition(1005);
+    //   System.out.println("Stage 2 limit hit");
+    // }
 
     // Sets encoder position when Upper Limit is hit
-    if(isAtUpperLimit()) {
-      m_elevatorMotor.setPosition(2000);
-    }
+    // if(isAtUpperLimit()) {
+    //   m_elevatorMotor.setPosition(2000);
+    // }
   }
 
   /**
@@ -216,7 +218,7 @@ public class ElevatorSub extends SubsystemBase {
    * @return true when it's at the limit, false otherwise
    */
   public boolean isAtLowerLimit() {
-    return m_elevatorLowerLimit.get();
+    return !m_elevatorLowerLimit.get();
   }
 
   /**
@@ -225,7 +227,7 @@ public class ElevatorSub extends SubsystemBase {
    * @return true when it's at the limit, false otherwise
    */
   public boolean isAtUpperLimit() {
-    return m_elevatorUpperLimit.get();
+    return !m_elevatorUpperLimit.get();
   }
 
   /**
@@ -269,7 +271,11 @@ public class ElevatorSub extends SubsystemBase {
    */
   private void runHeightControl(boolean justCalculate) {
     // TODO: Create and configure PID and Feedforward controllers
-    double pidPower = m_elevatorPID.calculate(getPositionMM(), m_targetHeight);
+    double pidPower = 0.1; //(m_elevatorPID.calculate(getPositionMM(), m_targetHeight)) * 0.0000000001;
+    if(m_targetHeight < getPositionMM()) {
+      pidPower = 0;
+    }
+    System.out.println("PID power is " + pidPower);
     double fedPower = 0;
 
     if(!justCalculate) {
