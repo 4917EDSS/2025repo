@@ -116,10 +116,11 @@ public class ElevatorSub extends SubsystemBase {
     //   System.out.println("Stage 2 limit hit");
     // }
 
-    // Sets encoder position when Upper Limit is hit
-    // if(isAtUpperLimit()) {
-    //   m_elevatorMotor.setPosition(2000);
-    // }
+    //Sets encoder position when Upper Limit is hit
+    //Issue with conversion to MM
+    if(isAtUpperLimit()) {
+      m_elevatorMotor.setPosition(2000);
+    }
   }
 
   /**
