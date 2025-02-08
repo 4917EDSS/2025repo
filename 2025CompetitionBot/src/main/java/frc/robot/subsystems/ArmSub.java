@@ -4,9 +4,12 @@
 
 package frc.robot.subsystems;
 
+import com.revrobotics.spark.SparkAbsoluteEncoder;
 import com.revrobotics.spark.SparkBase;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.SparkMax;
+import com.revrobotics.spark.config.AbsoluteEncoderConfig;
+import com.revrobotics.spark.config.AbsoluteEncoderConfigAccessor;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.SparkMaxConfig;
 import edu.wpi.first.math.controller.ArmFeedforward;
@@ -15,13 +18,14 @@ import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.RobotContainer;
 
 public class ArmSub extends SubsystemBase {
   private final ShuffleboardTab m_shuffleboardTab = Shuffleboard.getTab("Arm");
-  private final GenericEntry m_sbArmPower, m_sbLowerLimit, m_sbUpperLimit, m_sbArmPosition;
+  private final GenericEntry m_sbArmPower, m_sbLowerLimit, m_sbUpperLimit, m_sbArmPosition, m_sbArmAngle;
   private final SparkMax m_armMotor = new SparkMax(Constants.CanIds.kArmMotor, MotorType.kBrushless);
   private final DigitalInput m_armLowerLimit = new DigitalInput(Constants.DioIds.kArmLowerLimit);
   private final DigitalInput m_armUpperLimit = new DigitalInput(Constants.DioIds.kArmUpperLimit);
@@ -29,6 +33,8 @@ public class ArmSub extends SubsystemBase {
 
   private final ArmFeedforward m_armFeedforward = new ArmFeedforward(0.001, 0.001, 0.0);
   private final PIDController m_armPid = new PIDController(0.01, 0.001, 0.001); // really needs some tuning
+
+  private final SparkAbsoluteEncoder m_armMotorAbsoluteEncoder = m_armMotor.getAbsoluteEncoder();
 
   private double m_targetAngle = 0;
   private boolean m_automationEnabled = false;
@@ -38,22 +44,25 @@ public class ArmSub extends SubsystemBase {
   public ArmSub() {
     m_sbArmPower = m_shuffleboardTab.add("Arm power", 0).getEntry();
     m_sbArmPosition = m_shuffleboardTab.add("Arm position", getPosition()).getEntry();
+    m_sbArmAngle = m_shuffleboardTab.add("Arm angle", getPosition()).getEntry();
     m_sbLowerLimit = m_shuffleboardTab.add("Lower limit", isAtLowerLimit()).getEntry();
     m_sbUpperLimit = m_shuffleboardTab.add("Upper limit", isAtUpperLimit()).getEntry();
-    SparkMaxConfig config = new SparkMaxConfig();
-    config
+    SparkMaxConfig motorConfig = new SparkMaxConfig();
+    motorConfig
         .inverted(true) // Set to true to invert the forward motor direction
         .smartCurrentLimit(15) // Current limit in amps
         .idleMode(IdleMode.kBrake).encoder
             .positionConversionFactor(Constants.Arm.kEncoderPositionConversionFactor)
             .velocityConversionFactor(Constants.Arm.kEncoderVelocityConversionFactor); // Set to kCoast to allow the motor to coast when power is 0.0
 
+    AbsoluteEncoderConfig encoderConfig = new AbsoluteEncoderConfig();
+    encoderConfig.zeroOffset(Constants.Arm.kAbsoluteEncoderOffset);
+    motorConfig.apply(encoderConfig);
+
     // Save the configuration to the motor
     // Only persist parameters when configuring the motor on start up as this operation can be slow
-    m_armMotor.configure(config, SparkBase.ResetMode.kResetSafeParameters,
+    m_armMotor.configure(motorConfig, SparkBase.ResetMode.kResetSafeParameters,
         SparkBase.PersistMode.kPersistParameters);
-
-    resetPosition();
   }
 
   @Override
@@ -72,9 +81,12 @@ public class ArmSub extends SubsystemBase {
     if(!RobotContainer.disableShuffleboardPrint) {
       m_sbArmPower.setDouble(m_armMotor.get());
       m_sbArmPosition.setDouble(getPosition());
+      m_sbArmAngle.setDouble(getAngle());
       m_sbLowerLimit.setBoolean(isAtLowerLimit());
       m_sbUpperLimit.setBoolean(isAtUpperLimit());
     }
+
+    SmartDashboard.putNumber("Arm enc", getPosition());
   }
 
   /**
@@ -95,23 +107,25 @@ public class ArmSub extends SubsystemBase {
   }
 
   /**
-   * Sets the current angle as the zero angle
+   * Returns the raw current position of the arm
+   * 
+   * @return position in rotations
    */
-  public void resetPosition() {
-    // TODO:  If we have an absolute encoder, use that instead of the motor's internal encoder
-    // Would need to save an offset to permit resetting the position
-    m_armMotor.getEncoder().setPosition(0);
+  public double getPosition() {
+
+    return m_armMotor.getAbsoluteEncoder().getPosition(); // returns rotations
+
   }
+
 
   /**
    * Returns the current angular position of the arm
    * 
    * @return position in degrees
    */
-  public double getPosition() {
-    // TODO:  If we have an absolute encoder, use that instead of the motor's internal encoder
+  public double getAngle() {
 
-    return m_armMotor.getEncoder().getPosition() * 360; // returns degrees from revolutions
+    return m_armMotor.getAbsoluteEncoder().getPosition() * 360; // returns angle
 
   }
 
@@ -122,7 +136,7 @@ public class ArmSub extends SubsystemBase {
    */
   public double getVelocity() {
     // TODO:  If we have an absolute encoder, use that instead of the motor's internal encoder
-    return m_armMotor.getEncoder().getVelocity();
+    return m_armMotor.getAbsoluteEncoder().getVelocity();
   }
 
   /**
@@ -173,7 +187,7 @@ public class ArmSub extends SubsystemBase {
    * enables automation
    */
   public void enableAutomation() {
-    m_automationEnabled = true;
+    m_automationEnabled = false;
   }
 
   /**
@@ -189,12 +203,19 @@ public class ArmSub extends SubsystemBase {
   private void runAngleControl(boolean justCalculate) {
 
 
-    double pidPower = m_armPid.calculate(getPosition(), m_targetAngle);
-    double fedPower = m_armFeedforward.calculate(Math.toRadians(getPosition()), pidPower); // Feed forward expects 0 degrees as horizontal
+    // double pidPower = m_armPid.calculate(getPosition(), m_targetAngle);
+    // double fedPower = m_armFeedforward.calculate(Math.toRadians(getPosition()), pidPower); // Feed forward expects 0 degrees as horizontal
 
+    // if(!justCalculate) {
+    //   setPower(pidPower + fedPower);
+    // }
 
-    if(!justCalculate) {
-      setPower(pidPower + fedPower);
+    if(getAngle() < m_targetAngle - 1) {
+      setPower(0.25);
+    } else if(getAngle() > m_targetAngle + 1) {
+      setPower(-0.25);
+    } else {
+      setPower(0);
     }
 
 
