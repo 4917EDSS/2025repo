@@ -150,6 +150,9 @@ public class RobotContainer {
 
     // Triange - unused
 
+    m_operatorController.triangle().onTrue(new SetArmToPositionCmd(90, m_armSub));
+
+
     if(isLimelight) {
       m_driverController.L1().onTrue(new AutoDriveCmd(m_visionSub, m_drivetrainSub));
 

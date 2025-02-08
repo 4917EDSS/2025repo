@@ -22,8 +22,9 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.RobotContainer;
+import frc.robot.utils.TestableSubsystem;
 
-public class ArmSub extends SubsystemBase {
+public class ArmSub extends TestableSubsystem {
   private final ShuffleboardTab m_shuffleboardTab = Shuffleboard.getTab("Arm");
   private final GenericEntry m_sbArmPower, m_sbLowerLimit, m_sbUpperLimit, m_sbArmPosition, m_sbArmAngle;
   private final SparkMax m_armMotor = new SparkMax(Constants.CanIds.kArmMotor, MotorType.kBrushless);
@@ -87,6 +88,7 @@ public class ArmSub extends SubsystemBase {
     }
 
     SmartDashboard.putNumber("Arm enc", getPosition());
+    SmartDashboard.putNumber("Arm degrees", getAngle());
   }
 
   /**
@@ -187,7 +189,10 @@ public class ArmSub extends SubsystemBase {
    * enables automation
    */
   public void enableAutomation() {
-    m_automationEnabled = false;
+    if(!m_automationEnabled) {
+      m_targetAngle = getAngle();
+      m_automationEnabled = true;
+    }
   }
 
   /**
@@ -212,14 +217,118 @@ public class ArmSub extends SubsystemBase {
 
 
     if(!justCalculate) {
-
-      if(getAngle() < m_targetAngle - 1) {
-        setPower(0.25);
-      } else if(getAngle() > m_targetAngle + 1) {
-        setPower(-0.25);
+      if(getAngle() < m_targetAngle - 2) {
+        setPower(0.10);
+      } else if(getAngle() > m_targetAngle + 2) {
+        setPower(-0.10);
       } else {
         setPower(0);
       }
     }
+  }
+
+  //////////////////// Methods used for automated testing ////////////////////
+  /**
+   * Makes the motor ready for testing. This includes disabling any automation that uses this
+   * motor
+   * 
+   * @param motorId 1 for the first motor in the subsystem, 2 for the second, etc.
+   */
+  @Override
+  public void testEnableMotorTestMode(int motorId) {
+    // Disable any mechanism automation (PID, etc.).  Check periodic()
+  }
+
+  /**
+   * Puts the motor back into normal opeation mode.
+   * 
+   * @param motorId 1 for the first motor in the subsystem, 2 for the second, etc.
+   */
+  @Override
+  public void testDisableMotorTestMode(int motorId) {
+    // Re-ensable any mechanism automation
+  }
+
+  /**
+   * Resets the motor's encoder such that it reads zero
+   * 
+   * @param motorId 1 for the first motor in the subsystem, 2 for the second, etc.
+   */
+  @Override
+  public void testResetMotorPosition(int motorId) {
+    switch(motorId) {
+      case 1:
+        //m_armMotor.setPosition(0.0, 0.5); // Set it to 0 and wait up to half a second for it to take effect TODO: This isn't working, fix later
+        break;
+      default:
+        // Do nothing
+        break;
+    }
+  }
+
+  /**
+   * Sets the motor's power to the specified value. This needs to also disable anything else from
+   * changing the motor power.
+   * 
+   * @param motorId 1 for the first motor in the subsystem, 2 for the second, etc.
+   * @param power Desired power -1.0 to 1.0
+   */
+  @Override
+  public void testSetMotorPower(int motorId, double power) {
+    switch(motorId) {
+      case 1:
+        m_armMotor.set(power);
+        break;
+      default:
+        // Do nothing
+        break;
+    }
+  }
+
+  /**
+   * Returns the motor's current encoder value. Ideally this is the raw value, not the converted
+   * value. This should be the INTERNAL encoder to minimize dependencies on other hardware.
+   * 
+   * @param motorId 1 for the first motor in the subsystem, 2 for the second, etc.
+   * @return Encoder value in raw or converted units
+   */
+  @Override
+  public double testGetMotorPosition(int motorId) {
+    double angle = 0.0;
+
+    switch(motorId) {
+      case 1:
+        angle = m_armMotor.getAbsoluteEncoder().getPosition() * 360; // gives you the angle
+        break;
+      default:
+        // Return an invalid value
+        angle = -99999999.0;
+        break;
+    }
+
+    return angle;
+  }
+
+  /**
+   * Returns the motor's current current-draw.
+   * 
+   * @param motorId 1 for the first motor in the subsystem, 2 for the second, etc.
+   * @return Electrical current draw in amps, or -1 if feature not supported
+   */
+  @Override
+  public double testGetMotorAmps(int motorId) {
+    double current = 0.0;
+
+    switch(motorId) {
+      case 1:
+        current = m_armMotor.getOutputCurrent();
+        break;
+      default:
+        // Return an invalid value
+        current = -1.0;
+        break;
+    }
+
+    return current;
   }
 }
