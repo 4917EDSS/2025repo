@@ -22,7 +22,6 @@ public class ElevatorMoveWithJoystickCmd extends Command {
     m_controller = controller;
     m_elevatorSub = elevatorSub;
 
-
     // Use addRequirements() here to declare subsystem dependencies.
     addRequirements(elevatorSub);
   }
@@ -46,7 +45,7 @@ public class ElevatorMoveWithJoystickCmd extends Command {
       m_wasInDeadZone = false;
     } else if((Math.abs(elevatorPower) < 0.05) && !m_wasInDeadZone) {
       // When we enter the deadzone, enable automation
-      m_elevatorSub.setTargetHeight(m_elevatorSub.getPositionMM());
+      m_elevatorSub.setTargetHeight(m_elevatorSub.getPositionMm());
       m_elevatorSub.enableAutomation();
       m_wasInDeadZone = true;
     }
