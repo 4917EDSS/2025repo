@@ -41,7 +41,7 @@ public class ArmMoveWithJoystickCmd extends Command {
     }
     //else if we went into deadband, enable automation
     else if((Math.abs(pivotPower) < 0.05) && !m_wasInDeadZone) {
-      m_armSub.setTargetAngle(m_armSub.getPosition());
+      m_armSub.setTargetAngle(m_armSub.getAngle());
       m_armSub.enableAutomation();
       m_wasInDeadZone = true;
     }
