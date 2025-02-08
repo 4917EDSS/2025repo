@@ -210,14 +210,16 @@ public class ArmSub extends SubsystemBase {
     //   setPower(pidPower + fedPower);
     // }
 
-    if(getAngle() < m_targetAngle - 1) {
-      setPower(0.25);
-    } else if(getAngle() > m_targetAngle + 1) {
-      setPower(-0.25);
-    } else {
-      setPower(0);
+
+    if(!justCalculate) {
+
+      if(getAngle() < m_targetAngle - 1) {
+        setPower(0.25);
+      } else if(getAngle() > m_targetAngle + 1) {
+        setPower(-0.25);
+      } else {
+        setPower(0);
+      }
     }
-
-
   }
 }
