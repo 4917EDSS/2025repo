@@ -199,7 +199,7 @@ public class RobotContainer {
     // Circle - unused
 
 
-    m_operatorController.cross().onTrue(new InstantCommand(() -> m_elevatorSub.setTargetHeight(1000), m_elevatorSub));
+    m_operatorController.cross().onTrue(new InstantCommand(() -> m_elevatorSub.setTargetHeight(900), m_elevatorSub));
 
     m_operatorController.L1()
         .whileTrue(

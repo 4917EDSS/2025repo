@@ -69,6 +69,7 @@ public class ElevatorSub extends SubsystemBase {
 
     TalonFXConfiguration config = new TalonFXConfiguration();
     config.Feedback.SensorToMechanismRatio = Constants.Elevator.kRotationsToMm;
+
     m_elevatorMotor.getConfigurator().apply(config);
 
     //final DutyCycleOut m_dutyCycle = new DutyCycleOut(0.0);
@@ -150,13 +151,13 @@ public class ElevatorSub extends SubsystemBase {
     } else if(isAtUpperLimit() && power > 0.0) {
       powerValue = 0.0;
       System.out.println("Upper limit hit");
-    } //  else if((getPositionMm() < Constants.Elevator.kSlowDownLowerStageHeight)
-    //     && (power < Constants.Elevator.kSlowDownLowerStagePower)) {
-    //   powerValue = Constants.Elevator.kSlowDownLowerStagePower;
-    // } else if((getPositionMm() > Constants.Elevator.kSlowDownUpperStageHeight)
-    //     && (power > Constants.Elevator.kSlowDownUpperStagePower)) {
-    //   powerValue = Constants.Elevator.kSlowDownUpperStagePower;
-    // }
+    } else if((getPositionMm() < Constants.Elevator.kSlowDownLowerStageHeight)
+        && (power < Constants.Elevator.kSlowDownLowerStagePower)) {
+      powerValue = Constants.Elevator.kSlowDownLowerStagePower;
+    } else if((getPositionMm() > Constants.Elevator.kSlowDownUpperStageHeight)
+        && (power > Constants.Elevator.kSlowDownUpperStagePower)) {
+      powerValue = Constants.Elevator.kSlowDownUpperStagePower;
+    }
     m_elevatorMotor.set(powerValue);
     SmartDashboard.putNumber("El Power", powerValue);
     // System.out.println("Current power is " + powerValue);
