@@ -88,6 +88,7 @@ public class ArmSub extends TestableSubsystem {
     }
 
     SmartDashboard.putNumber("Arm enc", getPosition());
+    SmartDashboard.putNumber("Arm degrees", getAngle());
   }
 
   /**
@@ -188,7 +189,10 @@ public class ArmSub extends TestableSubsystem {
    * enables automation
    */
   public void enableAutomation() {
-    m_automationEnabled = false;
+    if(!m_automationEnabled) {
+      m_targetAngle = getAngle();
+      m_automationEnabled = true;
+    }
   }
 
   /**
@@ -213,11 +217,10 @@ public class ArmSub extends TestableSubsystem {
 
 
     if(!justCalculate) {
-
-      if(getAngle() < m_targetAngle - 1) {
-        setPower(0.25);
-      } else if(getAngle() > m_targetAngle + 1) {
-        setPower(-0.25);
+      if(getAngle() < m_targetAngle - 2) {
+        setPower(0.10);
+      } else if(getAngle() > m_targetAngle + 2) {
+        setPower(-0.10);
       } else {
         setPower(0);
       }
