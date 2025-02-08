@@ -8,8 +8,8 @@ import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.Meters;
 import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
 import com.ctre.phoenix6.configs.MotorOutputConfigs;
+import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.configs.TalonFXConfigurator;
-import com.ctre.phoenix6.controls.DutyCycleOut;
 import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
@@ -20,6 +20,7 @@ import edu.wpi.first.units.DistanceUnit;
 import edu.wpi.first.units.PerUnit;
 import edu.wpi.first.units.measure.Per;
 import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 
@@ -66,44 +67,53 @@ public class ElevatorSub extends SubsystemBase {
 
     m_elevatorMotor2.setControl(new Follower(m_elevatorMotor.getDeviceID(), false));
 
+    TalonFXConfiguration config = new TalonFXConfiguration();
+    config.Feedback.SensorToMechanismRatio = Constants.Elevator.kRotationsToMm;
+    m_elevatorMotor.getConfigurator().apply(config);
+
     //final DutyCycleOut m_dutyCycle = new DutyCycleOut(0.0);
     // m_elevatorMotor.setControl(m_dutyCycle.withOutput(0.5)
     //.withLimitForwardMotion(m_elevatorLowerLimit.get())
     //.withLimitReverseMotion(m_elevatorUpperLimit.get()));
 
-    resetPosition();
+    setPositionMm(0);
   }
 
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
     if(m_enableAutomation) {
-      runHeightControl(false);
-    } else {
       runHeightControl(true);
+    } else {
+      runHeightControl(false);
     }
+
+    SmartDashboard.putNumber("El Enc", getPositionMm());
+    SmartDashboard.putNumber("El Enc Raw", m_elevatorMotor.getPosition().getValueAsDouble());
+    SmartDashboard.putBoolean("El Auto", m_enableAutomation);
+    SmartDashboard.putBoolean("El UpLimit", isAtUpperLimit());
 
     // Reset encoder if we hit the limit switch and the position doesn't read close to zero
-    if(isAtLowerLimit() && Math.abs(getPositionMM()) > 5.0) {
-      m_hitLimitSwitchCounter++;
-    } else {
-      m_hitLimitSwitchCounter = 0;
-    }
+    // if(isAtLowerLimit() && Math.abs(getPositionMm()) > 5.0) {
+    //   m_hitLimitSwitchCounter++;
+    // } else {
+    //   m_hitLimitSwitchCounter = 0;
+    // }
 
     // Resets encoder when the limit switch is hit
-    if(m_hitLimitSwitchCounter >= 5) {
-      resetPosition();
-      m_hitLimitSwitchCounter = 0;
-    }
+    // if(m_hitLimitSwitchCounter >= 5) {
+    //   setPositionMm(0);
+    //   m_hitLimitSwitchCounter = 0;
+    // }
 
     // Sets encoder position when Encoder Reset Switch is hit
-    if((encoderResetSwitchHit()) && (m_elevatorMotor.get() > 0.0)) {
-      m_elevatorMotor.setPosition(5);
-      m_elevatorMotor2.setPosition(5);
-    } else if((encoderResetSwitchHit()) && (m_elevatorMotor.get() < 0.0)) {
-      m_elevatorMotor.setPosition(10);
-      m_elevatorMotor2.setPosition(10);
-    }
+    // if((encoderResetSwitchHit()) && (m_elevatorMotor.get() > 0.0)) {
+    //   m_elevatorMotor.setPosition(5);
+    //   m_elevatorMotor2.setPosition(5);
+    // } else if((encoderResetSwitchHit()) && (m_elevatorMotor.get() < 0.0)) {
+    //   m_elevatorMotor.setPosition(10);
+    //   m_elevatorMotor2.setPosition(10);
+    // }
 
     // Sets encoder position when Stage 2 Limit is hit
     // if((isAtStageTwoLimit()) && (m_elevatorMotor.get() > 0.0)) {
@@ -118,9 +128,9 @@ public class ElevatorSub extends SubsystemBase {
 
     //Sets encoder position when Upper Limit is hit
     //Issue with conversion to MM
-    if(isAtUpperLimit()) {
-      m_elevatorMotor.setPosition(2000);
-    }
+    // if(isAtUpperLimit()) {
+    //   m_elevatorMotor.setPosition(2000);
+    // }
   }
 
   /**
@@ -140,37 +150,33 @@ public class ElevatorSub extends SubsystemBase {
     } else if(isAtUpperLimit() && power > 0.0) {
       powerValue = 0.0;
       System.out.println("Upper limit hit");
-    } else if((getPositionMM() < Constants.Elevator.kSlowDownLowerStageHeight)
-        && (power < Constants.Elevator.kSlowDownLowerStagePower)) {
-      powerValue = Constants.Elevator.kSlowDownLowerStagePower;
-    } else if((getPositionMM() > Constants.Elevator.kSlowDownUpperStageHeight)
-        && (power > Constants.Elevator.kSlowDownUpperStagePower)) {
-      powerValue = Constants.Elevator.kSlowDownUpperStagePower;
-    }
+    } //  else if((getPositionMm() < Constants.Elevator.kSlowDownLowerStageHeight)
+    //     && (power < Constants.Elevator.kSlowDownLowerStagePower)) {
+    //   powerValue = Constants.Elevator.kSlowDownLowerStagePower;
+    // } else if((getPositionMm() > Constants.Elevator.kSlowDownUpperStageHeight)
+    //     && (power > Constants.Elevator.kSlowDownUpperStagePower)) {
+    //   powerValue = Constants.Elevator.kSlowDownUpperStagePower;
+    // }
     m_elevatorMotor.set(powerValue);
-    System.out.println("Current power is " + powerValue);
-    System.out.println("Position is " + getPositionMM());
-  }
-
-  public void getPower() {
-    m_elevatorMotor.get();
+    SmartDashboard.putNumber("El Power", powerValue);
+    // System.out.println("Current power is " + powerValue);
+    // System.out.println("Position is " + getPositionMm());
   }
 
   /**
-   * Sets the current height as the zero height
+   * Sets the current height
    */
-  public void resetPosition() {
-    m_elevatorMotor.setPosition(0);
-    m_elevatorMotor2.setPosition(0);
+  public void setPositionMm(double height) {
+    m_elevatorMotor.setPosition(height);
   }
 
   /**
-   * Returns the current angular position of the arm
+   * Returns the current height of the elevator
    * 
-   * @return position in degrees
+   * @return position in mm
    */
-  public double getPositionMM() {
-    return m_elevatorMotor.getPosition().getValueAsDouble() * Constants.Elevator.kRotationsToMM;
+  public double getPositionMm() {
+    return m_elevatorMotor.getPosition().getValueAsDouble();
   }
 
   /**
@@ -196,7 +202,7 @@ public class ElevatorSub extends SubsystemBase {
 
     m_targetHeight = targetHeight;
     enableAutomation();
-    runHeightControl(true);
+    runHeightControl(false);
   }
 
   /**
@@ -268,19 +274,32 @@ public class ElevatorSub extends SubsystemBase {
   /**
    * Calculates and sets the current power to apply to the elevator to get to or stay at its target
    * 
-   * @param justCalculate set to true to update the Feedforward and PID controllers without changing the motor power
+   * @param updatePower set to false to update the Feedforward and PID controllers without changing the motor power
    */
-  private void runHeightControl(boolean justCalculate) {
-    // TODO: Create and configure PID and Feedforward controllers
-    double pidPower = 0.1; //(m_elevatorPID.calculate(getPositionMM(), m_targetHeight)) * 0.0000000001;
-    if(m_targetHeight < getPositionMM()) {
-      pidPower = 0;
+  private void runHeightControl(boolean updatePower) {
+    //TODO: Create and configure PID and Feedforward controllers
+    double pidPower = (m_elevatorPID.calculate(getPositionMm(), m_targetHeight));
+    if(pidPower > .5) {
+      pidPower = .5;
     }
-    System.out.println("PID power is " + pidPower);
-    double fedPower = 0;
+    // if(m_targetHeight < getPositionMm()) {
+    //   pidPower = 0;
+    // }
+    double fedPower = 0.01;
 
-    if(!justCalculate) {
+    if(updatePower) {
       setPower(pidPower + fedPower);
     }
+
+    // if(updatePower) {
+    //   double delta = m_targetHeight - getPositionMm();
+    //   if(Math.abs(delta) < 10) {
+    //     setPower(0);
+    //   } else if(delta > 0) {
+    //     setPower(0.1);
+    //   } else {
+    //     setPower(-0.1);
+    //   }
+    // }
   }
 }
