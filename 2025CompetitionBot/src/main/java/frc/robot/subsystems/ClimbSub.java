@@ -18,8 +18,9 @@ import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.RobotContainer;
+import frc.robot.utils.TestableSubsystem;
 
-public class ClimbSub extends SubsystemBase {
+public class ClimbSub extends TestableSubsystem {
   // Create the climb motor
   private final TalonFX m_climbMotor = new TalonFX(Constants.CanIds.kClimbMotor);
   // TODO:  Add limit switches and/or absolute encoder
@@ -130,5 +131,111 @@ public class ClimbSub extends SubsystemBase {
    */
   public double getElectricalCurrent() {
     return m_climbMotor.getStatorCurrent().getValueAsDouble();
+  }
+
+  //////////////////// Methods used for automated testing ////////////////////
+  /**
+   * Makes the motor ready for testing. This includes disabling any automation that uses this
+   * motor
+   * 
+   * @param motorId 1 for the first motor in the subsystem, 2 for the second, etc.
+   */
+  @Override
+  public void testEnableMotorTestMode(int motorId) {
+    // Disable any mechanism automation (PID, etc.).  Check periodic()
+  }
+
+  /**
+   * Puts the motor back into normal opeation mode.
+   * 
+   * @param motorId 1 for the first motor in the subsystem, 2 for the second, etc.
+   */
+  @Override
+  public void testDisableMotorTestMode(int motorId) {
+    // Re-ensable any mechanism automation
+  }
+
+  /**
+   * Resets the motor's encoder such that it reads zero
+   * 
+   * @param motorId 1 for the first motor in the subsystem, 2 for the second, etc.
+   */
+  @Override
+  public void testResetMotorPosition(int motorId) {
+    switch(motorId) {
+      case 1:
+        m_climbMotor.setPosition(0.0, 0.5); // Set it to 0 and wait up to half a second for it to take effect
+        break;
+      default:
+        // Do nothing
+        break;
+    }
+  }
+
+  /**
+   * Sets the motor's power to the specified value. This needs to also disable anything else from
+   * changing the motor power.
+   * 
+   * @param motorId 1 for the first motor in the subsystem, 2 for the second, etc.
+   * @param power Desired power -1.0 to 1.0
+   */
+  @Override
+  public void testSetMotorPower(int motorId, double power) {
+    switch(motorId) {
+      case 1:
+        m_climbMotor.set(power);
+        break;
+      default:
+        // Do nothing
+        break;
+    }
+  }
+
+  /**
+   * Returns the motor's current encoder value. Ideally this is the raw value, not the converted
+   * value. This should be the INTERNAL encoder to minimize dependencies on other hardware.
+   * 
+   * @param motorId 1 for the first motor in the subsystem, 2 for the second, etc.
+   * @return Encoder value in raw or converted units
+   */
+  @Override
+  public double testGetMotorPosition(int motorId) {
+    double position = 0.0;
+
+    switch(motorId) {
+      case 1:
+        position = m_climbMotor.getPosition().getValueAsDouble(); // This position is affected by the conversion factor
+        break;
+
+      default:
+        // Return an invalid value
+        position = -99999999.0;
+        break;
+    }
+
+    return position;
+  }
+
+  /**
+   * Returns the motor's current current-draw.
+   * 
+   * @param motorId 1 for the first motor in the subsystem, 2 for the second, etc.
+   * @return Electrical current draw in amps, or -1 if feature not supported
+   */
+  @Override
+  public double testGetMotorAmps(int motorId) {
+    double current = 0.0;
+
+    switch(motorId) {
+      case 1:
+        current = m_climbMotor.getStatorCurrent().getValueAsDouble();
+        break;
+      default:
+        // Return an invalid value
+        current = -1.0;
+        break;
+    }
+
+    return current;
   }
 }
