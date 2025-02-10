@@ -34,6 +34,7 @@ import frc.robot.commands.ArmMoveWithJoystickCmd;
 import frc.robot.commands.AutoDriveCmd;
 import frc.robot.commands.ElevatorMoveWithJoystickCmd;
 import frc.robot.commands.KillAllCmd;
+import frc.robot.commands.L4PlacementGrp;
 import frc.robot.commands.SetArmToPositionCmd;
 import frc.robot.commands.SetElevatorToHeightCmd;
 import frc.robot.commands.tests.RunTestsGrp;
@@ -200,6 +201,9 @@ public class RobotContainer {
             m_intakeSub));
 
     // Circle - unused
+
+    m_operatorController.circle().whileTrue(
+        new L4PlacementGrp(m_armSub, m_elevatorSub));
 
 
     m_operatorController.cross().onTrue(new InstantCommand(() -> m_elevatorSub.setTargetHeight(900), m_elevatorSub));
