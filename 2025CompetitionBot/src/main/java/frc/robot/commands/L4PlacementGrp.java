@@ -9,6 +9,7 @@ import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandPS4Controller;
 import frc.robot.subsystems.ArmSub;
 import frc.robot.subsystems.ElevatorSub;
+import edu.wpi.first.wpilibj.Watchdog;
 import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelDeadlineGroup;
@@ -28,7 +29,9 @@ public class L4PlacementGrp extends SequentialCommandGroup {
         new WaitCommand(1000), // hopefully in milliseconds
         new SetArmToPositionCmd(90, armSub), // 90 degrees because the coral will just slam straight down onto l4
         new WaitCommand(1000), // hopefully in milliseconds
-        new InstantCommand(() -> elevatorSub.setTargetHeight(440)) //use the resting elevator height, this is an estimation
+        new InstantCommand(() -> elevatorSub.setTargetHeight(440)), //use the resting elevator height, this is an estimation
+        new WaitCommand(500), // hopefully in milliseconds
+        new SetArmToPositionCmd(0, armSub) // set the arm back to the 
     );
   }
 
