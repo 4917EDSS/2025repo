@@ -6,7 +6,7 @@ package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 
-// NOTE:  Consider using this command inline, rather than writing a subclass.  For more
+// NOTE: Consider using this command inline, rather than writing a subclass. For more
 // information, see:
 // https://docs.wpilib.org/en/stable/docs/software/commandbased/convenience-features.html
 public class L4PlacementGrp extends SequentialCommandGroup {
@@ -14,6 +14,8 @@ public class L4PlacementGrp extends SequentialCommandGroup {
   public L4PlacementGrp() {
     // Add your commands in the addCommands() call, e.g.
     // addCommands(new FooCommand(), new BarCommand());
-    addCommands();
+    addCommands(
+        new SetElevatorToHeightCmd(0, null),
+        new SetArmToPositionCmd(0, null));
   }
 }
