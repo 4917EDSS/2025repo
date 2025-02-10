@@ -5,6 +5,7 @@
 package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandPS4Controller;
 import frc.robot.subsystems.ArmSub;
 import frc.robot.subsystems.ElevatorSub;
@@ -23,9 +24,11 @@ public class L4PlacementGrp extends SequentialCommandGroup {
     // Add your commands in the addCommands() call, e.g.
     // addCommands(new FooCommand(), new BarCommand());
     addCommands(
-        new SetElevatorToHeightCmd(1900, elevatorSub), // as tall as possible so that the bottom of the coral is fully above the top of l4
+        new InstantCommand(() -> elevatorSub.setTargetHeight(1900)), // as tall as possible so that the bottom of the coral is fully above the top of l4
+        new WaitCommand(1000), // hopefully in milliseconds
         new SetArmToPositionCmd(90, armSub), // 90 degrees because the coral will just slam straight down onto l4
-        new SetElevatorToHeightCmd(440, elevatorSub) //use the resting elevator height, this is an estimation
+        new WaitCommand(1000), // hopefully in milliseconds
+        new InstantCommand(() -> elevatorSub.setTargetHeight(440)) //use the resting elevator height, this is an estimation
     );
   }
 
