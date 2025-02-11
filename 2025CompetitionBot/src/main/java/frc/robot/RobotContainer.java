@@ -34,8 +34,8 @@ import frc.robot.commands.ArmMoveWithJoystickCmd;
 import frc.robot.commands.AutoDriveCmd;
 import frc.robot.commands.ElevatorMoveWithJoystickCmd;
 import frc.robot.commands.KillAllCmd;
+import frc.robot.commands.L4PlacementGrp;
 import frc.robot.commands.SetArmToPositionCmd;
-import frc.robot.commands.SetElevatorToHeightCmd;
 import frc.robot.commands.tests.RunTestsGrp;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.ArmSub;
@@ -130,8 +130,6 @@ public class RobotContainer {
     NamedCommands.registerCommand("SetArmToPositionCmd",
         new SetArmToPositionCmd(63, m_armSub)); // put whatever number you want in here, I assume its in degrees
 
-    NamedCommands.registerCommand("SetElevatorToHeightCmd",
-        new SetElevatorToHeightCmd(74, m_elevatorSub)); // put whatever number you want in here
   }
 
   /**
@@ -140,7 +138,9 @@ public class RobotContainer {
   private void configureBindings() {
     // Drive controller bindings ////////////////////////////////////////////////////////////////////////////////////////////////
 
-    // Square - unused
+    // Square - used
+    m_operatorController.square().onTrue(new SetArmToPositionCmd(0, m_armSub));
+
 
     m_driverController.cross().whileTrue(m_drivetrainSub.applyRequest(() -> brake));
 
@@ -148,7 +148,7 @@ public class RobotContainer {
         .applyRequest(() -> point
             .withModuleDirection(new Rotation2d(-m_driverController.getLeftY(), -m_driverController.getLeftX()))));
 
-    // Triange - unused
+    // Triange - used
 
     m_operatorController.triangle().onTrue(new SetArmToPositionCmd(90, m_armSub));
 
@@ -161,73 +161,78 @@ public class RobotContainer {
 
 
     // L2 - unused
-
+    
     // R2 - unused
-
+    
     // Share - unused
-
+    
     // Options - unused
-
+    
     // Reset the field-centric heading
     m_driverController.PS().onTrue(m_drivetrainSub.runOnce(() -> m_drivetrainSub.seedFieldCentric()));
-
+    
     // Touchpad - unused
-
+    
     // 'Kill All' commands
     m_driverController.L3().onTrue(new KillAllCmd(m_climbSub, m_drivetrainSub, m_elevatorSub, m_intakeSub));
-
+    
     m_driverController.R3().onTrue(new KillAllCmd(m_climbSub, m_drivetrainSub, m_elevatorSub, m_intakeSub));
-
+    
     // Combination buttons for diagnostics
     // Run SysId routines when holding share/options and square/triangle.
     // Note that each routine should be run exactly once in a single log.
     m_driverController.share().and(m_driverController.triangle())
-        .whileTrue(m_drivetrainSub.sysIdDynamic(Direction.kForward));
+    .whileTrue(m_drivetrainSub.sysIdDynamic(Direction.kForward));
     m_driverController.share().and(m_driverController.square())
-        .whileTrue(m_drivetrainSub.sysIdDynamic(Direction.kReverse));
+    .whileTrue(m_drivetrainSub.sysIdDynamic(Direction.kReverse));
     m_driverController.options().and(m_driverController.triangle())
-        .whileTrue(m_drivetrainSub.sysIdQuasistatic(Direction.kForward));
+    .whileTrue(m_drivetrainSub.sysIdQuasistatic(Direction.kForward));
     m_driverController.options().and(m_driverController.square())
-        .whileTrue(m_drivetrainSub.sysIdQuasistatic(Direction.kReverse));
-
-
+    .whileTrue(m_drivetrainSub.sysIdQuasistatic(Direction.kReverse));
+    
+    
     // Operator Controller Bindings /////////////////////////////////////////////////////////////////////////////////////////////
-
+    
     // Square - unused
-
+    
     m_operatorController.triangle().whileTrue(
         new StartEndCommand(() -> m_intakeSub.setRollersPower(1.0), () -> m_intakeSub.setRollersPower(0.0),
-            m_intakeSub));
-
-    // Circle - unused
-
-
-    m_operatorController.cross().onTrue(new InstantCommand(() -> m_elevatorSub.setTargetHeight(900), m_elevatorSub));
-
-    m_operatorController.L1()
-        .whileTrue(
+        m_intakeSub));
+        
+        m_operatorController.circle().whileTrue(
+          new L4PlacementGrp(m_armSub, m_elevatorSub));
+          
+          
+          m_operatorController.cross().onTrue(new InstantCommand(() -> m_elevatorSub.setTargetHeight(900), m_elevatorSub));
+          
+          m_operatorController.L1()
+          .whileTrue(
             new StartEndCommand(() -> m_climbSub.setPower(0.10), () -> m_climbSub.setPower(0.0), m_climbSub));
-
-    m_operatorController.R1()
-        .whileTrue(
-            new StartEndCommand(() -> m_climbSub.setPower(-0.10), () -> m_climbSub.setPower(0.0), m_climbSub));
-
-
-    // Share - unused
-
-    // Options - unused
-
-    // PS - unused
+            
+            m_operatorController.R1()
+            .whileTrue(
+              new StartEndCommand(() -> m_climbSub.setPower(-0.10), () -> m_climbSub.setPower(0.0), m_climbSub));
+              
+            //  m_operatorController.L2().onTrue(new Al)
+            
+            // Share - unused
+            
+            // Options - unused
+            
+            m_operatorController.PS().onTrue(new InstantCommand(() -> {
+              m_elevatorSub.setPositionMm(0);
+      m_elevatorSub.setTargetHeight(0);
+    }, m_elevatorSub));
 
     // Touchpad - unused
-
+    
     // 'Kill All' commands
-    m_driverController.L3().onTrue(new KillAllCmd(m_climbSub, m_drivetrainSub, m_elevatorSub, m_intakeSub));
-
-    m_driverController.R3().onTrue(new KillAllCmd(m_climbSub, m_drivetrainSub, m_elevatorSub, m_intakeSub));
+    m_operatorController.L3().onTrue(new KillAllCmd(m_climbSub, m_drivetrainSub, m_elevatorSub, m_intakeSub));
+    
+    m_operatorController.R3().onTrue(new KillAllCmd(m_climbSub, m_drivetrainSub, m_elevatorSub, m_intakeSub));
   }
-
-
+  
+  
   /**
    * Use this to pass the autonomous command to the main {@link Robot} class.
    *

@@ -33,7 +33,7 @@ public class ArmSub extends TestableSubsystem {
   //private final SparkAbsoluteEncoder m_armEncoder = m_armMotor.getAbsoluteEncoder();  // TODO: Figure out if we'll have one of these or not
 
   private final ArmFeedforward m_armFeedforward = new ArmFeedforward(0.001, 0.001, 0.0);
-  private final PIDController m_armPid = new PIDController(0.01, 0.001, 0.001); // really needs some tuning
+  private final PIDController m_armPid = new PIDController(0.01, 0, 0); // really needs some tuning
 
   private final SparkAbsoluteEncoder m_armMotorAbsoluteEncoder = m_armMotor.getAbsoluteEncoder();
 
@@ -208,23 +208,30 @@ public class ArmSub extends TestableSubsystem {
   private void runAngleControl(boolean justCalculate) {
 
 
-    // double pidPower = m_armPid.calculate(getPosition(), m_targetAngle);
-    // double fedPower = m_armFeedforward.calculate(Math.toRadians(getPosition()), pidPower); // Feed forward expects 0 degrees as horizontal
-
-    // if(!justCalculate) {
-    //   setPower(pidPower + fedPower);
-    // }
-
+    double pidPower = m_armPid.calculate(getAngle(), m_targetAngle);
+    double fedPower = m_armFeedforward.calculate(Math.toRadians(getAngle()), pidPower); // Feed forward expects 0 degrees as horizontal
 
     if(!justCalculate) {
-      if(getAngle() < m_targetAngle - 2) {
-        setPower(0.10);
-      } else if(getAngle() > m_targetAngle + 2) {
-        setPower(-0.10);
-      } else {
-        setPower(0);
+      double tempPower = (pidPower + fedPower);
+
+      double SPEED = 0.15;
+      if(Math.abs(tempPower) > SPEED) {
+        double sign = (tempPower >= 0.0) ? 1.0 : -1.0;
+        tempPower = SPEED * sign;
       }
+      setPower(tempPower);
     }
+
+
+    // if(!justCalculate) {
+    //   if(getAngle() < m_targetAngle - 2) {
+    //     setPower(0.10);
+    //   } else if(getAngle() > m_targetAngle + 2) {
+    //     setPower(-0.10);
+    //   } else {
+    //     setPower(0);
+    //   }
+
   }
 
   //////////////////// Methods used for automated testing ////////////////////
