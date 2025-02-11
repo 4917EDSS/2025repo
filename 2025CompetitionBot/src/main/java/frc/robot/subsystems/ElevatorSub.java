@@ -315,6 +315,7 @@ public class ElevatorSub extends TestableSubsystem {
    */
   @Override
   public void testEnableMotorTestMode(int motorId) {
+    disableAutomation();
     // Disable any mechanism automation (PID, etc.).  Check periodic()
   }
 
@@ -325,6 +326,7 @@ public class ElevatorSub extends TestableSubsystem {
    */
   @Override
   public void testDisableMotorTestMode(int motorId) {
+    enableAutomation();
     // Re-ensable any mechanism automation
   }
 
