@@ -78,7 +78,7 @@ public class ElevatorSub extends TestableSubsystem {
     //.withLimitForwardMotion(m_elevatorLowerLimit.get())
     //.withLimitReverseMotion(m_elevatorUpperLimit.get()));
 
-    setPositionMm(0);
+    setPositionMm(Constants.Elevator.kStartingHeight);
   }
 
   @Override
@@ -91,7 +91,6 @@ public class ElevatorSub extends TestableSubsystem {
     }
 
     SmartDashboard.putNumber("El Enc", getPositionMm());
-    SmartDashboard.putNumber("El Enc Raw", m_elevatorMotor.getPosition().getValueAsDouble());
     SmartDashboard.putBoolean("El Auto", m_enableAutomation);
     SmartDashboard.putBoolean("El UpLimit", isAtUpperLimit());
 
@@ -420,5 +419,14 @@ public class ElevatorSub extends TestableSubsystem {
     }
 
     return current;
+  }
+
+  public boolean isElevatorAtTargetHeight() {
+    if(m_targetHeight <= getPositionMm() + Constants.Elevator.kHeightTolerance
+        && m_targetHeight >= getPositionMm() - Constants.Elevator.kHeightTolerance) { //Add tolerance
+      return true;
+    } else {
+      return false;
+    }
   }
 }

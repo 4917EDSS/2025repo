@@ -34,8 +34,8 @@ import frc.robot.commands.ArmMoveWithJoystickCmd;
 import frc.robot.commands.AutoDriveCmd;
 import frc.robot.commands.ElevatorMoveWithJoystickCmd;
 import frc.robot.commands.KillAllCmd;
+import frc.robot.commands.L4PlacementGrp;
 import frc.robot.commands.SetArmToPositionCmd;
-import frc.robot.commands.SetElevatorToHeightCmd;
 import frc.robot.commands.tests.RunTestsGrp;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.ArmSub;
@@ -130,8 +130,6 @@ public class RobotContainer {
     NamedCommands.registerCommand("SetArmToPositionCmd",
         new SetArmToPositionCmd(63, m_armSub)); // put whatever number you want in here, I assume its in degrees
 
-    NamedCommands.registerCommand("SetElevatorToHeightCmd",
-        new SetElevatorToHeightCmd(74, m_elevatorSub)); // put whatever number you want in here
   }
 
   /**
@@ -201,6 +199,9 @@ public class RobotContainer {
 
     // Circle - unused
 
+    m_operatorController.circle().whileTrue(
+        new L4PlacementGrp(m_armSub, m_elevatorSub));
+
 
     m_operatorController.cross().onTrue(new InstantCommand(() -> m_elevatorSub.setTargetHeight(900), m_elevatorSub));
 
@@ -217,14 +218,17 @@ public class RobotContainer {
 
     // Options - unused
 
-    // PS - unused
+    m_operatorController.PS().onTrue(new InstantCommand(() -> {
+      m_elevatorSub.setPositionMm(0);
+      m_elevatorSub.setTargetHeight(0);
+    }, m_elevatorSub));
 
     // Touchpad - unused
 
     // 'Kill All' commands
-    m_driverController.L3().onTrue(new KillAllCmd(m_climbSub, m_drivetrainSub, m_elevatorSub, m_intakeSub));
+    m_operatorController.L3().onTrue(new KillAllCmd(m_climbSub, m_drivetrainSub, m_elevatorSub, m_intakeSub));
 
-    m_driverController.R3().onTrue(new KillAllCmd(m_climbSub, m_drivetrainSub, m_elevatorSub, m_intakeSub));
+    m_operatorController.R3().onTrue(new KillAllCmd(m_climbSub, m_drivetrainSub, m_elevatorSub, m_intakeSub));
   }
 
 
