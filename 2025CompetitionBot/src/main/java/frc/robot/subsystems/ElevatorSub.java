@@ -44,6 +44,9 @@ public class ElevatorSub extends TestableSubsystem {
   private double m_targetHeight = 0.0;
   private boolean m_enableAutomation = false;
   private int m_hitLimitSwitchCounter = 0;
+  public boolean m_elevatorMotorDirection = true;
+  private boolean m_isElevatorEncoderSet = false;
+  private int m_hitEncoderSwitchCounter = 0;
 
 
   /** Creates a new ElevatorSub. */
@@ -95,16 +98,34 @@ public class ElevatorSub extends TestableSubsystem {
     SmartDashboard.putBoolean("El UpLimit", isAtUpperLimit());
 
     // Reset encoder if we hit the limit switch and the position doesn't read close to zero
-    // if(isAtLowerLimit() && Math.abs(getPositionMm()) > 5.0) {
-    //   m_hitLimitSwitchCounter++;
-    // } else {
-    //   m_hitLimitSwitchCounter = 0;
-    // }
+    if(isAtLowerLimit() && Math.abs(getPositionMm()) > 5.0) {
+      m_hitLimitSwitchCounter++;
+    } else {
+      m_hitLimitSwitchCounter = 0;
+    }
 
-    // Resets encoder when the limit switch is hit
-    // if(m_hitLimitSwitchCounter >= 5) {
-    //   setPositionMm(0);
-    //   m_hitLimitSwitchCounter = 0;
+    // Adds a counter to the encoder reset switch so that we don't reset position by accident
+    if(encoderResetSwitchHit()) {
+      m_hitEncoderSwitchCounter++;
+    } else {
+      m_hitEncoderSwitchCounter = 0;
+    }
+
+    //Resets encoder when the limit switch is hit
+    // Work in progress
+    // if(m_isElevatorEncoderSet == false){
+    //   if(m_elevatorMotorDirection == true){
+    //     if(m_hitEncoderSwitchCounter >= 2) {
+
+    //     }
+    //   }
+    //   if(encoderResetSwitchHit() == true){
+
+    //   }
+    //   if(m_hitLimitSwitchCounter >= 2) {
+    //     setPositionMm(0);
+    //     m_hitLimitSwitchCounter = 0;
+    //   }
     // }
 
     // Sets encoder position when Encoder Reset Switch is hit
@@ -159,6 +180,12 @@ public class ElevatorSub extends TestableSubsystem {
       powerValue = Constants.Elevator.kSlowDownUpperStagePower;
     }
     m_elevatorMotor.set(powerValue);
+    //check elevator direction
+    if(powerValue > 0) {
+      m_elevatorMotorDirection = true;
+    } else {
+      m_elevatorMotorDirection = false;
+    }
     SmartDashboard.putNumber("El Power", powerValue);
     // System.out.println("Current power is " + powerValue);
     // System.out.println("Position is " + getPositionMm());
