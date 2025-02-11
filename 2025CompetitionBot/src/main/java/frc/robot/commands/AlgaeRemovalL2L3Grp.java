@@ -8,7 +8,6 @@ import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.subsystems.ArmSub;
 import frc.robot.subsystems.ElevatorSub;
-import edu.wpi.first.wpilibj.Watchdog;
 import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelDeadlineGroup;
@@ -17,20 +16,17 @@ import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 // NOTE: Consider using this command inline, rather than writing a subclass. For more
 // information, see:
 // https://docs.wpilib.org/en/stable/docs/software/commandbased/convenience-features.html
-public class L4PlacementGrp extends SequentialCommandGroup {
-  /** Creates a new L4PlacementGrp. */
-  public L4PlacementGrp(ArmSub armSub, ElevatorSub elevatorSub) {
+public class AlgaeRemovalL2L3Grp extends SequentialCommandGroup {
+  /** Creates a new AlgaeRemovalL2L3Grp. */
+  public AlgaeRemovalL2L3Grp(ArmSub armSub, ElevatorSub elevatorSub) {
     // Add your commands in the addCommands() call, e.g.
     // addCommands(new FooCommand(), new BarCommand());
     addCommands(
-        new InstantCommand(() -> elevatorSub.setTargetHeight(1900)), // as tall as possible so that the bottom of the coral is fully above the top of l4
-        new WaitCommand(1000), // hopefully in milliseconds
-        new SetArmToPositionCmd(90, armSub), // 90 degrees because the coral will just slam straight down onto l4
-        new WaitCommand(1000), // hopefully in milliseconds
-        new InstantCommand(() -> elevatorSub.setTargetHeight(440)), //use the resting elevator height, this is an estimation
-        new WaitCommand(500), // hopefully in milliseconds
-        new SetArmToPositionCmd(0, armSub) // set the arm back to the 
+        new InstantCommand(() -> elevatorSub.setTargetHeight(100), elevatorSub), // Set elevator below 
+        new WaitCommand(2), // Wait 2 seconds
+        new SetArmToPositionCmd(85, armSub), // Set arm angle to under algae
+        new SetArmToPositionCmd(100, armSub) // Lift arm to remove algae
+
     );
   }
-
 }
