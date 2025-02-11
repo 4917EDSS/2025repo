@@ -32,7 +32,6 @@ public class ClimbSub extends TestableSubsystem {
   private final GenericEntry m_sbClimbPower, m_sbClimbInLimit, m_sbClimbOutLimit; //TODO: create height variables
 
 
-
   /** Creates a new ClimbSub. */
   public ClimbSub() {
     /* Add motor and limit switche(s) to shuffleboard */
@@ -40,7 +39,6 @@ public class ClimbSub extends TestableSubsystem {
     //m_climb = m_shuffleboardTab.add("Climb Left Height", 0).getEntry(); //TODO: add height
     m_sbClimbInLimit = m_shuffleboardTab.add("Climb In Limit", isAtInLimit()).getEntry(); // in limit
     m_sbClimbOutLimit = m_shuffleboardTab.add("Climb Out Limit", isAtOutLimit()).getEntry(); // out limit
-
 
 
     TalonFXConfigurator talonFxConfiguarator = m_climbMotor.getConfigurator();
@@ -82,7 +80,7 @@ public class ClimbSub extends TestableSubsystem {
   }
 
   public boolean isAtInLimit() {
-    return m_climbInLimit.get(); 
+    return m_climbInLimit.get();
   }
 
   public boolean isAtOutLimit() {
@@ -142,7 +140,7 @@ public class ClimbSub extends TestableSubsystem {
    */
   @Override
   public void testEnableMotorTestMode(int motorId) {
-    // Disable any mechanism automation (PID, etc.).  Check periodic()
+    // unnecessary
   }
 
   /**
@@ -152,7 +150,7 @@ public class ClimbSub extends TestableSubsystem {
    */
   @Override
   public void testDisableMotorTestMode(int motorId) {
-    // Re-ensable any mechanism automation
+    // unnecessary
   }
 
   /**

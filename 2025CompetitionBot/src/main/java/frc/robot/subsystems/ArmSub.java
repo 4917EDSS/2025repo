@@ -236,7 +236,7 @@ public class ArmSub extends TestableSubsystem {
    */
   @Override
   public void testEnableMotorTestMode(int motorId) {
-    // Disable any mechanism automation (PID, etc.).  Check periodic()
+    enableAutomation();
   }
 
   /**
@@ -247,6 +247,7 @@ public class ArmSub extends TestableSubsystem {
   @Override
   public void testDisableMotorTestMode(int motorId) {
     // Re-ensable any mechanism automation
+    disableAutomation();
   }
 
   /**
@@ -258,7 +259,7 @@ public class ArmSub extends TestableSubsystem {
   public void testResetMotorPosition(int motorId) {
     switch(motorId) {
       case 1:
-        //m_armMotor.setPosition(0.0, 0.5); // Set it to 0 and wait up to half a second for it to take effect TODO: This isn't working, fix later
+        // Do nothing (absolute encoder)
         break;
       default:
         // Do nothing
