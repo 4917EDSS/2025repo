@@ -122,6 +122,9 @@ public final class Constants {
     public final static double kTargetHeightDeadbandMM = 5.0; // In mm
 
     public final static double kRotationsToMm = 5 / (0.75 * 25.4 * Math.PI); // Gearing / Spool diameter in inches * mm/in * PI
+    public final static double kStartingHeight = 440.0; // Starting height in mm
+
+    public final static double kHeightTolerance = 5;
   }
 
   public static class Intake {
