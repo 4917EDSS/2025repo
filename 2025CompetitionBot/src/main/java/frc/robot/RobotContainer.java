@@ -140,7 +140,9 @@ public class RobotContainer {
   private void configureBindings() {
     // Drive controller bindings ////////////////////////////////////////////////////////////////////////////////////////////////
 
-    // Square - unused
+    // Square - used
+    m_operatorController.square().onTrue(new SetArmToPositionCmd(0, m_armSub));
+
 
     m_driverController.cross().whileTrue(m_drivetrainSub.applyRequest(() -> brake));
 
@@ -148,7 +150,7 @@ public class RobotContainer {
         .applyRequest(() -> point
             .withModuleDirection(new Rotation2d(-m_driverController.getLeftY(), -m_driverController.getLeftX()))));
 
-    // Triange - unused
+    // Triange - used
 
     m_operatorController.triangle().onTrue(new SetArmToPositionCmd(90, m_armSub));
 
