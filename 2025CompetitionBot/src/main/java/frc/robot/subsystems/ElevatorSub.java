@@ -114,27 +114,17 @@ public class ElevatorSub extends TestableSubsystem {
     }
 
     //Resets encoder when the limit switch is hit
-    // Work in progress
-    // if(m_isElevatorEncoderSet == false){
-    //   if(m_elevatorMotorDirection == true){
-    //     if(m_hitEncoderSwitchCounter >= 2) {
-
-    //     }
-    //   }
-    //   if(encoderResetSwitchHit() == true){
-
-    //   }
-    //   if(m_hitLimitSwitchCounter >= 2) {
-    //     setPositionMm(0);
-    //     m_hitLimitSwitchCounter = 0;
-    //   }
+    // if(m_hitLimitSwitchCounter >= 2) {
+    //   setPositionMm(0);
+    //   m_hitLimitSwitchCounter = 0;
     // }
 
     // Sets encoder position when Encoder Reset Switch is hit
-    // if((encoderResetSwitchHit()) && (m_elevatorMotor.get() > 0.0)) {
-    //   m_elevatorMotor.setPosition(5);
-    //   m_elevatorMotor2.setPosition(5);
-    // } else if((encoderResetSwitchHit()) && (m_elevatorMotor.get() < 0.0)) {
+    if((m_hitEncoderSwitchCounter >= 2) && (m_elevatorMotor.get() > 0.0) && (!m_isElevatorEncoderSet)) {
+      m_elevatorMotor.setPosition(445);
+      m_elevatorMotor2.setPosition(445);
+      m_isElevatorEncoderSet = true;
+    } //else if((encoderResetSwitchHit()) && (m_elevatorMotor.get() < 0.0)) {
     //   m_elevatorMotor.setPosition(10);
     //   m_elevatorMotor2.setPosition(10);
     // }
@@ -151,7 +141,6 @@ public class ElevatorSub extends TestableSubsystem {
     // }
 
     //Sets encoder position when Upper Limit is hit
-    //Issue with conversion to MM
     // if(isAtUpperLimit()) {
     //   m_elevatorMotor.setPosition(2000);
     // }
