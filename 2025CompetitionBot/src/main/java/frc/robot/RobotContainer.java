@@ -30,9 +30,11 @@ import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandPS4Controller;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.Constants.OperatorConstants;
+import frc.robot.commands.AlgaeRemovalL2L3Grp;
 import frc.robot.commands.ArmMoveWithJoystickCmd;
 import frc.robot.commands.AutoDriveCmd;
 import frc.robot.commands.ElevatorMoveWithJoystickCmd;
+import frc.robot.commands.HomeButton;
 import frc.robot.commands.KillAllCmd;
 import frc.robot.commands.L4PlacementGrp;
 import frc.robot.commands.SetArmToPositionCmd;
@@ -161,78 +163,83 @@ public class RobotContainer {
 
 
     // L2 - unused
-    
+
     // R2 - unused
-    
+
     // Share - unused
-    
+
     // Options - unused
-    
+
     // Reset the field-centric heading
     m_driverController.PS().onTrue(m_drivetrainSub.runOnce(() -> m_drivetrainSub.seedFieldCentric()));
-    
+
     // Touchpad - unused
-    
+
     // 'Kill All' commands
     m_driverController.L3().onTrue(new KillAllCmd(m_climbSub, m_drivetrainSub, m_elevatorSub, m_intakeSub));
-    
+
     m_driverController.R3().onTrue(new KillAllCmd(m_climbSub, m_drivetrainSub, m_elevatorSub, m_intakeSub));
-    
+
     // Combination buttons for diagnostics
     // Run SysId routines when holding share/options and square/triangle.
     // Note that each routine should be run exactly once in a single log.
     m_driverController.share().and(m_driverController.triangle())
-    .whileTrue(m_drivetrainSub.sysIdDynamic(Direction.kForward));
+        .whileTrue(m_drivetrainSub.sysIdDynamic(Direction.kForward));
     m_driverController.share().and(m_driverController.square())
-    .whileTrue(m_drivetrainSub.sysIdDynamic(Direction.kReverse));
+        .whileTrue(m_drivetrainSub.sysIdDynamic(Direction.kReverse));
     m_driverController.options().and(m_driverController.triangle())
-    .whileTrue(m_drivetrainSub.sysIdQuasistatic(Direction.kForward));
+        .whileTrue(m_drivetrainSub.sysIdQuasistatic(Direction.kForward));
     m_driverController.options().and(m_driverController.square())
-    .whileTrue(m_drivetrainSub.sysIdQuasistatic(Direction.kReverse));
-    
-    
+        .whileTrue(m_drivetrainSub.sysIdQuasistatic(Direction.kReverse));
+
+
     // Operator Controller Bindings /////////////////////////////////////////////////////////////////////////////////////////////
-    
-    // Square - unused
-    
+
+    // Square - Used
+
     m_operatorController.triangle().whileTrue(
         new StartEndCommand(() -> m_intakeSub.setRollersPower(1.0), () -> m_intakeSub.setRollersPower(0.0),
-        m_intakeSub));
-        
-        m_operatorController.circle().whileTrue(
-          new L4PlacementGrp(m_armSub, m_elevatorSub));
-          
-          
-          m_operatorController.cross().onTrue(new InstantCommand(() -> m_elevatorSub.setTargetHeight(900), m_elevatorSub));
-          
-          m_operatorController.L1()
-          .whileTrue(
+            m_intakeSub));
+
+    m_operatorController.circle().whileTrue(
+        new L4PlacementGrp(m_armSub, m_elevatorSub));
+
+    m_operatorController.square().whileTrue(
+        new AlgaeRemovalL2L3Grp(m_armSub, m_elevatorSub));
+
+    m_operatorController.share().onTrue(
+        new HomeButton(m_armSub, m_elevatorSub));
+
+    m_operatorController.cross().onTrue(new InstantCommand(() -> m_elevatorSub.setTargetHeight(900), m_elevatorSub));
+
+    m_operatorController.L1()
+        .whileTrue(
             new StartEndCommand(() -> m_climbSub.setPower(0.10), () -> m_climbSub.setPower(0.0), m_climbSub));
-            
-            m_operatorController.R1()
-            .whileTrue(
-              new StartEndCommand(() -> m_climbSub.setPower(-0.10), () -> m_climbSub.setPower(0.0), m_climbSub));
-              
-            //  m_operatorController.L2().onTrue(new Al)
-            
-            // Share - unused
-            
-            // Options - unused
-            
-            m_operatorController.PS().onTrue(new InstantCommand(() -> {
-              m_elevatorSub.setPositionMm(0);
+
+    m_operatorController.R1()
+        .whileTrue(
+            new StartEndCommand(() -> m_climbSub.setPower(-0.10), () -> m_climbSub.setPower(0.0), m_climbSub));
+
+    //  m_operatorController.L2().onTrue(new Al)
+
+    // Share - Used
+
+    // Options - unused
+
+    m_operatorController.PS().onTrue(new InstantCommand(() -> {
+      m_elevatorSub.setPositionMm(0);
       m_elevatorSub.setTargetHeight(0);
     }, m_elevatorSub));
 
     // Touchpad - unused
-    
+
     // 'Kill All' commands
     m_operatorController.L3().onTrue(new KillAllCmd(m_climbSub, m_drivetrainSub, m_elevatorSub, m_intakeSub));
-    
+
     m_operatorController.R3().onTrue(new KillAllCmd(m_climbSub, m_drivetrainSub, m_elevatorSub, m_intakeSub));
   }
-  
-  
+
+
   /**
    * Use this to pass the autonomous command to the main {@link Robot} class.
    *
