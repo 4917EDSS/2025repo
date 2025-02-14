@@ -170,10 +170,23 @@ public final class Constants {
      * ampsTolerance - Tolerance around the current target that's considered a pass
      */
 
+    /* Elevator Motors */
     public static final TestMotorParameters kElevatorMotor1 =
-        new TestMotorParameters("ElevatorM1", 1, 0.1, 1000, 75, 3.0, 10, 1.5, 0.1, 0.5);
+        new TestMotorParameters("ElevatorMotor1", 1, 0.1, 1000, 75, 3.0, 10, 1.5, 0.1, 0.5);
     public static final TestMotorParameters kElevatorMotor2 =
-        new TestMotorParameters("ElevatorM2", 2, 0.1, 1000, 75, 3.0, 10, 1.5, 0.1, 0.5);
+        new TestMotorParameters("ElevatorMotor2", 2, 0.1, 1000, 75, 3.0, 10, 1.5, 0.1, 0.5);
+    /* Intake Motors */
+    public static final TestMotorParameters kIntakeMotor1 =
+        new TestMotorParameters("IntakeMotor1", 3, 0.1, 1000, 75, 3.0, 10, 1.5, 0.1, 0.5);
+    public static final TestMotorParameters kIntakeMotor2 =
+        new TestMotorParameters("IntakeMotor2", 4, 0.1, 1000, 75, 3.0, 10, 1.5, 0.1, 0.5);
+    /* Arm Motor */
+    public static final TestMotorParameters kArmMotor =
+        new TestMotorParameters("ArmMotor", 5, 0.1, 1000, 75, 3.0, 10, 1.5, 0.1, 0.5);
+    /* Climb Motor */
+    public static final TestMotorParameters kClimbMotor =
+        new TestMotorParameters("ClimbMotor", 6, 0.1, 1000, 75, 3.0, 10, 1.5, 0.1, 0.5);
   }
+
 
 }
