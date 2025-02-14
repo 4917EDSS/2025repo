@@ -36,6 +36,7 @@ import frc.robot.commands.AutoDriveCmd;
 import frc.robot.commands.ElevatorMoveWithJoystickCmd;
 import frc.robot.commands.HomeButton;
 import frc.robot.commands.KillAllCmd;
+import frc.robot.commands.L2PlacementGrp;
 import frc.robot.commands.L4PlacementGrp;
 import frc.robot.commands.SetArmToPositionCmd;
 import frc.robot.commands.tests.RunTestsGrp;
@@ -104,7 +105,7 @@ public class RobotContainer {
       m_visionSub = new VisionSub(m_drivetrainSub);
     }
 
-    m_testManager.setTestCommand(new RunTestsGrp(m_climbSub, m_intakeSub, m_testManager));
+    m_testManager.setTestCommand(new RunTestsGrp(m_climbSub, m_intakeSub, m_armSub, m_elevatorSub, m_testManager));
 
     // Default commands
     m_drivetrainSub.setDefaultCommand(
@@ -209,7 +210,7 @@ public class RobotContainer {
 
     m_operatorController.share().onTrue(
         new HomeButton(m_armSub, m_elevatorSub));
-
+        
     m_operatorController.cross().onTrue(new InstantCommand(() -> m_elevatorSub.setTargetHeight(900), m_elevatorSub));
 
     m_operatorController.L1()
@@ -222,9 +223,9 @@ public class RobotContainer {
 
     //  m_operatorController.L2().onTrue(new Al)
 
-    // Share - Used
+    // Share - unused
 
-    // Options - unused
+    m_operatorController.options().onTrue(new L2PlacementGrp(m_armSub, m_elevatorSub));
 
     m_operatorController.PS().onTrue(new InstantCommand(() -> {
       m_elevatorSub.setPositionMm(0);
