@@ -31,6 +31,7 @@ import edu.wpi.first.wpilibj2.command.button.CommandPS4Controller;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.commands.AlgaeRemovalL2L3Grp;
+import frc.robot.commands.AlgaeRemovalL3L4Grp;
 import frc.robot.commands.ArmMoveWithJoystickCmd;
 import frc.robot.commands.AutoDriveCmd;
 import frc.robot.commands.ElevatorMoveWithJoystickCmd;
@@ -204,7 +205,7 @@ public class RobotContainer {
     m_operatorController.circle().whileTrue(
         new L4PlacementGrp(m_armSub, m_elevatorSub));
 
-    m_operatorController.square().whileTrue(
+    m_operatorController.square().onTrue(
         new AlgaeRemovalL2L3Grp(m_armSub, m_elevatorSub));
 
     m_operatorController.share().onTrue(
@@ -220,7 +221,8 @@ public class RobotContainer {
         .whileTrue(
             new StartEndCommand(() -> m_climbSub.setPower(-0.10), () -> m_climbSub.setPower(0.0), m_climbSub));
 
-    //  m_operatorController.L2().onTrue(new Al)
+    m_operatorController.L2().onTrue(
+        new AlgaeRemovalL3L4Grp(m_armSub, m_elevatorSub));
 
     // Share - Used
 
