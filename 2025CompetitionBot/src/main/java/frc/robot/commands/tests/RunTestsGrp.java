@@ -21,8 +21,6 @@ public class RunTestsGrp extends SequentialCommandGroup {
     // addCommands(new FooCommand(), new BarCommand());
     addCommands(
         new InstantCommand(() -> testManager.resetTestStatuses()),
-        new TestIntakeSub(intakeSub, testManager),
-        new TestClimbSubCmd(climbSub, testManager),
         new InstantCommand(() -> testManager.updateOverallStatus()));
   }
 }
