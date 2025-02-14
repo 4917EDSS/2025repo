@@ -25,7 +25,10 @@ public class AlgaeRemovalL2L3Grp extends SequentialCommandGroup {
         new InstantCommand(() -> armSub.setTargetAngle(83.2), armSub),
         new WaitCommand(2), // Wait 2 seconds
         new InstantCommand(() -> elevatorSub.setTargetHeight(340), elevatorSub), // Set elevator below 
+        new WaitCommand(2),
+        new InstantCommand(() -> armSub.setTargetAngle(100), armSub),
         new WaitCommand(2)
+
 
     );
   }

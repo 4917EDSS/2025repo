@@ -25,7 +25,7 @@ public class HomeButton extends SequentialCommandGroup {
     addCommands(
         new InstantCommand(() -> elevatorSub.setTargetHeight(440)),
         new WaitCommand(1), // wait a second for the instant command
-        new SetArmToPositionCmd(0, armSub),
+        new SetArmToPositionCmd(5, armSub),
         new WaitCommand(1));
   }
 }

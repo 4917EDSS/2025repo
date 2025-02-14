@@ -31,6 +31,7 @@ import edu.wpi.first.wpilibj2.command.button.CommandPS4Controller;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.commands.AlgaeRemovalL2L3Grp;
+import frc.robot.commands.AlgaeRemovalL3L4Grp;
 import frc.robot.commands.ArmMoveWithJoystickCmd;
 import frc.robot.commands.AutoDriveCmd;
 import frc.robot.commands.ElevatorMoveWithJoystickCmd;
@@ -216,6 +217,8 @@ public class RobotContainer {
 
     m_operatorController.R2().whileTrue(
         new AlgaeRemovalL2L3Grp(m_armSub, m_elevatorSub));
+    m_operatorController.L2().onTrue(
+        new AlgaeRemovalL3L4Grp(m_armSub, m_elevatorSub));
 
     // Share - unused
 
