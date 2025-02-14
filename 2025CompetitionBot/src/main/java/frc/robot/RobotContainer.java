@@ -30,11 +30,14 @@ import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandPS4Controller;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.Constants.OperatorConstants;
+import frc.robot.commands.AlgaeRemovalL2L3Grp;
 import frc.robot.commands.ArmMoveWithJoystickCmd;
 import frc.robot.commands.AutoDriveCmd;
 import frc.robot.commands.ElevatorMoveWithJoystickCmd;
+import frc.robot.commands.HomeButton;
 import frc.robot.commands.KillAllCmd;
 import frc.robot.commands.L3PlacementGrp;
+import frc.robot.commands.L2PlacementGrp;
 import frc.robot.commands.L4PlacementGrp;
 import frc.robot.commands.SetArmToPositionCmd;
 import frc.robot.commands.tests.RunTestsGrp;
@@ -103,7 +106,7 @@ public class RobotContainer {
       m_visionSub = new VisionSub(m_drivetrainSub);
     }
 
-    m_testManager.setTestCommand(new RunTestsGrp(m_climbSub, m_intakeSub, m_testManager));
+    m_testManager.setTestCommand(new RunTestsGrp(m_climbSub, m_intakeSub, m_armSub, m_elevatorSub, m_testManager));
 
     // Default commands
     m_drivetrainSub.setDefaultCommand(
@@ -139,20 +142,13 @@ public class RobotContainer {
   private void configureBindings() {
     // Drive controller bindings ////////////////////////////////////////////////////////////////////////////////////////////////
 
-    // Square - used
-    m_operatorController.square().onTrue(new SetArmToPositionCmd(0, m_armSub));
-
+    // Square - unused
 
     m_driverController.cross().whileTrue(m_drivetrainSub.applyRequest(() -> brake));
 
     m_driverController.circle().whileTrue(m_drivetrainSub
         .applyRequest(() -> point
             .withModuleDirection(new Rotation2d(-m_driverController.getLeftY(), -m_driverController.getLeftX()))));
-
-    // Triange - used
-
-    m_operatorController.triangle().onTrue(new SetArmToPositionCmd(90, m_armSub));
-
 
     if(isLimelight) {
       m_driverController.L1().onTrue(new AutoDriveCmd(m_visionSub, m_drivetrainSub));
@@ -193,17 +189,22 @@ public class RobotContainer {
 
 
     // Operator Controller Bindings /////////////////////////////////////////////////////////////////////////////////////////////
-
     m_operatorController.square().onTrue(new L3PlacementGrp(m_armSub, m_elevatorSub));
-    m_operatorController.triangle().whileTrue(
-        new StartEndCommand(() -> m_intakeSub.setRollersPower(1.0), () -> m_intakeSub.setRollersPower(0.0),
-            m_intakeSub));
+
+
+    m_operatorController.cross().onTrue(new InstantCommand(() -> m_elevatorSub.setTargetHeight(900), m_elevatorSub));
 
     m_operatorController.circle().whileTrue(
         new L4PlacementGrp(m_armSub, m_elevatorSub));
 
+    m_operatorController.triangle().whileTrue(
+        new StartEndCommand(() -> m_intakeSub.setRollersPower(1.0), () -> m_intakeSub.setRollersPower(0.0),
+            m_intakeSub));
 
-    m_operatorController.cross().onTrue(new InstantCommand(() -> m_elevatorSub.setTargetHeight(900), m_elevatorSub));
+    m_operatorController.share().onTrue(
+        new HomeButton(m_armSub, m_elevatorSub));
+
+    m_operatorController.options().onTrue(new L2PlacementGrp(m_armSub, m_elevatorSub));
 
     m_operatorController.L1()
         .whileTrue(
@@ -213,11 +214,11 @@ public class RobotContainer {
         .whileTrue(
             new StartEndCommand(() -> m_climbSub.setPower(-0.10), () -> m_climbSub.setPower(0.0), m_climbSub));
 
-    //  m_operatorController.L2().onTrue(new Al)
+    m_operatorController.R2().whileTrue(
+        new AlgaeRemovalL2L3Grp(m_armSub, m_elevatorSub));
 
     // Share - unused
 
-    // Options - unused
 
     m_operatorController.PS().onTrue(new InstantCommand(() -> {
       m_elevatorSub.setPositionMm(0);

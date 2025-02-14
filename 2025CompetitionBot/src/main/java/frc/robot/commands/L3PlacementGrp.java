@@ -23,9 +23,9 @@ public class L3PlacementGrp extends SequentialCommandGroup {
     // Add your commands in the addCommands() call, e.g.
     // addCommands(new FooCommand(), new BarCommand());
     addCommands(
-        new InstantCommand(() -> elevatorSub.setTargetHeight(563)), // Set height close to L3
+        new InstantCommand(() -> elevatorSub.setTargetHeight(510)), // Set height close to L3
         new WaitCommand(2), // Wait 2 seconds
-        new InstantCommand(() -> armSub.setTargetAngle(146)), // Move arm angle above L3
+        new InstantCommand(() -> armSub.setTargetAngle(167)), // Move arm angle above L3
         new WaitCommand(5), // Wait 1 second
         new InstantCommand(() -> elevatorSub.setTargetHeight(500)), // Bring elevator height down to drop coral
         new InstantCommand(() -> elevatorSub.setTargetHeight(212)) // Bring elevator height down
