@@ -104,7 +104,7 @@ public class RobotContainer {
       m_visionSub = new VisionSub(m_drivetrainSub);
     }
 
-    m_testManager.setTestCommand(new RunTestsGrp(m_climbSub, m_intakeSub, m_testManager));
+    m_testManager.setTestCommand(new RunTestsGrp(m_climbSub, m_intakeSub, m_armSub, m_elevatorSub, m_testManager));
 
     // Default commands
     m_drivetrainSub.setDefaultCommand(
