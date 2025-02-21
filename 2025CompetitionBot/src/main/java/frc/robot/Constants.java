@@ -126,6 +126,9 @@ public final class Constants {
     public final static double kResetHeight = 450.0; // In mm
 
     public final static double kHeightTolerance = 5;
+
+    //Sets max power for isElevatorAtTargetHeight function
+    public final static double kAtTargetMaxVelocity = 150;
   }
 
   public static class Intake {
