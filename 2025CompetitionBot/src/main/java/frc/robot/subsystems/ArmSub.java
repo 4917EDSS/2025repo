@@ -14,43 +14,35 @@ import com.revrobotics.spark.config.SparkMaxConfig;
 import edu.wpi.first.math.controller.ArmFeedforward;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.networktables.GenericEntry;
-import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants;
 import frc.robot.RobotContainer;
 import frc.robot.utils.TestableSubsystem;
 
 public class ArmSub extends TestableSubsystem {
-  private final ShuffleboardTab m_shuffleboardTab = Shuffleboard.getTab("Arm");
-  private final GenericEntry m_sbArmPower, m_sbLowerLimit, m_sbUpperLimit, m_sbArmPosition, m_sbArmAngle;
   private final SparkMax m_armMotor = new SparkMax(Constants.CanIds.kArmMotor, MotorType.kBrushless);
-  private final DigitalInput m_armLowerLimit = new DigitalInput(Constants.DioIds.kArmLowerLimit);
-  private final DigitalInput m_armUpperLimit = new DigitalInput(Constants.DioIds.kArmUpperLimit);
   private final SparkAbsoluteEncoder m_absoluteEncoder = m_armMotor.getAbsoluteEncoder();
 
   private final ArmFeedforward m_armFeedforward = new ArmFeedforward(0.001, 0.001, 0.0);
-  private final PIDController m_armPid = new PIDController(0.01, 0, 0); // really needs some tuning
+  private final PIDController m_armPid = new PIDController(0.01, 0, 0); // TODO: Tune
 
   private double m_targetAngle = 0;
   private boolean m_automationEnabled = false;
 
+  private final ShuffleboardTab m_shuffleboardTab = Shuffleboard.getTab("Arm");
+  private final GenericEntry m_sbArmPower, m_sbArmPosition, m_sbArmAngle;
+
 
   /** Creates a new ArmSub. */
   public ArmSub() {
-    m_sbArmPower = m_shuffleboardTab.add("Arm power", 0).getEntry();
-    m_sbArmPosition = m_shuffleboardTab.add("Arm position", getPosition()).getEntry();
-    m_sbArmAngle = m_shuffleboardTab.add("Arm angle", getPosition()).getEntry();
-    m_sbLowerLimit = m_shuffleboardTab.add("Lower limit", isAtLowerLimit()).getEntry();
-    m_sbUpperLimit = m_shuffleboardTab.add("Upper limit", isAtUpperLimit()).getEntry();
     SparkMaxConfig motorConfig = new SparkMaxConfig();
     motorConfig
         .inverted(true) // Set to true to invert the forward motor direction
-        .smartCurrentLimit(15) // Current limit in amps
+        .smartCurrentLimit(15) // Current limit in amps // TODO: Determine real current limit
         .idleMode(IdleMode.kBrake).encoder
             .positionConversionFactor(Constants.Arm.kEncoderPositionConversionFactor)
-            .velocityConversionFactor(Constants.Arm.kEncoderVelocityConversionFactor); // Set to kCoast to allow the motor to coast when power is 0.0
+            .velocityConversionFactor(Constants.Arm.kEncoderVelocityConversionFactor);
 
     AbsoluteEncoderConfig encoderConfig = new AbsoluteEncoderConfig();
     encoderConfig.zeroOffset(Constants.Arm.kAbsoluteEncoderOffset);
@@ -60,6 +52,10 @@ public class ArmSub extends TestableSubsystem {
     // Only persist parameters when configuring the motor on start up as this operation can be slow
     m_armMotor.configure(motorConfig, SparkBase.ResetMode.kResetSafeParameters,
         SparkBase.PersistMode.kPersistParameters);
+
+    m_sbArmPower = m_shuffleboardTab.add("Arm power", 0.0).getEntry();
+    m_sbArmPosition = m_shuffleboardTab.add("Arm raw enc", getPosition()).getEntry();
+    m_sbArmAngle = m_shuffleboardTab.add("Arm angle", getAngle()).getEntry();
   }
 
   @Override
@@ -79,12 +75,7 @@ public class ArmSub extends TestableSubsystem {
       m_sbArmPower.setDouble(m_armMotor.get());
       m_sbArmPosition.setDouble(getPosition());
       m_sbArmAngle.setDouble(getAngle());
-      m_sbLowerLimit.setBoolean(isAtLowerLimit());
-      m_sbUpperLimit.setBoolean(isAtUpperLimit());
     }
-
-    SmartDashboard.putNumber("Arm enc", getPosition());
-    SmartDashboard.putNumber("Arm degrees", getAngle());
   }
 
   /**
@@ -93,15 +84,7 @@ public class ArmSub extends TestableSubsystem {
    * @param power power value -1.0 to 1.0
    */
   public void setPower(double power) {
-    // Prevent motor from moving past limit switch
-    // if((power < 0.0) && isAtLowerLimit()) {
-    //   power = 0.0;
-    // } else if((power > 0.0) && isAtUpperLimit()) {
-    //   power = 0.0;
-    // }
-
     m_armMotor.set(power);
-    // System.out.println(power);
   }
 
   /**
@@ -110,9 +93,7 @@ public class ArmSub extends TestableSubsystem {
    * @return position in rotations
    */
   public double getPosition() {
-
     return m_absoluteEncoder.getPosition(); // returns rotations
-
   }
 
 
@@ -122,9 +103,8 @@ public class ArmSub extends TestableSubsystem {
    * @return position in degrees
    */
   public double getAngle() {
-
+    // TODO:  Do we need to account for the 0 to 360 rollover?
     return m_absoluteEncoder.getPosition() * 360; // returns angle
-
   }
 
   /**
@@ -157,8 +137,7 @@ public class ArmSub extends TestableSubsystem {
    * @return true when it's at the limit, false otherwise
    */
   public boolean isAtLowerLimit() {
-    return m_armLowerLimit.get(); // If switch is normally closed, return !m_armLowerLimit.get()
-    // to return a true when switch is false and false when it's true
+    return false; // TODO: Read this from the SparkMax since the switch would be wired directly into it
   }
 
   /**
@@ -167,31 +146,18 @@ public class ArmSub extends TestableSubsystem {
    * @return true when it's at the limit, false otherwise
    */
   public boolean isAtUpperLimit() {
-    return m_armUpperLimit.get(); // If switch is normally closed, return !m_armUpperLimit.get()
-    // to return a true when switch is false and false when it's true
+    return false; // TODO: Read this from the SparkMax since the switch would be wired directly into it
   }
 
   /**
-   * Returns how much current the motor is currently drawing
-   * 
-   * @return current in amps or -1.0 if motor can't measure current
-   */
-  public double getElectricalCurrent() {
-    return -1.0;
-  }
-
-  /**
-   * enables automation
+   * Enables automation
    */
   public void enableAutomation() {
-    if(!m_automationEnabled) {
-      m_targetAngle = getAngle();
-      m_automationEnabled = true;
-    }
+    m_automationEnabled = true;
   }
 
   /**
-   * disables automation
+   * Disables automation
    */
   public void disableAutomation() {
     m_automationEnabled = false;
@@ -201,33 +167,21 @@ public class ArmSub extends TestableSubsystem {
    * Calculates and sets the current power to apply to the arm to get to or stay at its target
    */
   private void runAngleControl(boolean justCalculate) {
-
-
     double pidPower = m_armPid.calculate(getAngle(), m_targetAngle);
     double fedPower = m_armFeedforward.calculate(Math.toRadians(getAngle()), pidPower); // Feed forward expects 0 degrees as horizontal
 
     if(!justCalculate) {
       double tempPower = (pidPower + fedPower);
 
-      double SPEED = 0.15;
-      if(Math.abs(tempPower) > SPEED) {
+      double maxPower = 0.15;
+      if(Math.abs(tempPower) > maxPower) {
         double sign = (tempPower >= 0.0) ? 1.0 : -1.0;
-        tempPower = SPEED * sign;
+        tempPower = maxPower * sign;
       }
       setPower(tempPower);
     }
-
-
-    // if(!justCalculate) {
-    //   if(getAngle() < m_targetAngle - 2) {
-    //     setPower(0.10);
-    //   } else if(getAngle() > m_targetAngle + 2) {
-    //     setPower(-0.10);
-    //   } else {
-    //     setPower(0);
-    //   }
-
   }
+
 
   //////////////////// Methods used for automated testing ////////////////////
   /**
@@ -238,7 +192,7 @@ public class ArmSub extends TestableSubsystem {
    */
   @Override
   public void testEnableMotorTestMode(int motorId) {
-    enableAutomation();
+    disableAutomation();
   }
 
   /**
@@ -249,7 +203,7 @@ public class ArmSub extends TestableSubsystem {
   @Override
   public void testDisableMotorTestMode(int motorId) {
     // Re-ensable any mechanism automation
-    disableAutomation();
+    enableAutomation();
   }
 
   /**
@@ -261,7 +215,7 @@ public class ArmSub extends TestableSubsystem {
   public void testResetMotorPosition(int motorId) {
     switch(motorId) {
       case 1:
-        // Do nothing (absolute encoder)
+        m_armMotor.getEncoder().setPosition(0.0);
         break;
       default:
         // Do nothing
@@ -297,19 +251,19 @@ public class ArmSub extends TestableSubsystem {
    */
   @Override
   public double testGetMotorPosition(int motorId) {
-    double angle = 0.0;
+    double position = 0.0;
 
     switch(motorId) {
       case 1:
-        angle = m_absoluteEncoder.getPosition() * 360; // gives you the angle
+        position = m_armMotor.getEncoder().getPosition();
         break;
       default:
         // Return an invalid value
-        angle = -99999999.0;
+        position = -99999999.0;
         break;
     }
 
-    return angle;
+    return position;
   }
 
   /**
@@ -324,7 +278,7 @@ public class ArmSub extends TestableSubsystem {
 
     switch(motorId) {
       case 1:
-        current = m_armMotor.getOutputCurrent();
+        current = m_armMotor.getOutputCurrent(); // SparkMax doesn't support current reading
         break;
       default:
         // Return an invalid value

@@ -21,23 +21,17 @@ import frc.robot.utils.TestableSubsystem;
 public class ElevatorSub extends TestableSubsystem {
   private final TalonFX m_elevatorMotor = new TalonFX(Constants.CanIds.kElevatorMotor);
   private final TalonFX m_elevatorMotor2 = new TalonFX(Constants.CanIds.kElevatorMotor2);
-  private final DigitalInput m_elevatorLowerLimit = new DigitalInput(Constants.DioIds.kElevatorLowerLimit);
   private final DigitalInput m_elevatorUpperLimit = new DigitalInput(Constants.DioIds.kElevatorUpperLimit);
-  private final DigitalInput m_elevatorEncoderResetSwitch =
-      new DigitalInput(Constants.DioIds.kElevatorEncoderResetSwitch);
-  private final DigitalInput m_elevatorStageTwoLimit = new DigitalInput(Constants.DioIds.kElevatorStageTwoLimit);
+  private final DigitalInput m_encoderResetSwitch = new DigitalInput(Constants.DioIds.kElevatorEncoderResetSwitch);
 
-  // TODO:  Either finish off the proper units implementation or get rid of it
-
-  // TODO:  Need a feed-forward controller here
   private final PIDController m_elevatorPID = new PIDController(0.002, 0.0, 0.0);
 
   private double m_targetHeight = 0.0;
   private boolean m_enableAutomation = false;
-  private int m_hitLimitSwitchCounter = 0;
-  public boolean m_elevatorMotorDirection = true;
   private boolean m_isElevatorEncoderSet = false;
   private int m_hitEncoderSwitchCounter = 0;
+  private double m_preTestHeight = 0;
+  private double m_preTestHeight2 = 0;
 
 
   /** Creates a new ElevatorSub. */
@@ -47,7 +41,7 @@ public class ElevatorSub extends TestableSubsystem {
 
     // This is how you set a current limit inside the motor (vs on the input power supply)
     CurrentLimitsConfigs limitConfigs = new CurrentLimitsConfigs();
-    limitConfigs.StatorCurrentLimit = 40; // Limit in Amps
+    limitConfigs.StatorCurrentLimit = 40; // Limit in Amps  // TODO:  Determine reasonable limit
     limitConfigs.StatorCurrentLimitEnable = true;
     talonFxConfiguarator.apply(limitConfigs);
     talonFxConfiguarator2.apply(limitConfigs);
@@ -62,16 +56,12 @@ public class ElevatorSub extends TestableSubsystem {
 
     m_elevatorMotor2.setControl(new Follower(m_elevatorMotor.getDeviceID(), false));
 
+    // Set the encoder conversion factor
     TalonFXConfiguration config = new TalonFXConfiguration();
     config.Feedback.SensorToMechanismRatio = Constants.Elevator.kRotationsToMm;
-
     m_elevatorMotor.getConfigurator().apply(config);
 
-    //final DutyCycleOut m_dutyCycle = new DutyCycleOut(0.0);
-    // m_elevatorMotor.setControl(m_dutyCycle.withOutput(0.5)
-    //.withLimitForwardMotion(m_elevatorLowerLimit.get())
-    //.withLimitReverseMotion(m_elevatorUpperLimit.get()));
-
+    m_elevatorMotor.setPosition(Constants.Elevator.kStartingHeight);
     setPositionMm(Constants.Elevator.kStartingHeight);
   }
 
@@ -88,51 +78,20 @@ public class ElevatorSub extends TestableSubsystem {
     SmartDashboard.putBoolean("El Auto", m_enableAutomation);
     SmartDashboard.putBoolean("El UpLimit", isAtUpperLimit());
 
-    // Reset encoder if we hit the limit switch and the position doesn't read close to zero
-    if(isAtLowerLimit() && Math.abs(getPositionMm()) > 5.0) {
-      m_hitLimitSwitchCounter++;
-    } else {
-      m_hitLimitSwitchCounter = 0;
+    // If we haven't set the relative encoder's position yet, check if we are at the switch that tells us to do so
+    if(!m_isElevatorEncoderSet) {
+      // Adds a counter to the encoder reset switch so that we don't reset position by accident
+      if(encoderResetSwitchHit() && (m_elevatorMotor.get() > 0.0)) {
+        m_hitEncoderSwitchCounter++;
+      } else {
+        m_hitEncoderSwitchCounter = 0;
+      }
+
+      if(m_hitEncoderSwitchCounter >= 2) {
+        m_elevatorMotor2.setPosition(Constants.Elevator.kResetHeight);
+        m_isElevatorEncoderSet = true;
+      }
     }
-
-    // Adds a counter to the encoder reset switch so that we don't reset position by accident
-    if(encoderResetSwitchHit()) {
-      m_hitEncoderSwitchCounter++;
-    } else {
-      m_hitEncoderSwitchCounter = 0;
-    }
-
-    //Resets encoder when the limit switch is hit
-    // if(m_hitLimitSwitchCounter >= 2) {
-    //   setPositionMm(0);
-    //   m_hitLimitSwitchCounter = 0;
-    // }
-
-    // Sets encoder position when Encoder Reset Switch is hit
-    if((m_hitEncoderSwitchCounter >= 2) && (m_elevatorMotor.get() > 0.0) && (!m_isElevatorEncoderSet)) {
-      m_elevatorMotor.setPosition(445);
-      m_elevatorMotor2.setPosition(445);
-      m_isElevatorEncoderSet = true;
-    } //else if((encoderResetSwitchHit()) && (m_elevatorMotor.get() < 0.0)) {
-    //   m_elevatorMotor.setPosition(10);
-    //   m_elevatorMotor2.setPosition(10);
-    // }
-
-    // Sets encoder position when Stage 2 Limit is hit
-    // if((isAtStageTwoLimit()) && (m_elevatorMotor.get() > 0.0)) {
-    //   m_elevatorMotor.setPosition(1000);
-    //   m_elevatorMotor2.setPosition(1000);
-    //   System.out.println("Stage 2 limit hit");
-    // } else if((isAtStageTwoLimit()) && (m_elevatorMotor.get() < 0.0)) {
-    //   m_elevatorMotor.setPosition(1005);
-    //   m_elevatorMotor2.setPosition(1005);
-    //   System.out.println("Stage 2 limit hit");
-    // }
-
-    //Sets encoder position when Upper Limit is hit
-    // if(isAtUpperLimit()) {
-    //   m_elevatorMotor.setPosition(2000);
-    // }
   }
 
   /**
@@ -159,16 +118,9 @@ public class ElevatorSub extends TestableSubsystem {
         && (power > Constants.Elevator.kSlowDownUpperStagePower)) {
       powerValue = Constants.Elevator.kSlowDownUpperStagePower;
     }
+
     m_elevatorMotor.set(powerValue);
-    //check elevator direction
-    if(powerValue > 0) {
-      m_elevatorMotorDirection = true;
-    } else {
-      m_elevatorMotorDirection = false;
-    }
     SmartDashboard.putNumber("El Power", powerValue);
-    // System.out.println("Current power is " + powerValue);
-    // System.out.println("Position is " + getPositionMm());
   }
 
   /**
@@ -233,7 +185,7 @@ public class ElevatorSub extends TestableSubsystem {
    * @return true when it's at the limit, false otherwise
    */
   public boolean isAtLowerLimit() {
-    return !m_elevatorLowerLimit.get();
+    return false; // We don't have a lower limit switch
   }
 
   /**
@@ -251,33 +203,8 @@ public class ElevatorSub extends TestableSubsystem {
    * @return true when it's at the switch, false otherwise
    */
   public boolean encoderResetSwitchHit() {
-    return m_elevatorEncoderResetSwitch.get();
+    return m_encoderResetSwitch.get();
   }
-
-  /**
-   * Returns if the elevator is at the stage 2 limit or not
-   * 
-   * @return true when it's at the limit, false otherwise
-   */
-  public boolean isAtStageTwoLimit() {
-    return m_elevatorStageTwoLimit.get();
-  }
-
-  /**
-   * Returns how much current the motor is currently drawing
-   * 
-   * @return current in amps or -1.0 if motor can't measure current
-   */
-  public double getElectricalCurrent() {
-    // TODO:  Need to figure this out for multiple motors
-    return -1.0;
-  }
-
-  public void testElevatorMotor(double power) {
-    m_elevatorMotor.set(power);
-    m_elevatorMotor2.set(power);
-  }
-
 
   /**
    * Calculates and sets the current power to apply to the elevator to get to or stay at its target
@@ -285,31 +212,32 @@ public class ElevatorSub extends TestableSubsystem {
    * @param updatePower set to false to update the Feedforward and PID controllers without changing the motor power
    */
   private void runHeightControl(boolean updatePower) {
-    //TODO: Create and configure PID and Feedforward controllers
     double pidPower = (m_elevatorPID.calculate(getPositionMm(), m_targetHeight));
     if(pidPower > .5) {
       pidPower = .5;
     }
-    // if(m_targetHeight < getPositionMm()) {
-    //   pidPower = 0;
-    // }
     double fedPower = 0.01;
 
     if(updatePower) {
       setPower(pidPower + fedPower);
     }
-
-    // if(updatePower) {
-    //   double delta = m_targetHeight - getPositionMm();
-    //   if(Math.abs(delta) < 10) {
-    //     setPower(0);
-    //   } else if(delta > 0) {
-    //     setPower(0.1);
-    //   } else {
-    //     setPower(-0.1);
-    //   }
-    // }
   }
+
+  /**
+   * Returns if the elevator has reached it's target height or not
+   * 
+   * @return true if at target height, false if not
+   */
+  public boolean isElevatorAtTargetHeight() {
+    // If we are within tolerance and our velocity is low, we're at our target
+    // TODO:  Add velocity check
+    if(Math.abs(m_targetHeight - getPositionMm()) < Constants.Elevator.kHeightTolerance) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
 
   //////////////////// Methods used for automated testing ////////////////////
   /**
@@ -320,8 +248,12 @@ public class ElevatorSub extends TestableSubsystem {
    */
   @Override
   public void testEnableMotorTestMode(int motorId) {
-    disableAutomation();
+    // Save the current encoder values because the tests will reset them
+    m_preTestHeight = m_elevatorMotor.getPosition().getValueAsDouble();
+    m_preTestHeight2 = m_elevatorMotor.getPosition().getValueAsDouble();
+
     // Disable any mechanism automation (PID, etc.).  Check periodic()
+    disableAutomation();
   }
 
   /**
@@ -331,8 +263,12 @@ public class ElevatorSub extends TestableSubsystem {
    */
   @Override
   public void testDisableMotorTestMode(int motorId) {
-    enableAutomation();
+    // Set the encoders to their pre-test values plus the change in position from the test
+    m_elevatorMotor.setPosition(m_preTestHeight + m_elevatorMotor.getPosition().getValueAsDouble(), 0.5);
+    m_elevatorMotor2.setPosition(m_preTestHeight2 + m_elevatorMotor2.getPosition().getValueAsDouble(), 0.5);
+
     // Re-ensable any mechanism automation
+    enableAutomation();
   }
 
   /**
@@ -428,14 +364,5 @@ public class ElevatorSub extends TestableSubsystem {
     }
 
     return current;
-  }
-
-  public boolean isElevatorAtTargetHeight() {
-    if(m_targetHeight <= getPositionMm() + Constants.Elevator.kHeightTolerance
-        && m_targetHeight >= getPositionMm() - Constants.Elevator.kHeightTolerance) { //Add tolerance
-      return true;
-    } else {
-      return false;
-    }
   }
 }

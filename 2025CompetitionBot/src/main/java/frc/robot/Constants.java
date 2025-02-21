@@ -36,9 +36,6 @@ public final class Constants {
     public static final int kElevatorEncoderResetSwitch = 2;
     public static final int kElevatorStageTwoLimit = 3;
 
-    public static final int kArmLowerLimit = 4;
-    public static final int kArmUpperLimit = 5;
-
     public static final int kIntakeLowerLimit = 6;
     public static final int kIntakeUpperLimit = 7;
 
@@ -116,6 +113,7 @@ public final class Constants {
   public final static class Elevator {
     public final static double kMinHeight = 0.0; // In mm
     public final static double kMaxHeight = 1140.0; // In mm
+
     // Sets a max power if we are close to the lower limit switch
     public final static double kSlowDownLowerStagePower = -0.1;
     public final static double kSlowDownLowerStageHeight = 20.0; // In mm
@@ -124,7 +122,8 @@ public final class Constants {
     public final static double kTargetHeightDeadbandMM = 5.0; // In mm
 
     public final static double kRotationsToMm = 5 / (0.75 * 25.4 * Math.PI); // Gearing / Spool diameter in inches * mm/in * PI
-    public final static double kStartingHeight = 440.0; // Starting height in mm
+    public final static double kStartingHeight = 440.0; // In mm
+    public final static double kResetHeight = 450.0; // In mm
 
     public final static double kHeightTolerance = 5;
   }

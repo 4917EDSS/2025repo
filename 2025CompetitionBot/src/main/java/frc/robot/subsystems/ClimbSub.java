@@ -21,29 +21,23 @@ import frc.robot.utils.TestableSubsystem;
 public class ClimbSub extends TestableSubsystem {
   // Create the climb motor
   private final TalonFX m_climbMotor = new TalonFX(Constants.CanIds.kClimbMotor);
-  // TODO:  Add limit switches and/or absolute encoder
 
   private final DigitalInput m_climbInLimit = new DigitalInput(Constants.DioIds.kClimbInLimitSwitch);
   private final DigitalInput m_climbOutLimit = new DigitalInput(Constants.DioIds.kClimbOutLimitSwitch);
 
   private final ShuffleboardTab m_shuffleboardTab = Shuffleboard.getTab("Climb");
-  private final GenericEntry m_sbClimbPower, m_sbClimbInLimit, m_sbClimbOutLimit; //TODO: create height variables
+  private final GenericEntry m_sbClimbPower, m_sbClimbInLimit, m_sbClimbOutLimit;
 
 
   /** Creates a new ClimbSub. */
   public ClimbSub() {
-    /* Add motor and limit switche(s) to shuffleboard */
-    m_sbClimbPower = m_shuffleboardTab.add("Climb Motor Power", 0).getEntry(); //power
-    //m_climb = m_shuffleboardTab.add("Climb Left Height", 0).getEntry(); //TODO: add height
-    m_sbClimbInLimit = m_shuffleboardTab.add("Climb In Limit", isAtInLimit()).getEntry(); // in limit
-    m_sbClimbOutLimit = m_shuffleboardTab.add("Climb Out Limit", isAtOutLimit()).getEntry(); // out limit
 
 
     TalonFXConfigurator talonFxConfiguarator = m_climbMotor.getConfigurator();
 
     // This is how you set a current limit inside the motor (vs on the input power supply)
     CurrentLimitsConfigs limitConfigs = new CurrentLimitsConfigs();
-    limitConfigs.StatorCurrentLimit = 40; // Limit in Amps
+    limitConfigs.StatorCurrentLimit = 40; // Limit in Amps  // TOOD: Determine reasonable limit
     limitConfigs.StatorCurrentLimitEnable = true;
     talonFxConfiguarator.apply(limitConfigs);
 
@@ -54,18 +48,18 @@ public class ClimbSub extends TestableSubsystem {
     outputConfigs.NeutralMode = NeutralModeValue.Brake;
     talonFxConfiguarator.apply(outputConfigs);
 
-    // To configure a second motor to follow the first motor
-    //boolean turnOppositeDirectionFromMaster = true; // False if both motors turn in same direction, true to make them turn in opposite directions
-    //m_testMotor2.setControl(new Follower(m_testMotor.getDeviceID(), turnOppositeDirectionFromMaster));
+    /* Add motor and limit switche(s) to shuffleboard */
+    m_sbClimbPower = m_shuffleboardTab.add("Climb Motor Power", 0.0).getEntry(); //power
+    m_sbClimbInLimit = m_shuffleboardTab.add("Climb In Limit", isAtInLimit()).getEntry(); // in limit
+    m_sbClimbOutLimit = m_shuffleboardTab.add("Climb Out Limit", isAtOutLimit()).getEntry(); // out limit
 
     resetPosition();
-    updateShuffleBoard();
   }
 
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
-    updateShuffleBoard(); //update the shuffleboard
+    updateShuffleBoard();
   }
 
   private void updateShuffleBoard() {
@@ -128,6 +122,7 @@ public class ClimbSub extends TestableSubsystem {
   public double getElectricalCurrent() {
     return m_climbMotor.getStatorCurrent().getValueAsDouble();
   }
+
 
   //////////////////// Methods used for automated testing ////////////////////
   /**

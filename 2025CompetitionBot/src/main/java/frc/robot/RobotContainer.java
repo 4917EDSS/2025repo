@@ -76,13 +76,13 @@ public class RobotContainer {
 
   // Robot subsystems
   //private final ArduinoSub m_arduinoSub = new ArduinoSub();   // TODO:  Implement new CAN Arduino
+  private final ArmSub m_armSub = new ArmSub();
   private final ClimbSub m_climbSub = new ClimbSub();
   public final DrivetrainSub m_drivetrainSub = TunerConstants.createDrivetrain();
   private final ElevatorSub m_elevatorSub = new ElevatorSub();
   private final IntakeSub m_intakeSub = new IntakeSub();
   //private final LedSub m_ledSub = new LedSub(m_arduinoSub);  // TODO:  Implement with new Arduino
   private final VisionSub m_visionSub;
-  private final ArmSub m_armSub = new ArmSub();
 
   // Controllers
   private final CommandPS4Controller m_driverController =
@@ -97,7 +97,7 @@ public class RobotContainer {
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
-
+    // Only initialize vision if a camera is connected (prevents crash)
     NetworkTableEvent.Kind[] topicsArray = NetworkTableEvent.Kind.values();
     if(!Arrays.asList(topicsArray).contains("limelight")) {
       isLimelight = false;
@@ -106,11 +106,10 @@ public class RobotContainer {
       m_visionSub = new VisionSub(m_drivetrainSub);
     }
 
-    m_testManager.setTestCommand(new RunTestsGrp(m_climbSub, m_intakeSub, m_armSub, m_elevatorSub, m_testManager));
+    m_testManager.setTestCommand(new RunTestsGrp(m_climbSub, m_armSub, m_elevatorSub, m_intakeSub, m_testManager));
 
     // Default commands
     m_drivetrainSub.setDefaultCommand(
-
         // Note: X is defined as forward and Y as left according to WPILib convention
         m_drivetrainSub.applyRequest(() -> drive.withVelocityX(-m_driverController.getLeftY() * MaxSpeed) // Drive forward with negative Y (forward)
             .withVelocityY(-m_driverController.getLeftX() * MaxSpeed) // Drive left with negative X (left)
@@ -125,15 +124,11 @@ public class RobotContainer {
     // Configure the trigger bindings
     configureBindings();
     autoChooserSetup();
-    autoChooserSetup();
   }
 
-
   private void registerNamedCommands() {
-
     NamedCommands.registerCommand("SetArmToPositionCmd",
         new SetArmToPositionCmd(63, m_armSub)); // put whatever number you want in here, I assume its in degrees
-
   }
 
   /**
@@ -142,38 +137,42 @@ public class RobotContainer {
   private void configureBindings() {
     // Drive controller bindings ////////////////////////////////////////////////////////////////////////////////////////////////
 
-    // Square - unused
+    // Square
 
+    // Cross
     m_driverController.cross().whileTrue(m_drivetrainSub.applyRequest(() -> brake));
 
+    // Circle
     m_driverController.circle().whileTrue(m_drivetrainSub
         .applyRequest(() -> point
             .withModuleDirection(new Rotation2d(-m_driverController.getLeftY(), -m_driverController.getLeftX()))));
 
     if(isLimelight) {
+      // L1
       m_driverController.L1().onTrue(new AutoDriveCmd(m_visionSub, m_drivetrainSub));
-
+      // R1
       m_driverController.R1().onTrue(new AutoDriveCmd(m_visionSub, m_drivetrainSub));
     }
 
+    // L2
 
-    // L2 - unused
+    // R2
 
-    // R2 - unused
+    // Share
 
-    // Share - unused
+    // Options
 
-    // Options - unused
-
+    // PS
     // Reset the field-centric heading
     m_driverController.PS().onTrue(m_drivetrainSub.runOnce(() -> m_drivetrainSub.seedFieldCentric()));
 
-    // Touchpad - unused
+    // Touchpad
 
-    // 'Kill All' commands
-    m_driverController.L3().onTrue(new KillAllCmd(m_climbSub, m_drivetrainSub, m_elevatorSub, m_intakeSub));
+    // L3
+    m_driverController.L3().onTrue(new KillAllCmd(m_armSub, m_climbSub, m_drivetrainSub, m_elevatorSub, m_intakeSub));
 
-    m_driverController.R3().onTrue(new KillAllCmd(m_climbSub, m_drivetrainSub, m_elevatorSub, m_intakeSub));
+    // R3
+    m_driverController.R3().onTrue(new KillAllCmd(m_armSub, m_climbSub, m_drivetrainSub, m_elevatorSub, m_intakeSub));
 
     // Combination buttons for diagnostics
     // Run SysId routines when holding share/options and square/triangle.
@@ -189,50 +188,53 @@ public class RobotContainer {
 
 
     // Operator Controller Bindings /////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Square
     m_operatorController.square().onTrue(new L3PlacementGrp(m_armSub, m_elevatorSub));
 
-
+    // Cross
     m_operatorController.cross().onTrue(new InstantCommand(() -> m_elevatorSub.setTargetHeight(900), m_elevatorSub));
 
-    m_operatorController.circle().whileTrue(
-        new L4PlacementGrp(m_armSub, m_elevatorSub));
+    // Circle
+    m_operatorController.circle().whileTrue(new L4PlacementGrp(m_armSub, m_elevatorSub));
 
-    m_operatorController.triangle().whileTrue(
-        new StartEndCommand(() -> m_intakeSub.setRollersPower(1.0), () -> m_intakeSub.setRollersPower(0.0),
-            m_intakeSub));
+    // Triangle
+    m_operatorController.triangle().whileTrue(new StartEndCommand(() -> m_intakeSub.setRollersPower(1.0),
+        () -> m_intakeSub.setRollersPower(0.0), m_intakeSub));
 
-    m_operatorController.share().onTrue(
-        new HomeButton(m_armSub, m_elevatorSub));
+    // L1
+    m_operatorController.L1()
+        .whileTrue(new StartEndCommand(() -> m_climbSub.setPower(0.10), () -> m_climbSub.setPower(0.0), m_climbSub));
 
+    // R1
+    m_operatorController.R1()
+        .whileTrue(new StartEndCommand(() -> m_climbSub.setPower(-0.10), () -> m_climbSub.setPower(0.0), m_climbSub));
+
+    // L2
+    m_operatorController.L2().onTrue(new AlgaeRemovalL3L4Grp(m_armSub, m_elevatorSub));
+
+    // R2
+    m_operatorController.R2().whileTrue(new AlgaeRemovalL2L3Grp(m_armSub, m_elevatorSub));
+
+    // Share
+    m_operatorController.share().onTrue(new HomeButton(m_armSub, m_elevatorSub));
+
+    // Options
     m_operatorController.options().onTrue(new L2PlacementGrp(m_armSub, m_elevatorSub));
 
-    m_operatorController.L1()
-        .whileTrue(
-            new StartEndCommand(() -> m_climbSub.setPower(0.10), () -> m_climbSub.setPower(0.0), m_climbSub));
-
-    m_operatorController.R1()
-        .whileTrue(
-            new StartEndCommand(() -> m_climbSub.setPower(-0.10), () -> m_climbSub.setPower(0.0), m_climbSub));
-
-    m_operatorController.R2().whileTrue(
-        new AlgaeRemovalL2L3Grp(m_armSub, m_elevatorSub));
-    m_operatorController.L2().onTrue(
-        new AlgaeRemovalL3L4Grp(m_armSub, m_elevatorSub));
-
-    // Share - unused
-
-
+    // PS
     m_operatorController.PS().onTrue(new InstantCommand(() -> {
       m_elevatorSub.setPositionMm(0);
       m_elevatorSub.setTargetHeight(0);
     }, m_elevatorSub));
 
-    // Touchpad - unused
+    // Touchpad
 
-    // 'Kill All' commands
-    m_operatorController.L3().onTrue(new KillAllCmd(m_climbSub, m_drivetrainSub, m_elevatorSub, m_intakeSub));
+    // L3
+    m_operatorController.L3().onTrue(new KillAllCmd(m_armSub, m_climbSub, m_drivetrainSub, m_elevatorSub, m_intakeSub));
 
-    m_operatorController.R3().onTrue(new KillAllCmd(m_climbSub, m_drivetrainSub, m_elevatorSub, m_intakeSub));
+    // R3
+    m_operatorController.R3().onTrue(new KillAllCmd(m_armSub, m_climbSub, m_drivetrainSub, m_elevatorSub, m_intakeSub));
   }
 
 
@@ -249,7 +251,6 @@ public class RobotContainer {
     m_Chooser.addOption("Testing Auto", new PathPlannerAuto("Testing Auto"));
     m_Chooser.addOption("DoNothingAuto", new DoNothingGrp());
     SmartDashboard.putData("auto choices", m_Chooser);
-
   }
 }
 

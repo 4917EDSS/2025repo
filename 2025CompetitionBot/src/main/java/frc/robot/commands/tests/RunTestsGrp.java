@@ -19,7 +19,8 @@ import frc.robot.utils.TestManager;
 public class RunTestsGrp extends SequentialCommandGroup {
 
   /** Creates a new RunTestsGrp. */
-  public RunTestsGrp(ClimbSub climbSub, IntakeSub intakeSub, ArmSub armSub, ElevatorSub elevatorSub, TestManager testManager) {
+  public RunTestsGrp(ClimbSub climbSub, ArmSub armSub, ElevatorSub elevatorSub, IntakeSub intakeSub,
+      TestManager testManager) {
     // Add your commands in the addCommands() call, e.g.
     // addCommands(new FooCommand(), new BarCommand());
     addCommands(
@@ -28,12 +29,12 @@ public class RunTestsGrp extends SequentialCommandGroup {
         new TestMotorCmd(Constants.Tests.kElevatorMotor1, elevatorSub, testManager),
         new TestMotorCmd(Constants.Tests.kElevatorMotor2, elevatorSub, testManager),
 
-        new TestMotorCmd(Constants.Tests.kIntakeMotor1, intakeSub, testManager),
-        new TestMotorCmd(Constants.Tests.kIntakeMotor2, intakeSub, testManager),
+        // new TestMotorCmd(Constants.Tests.kIntakeMotor1, intakeSub, testManager),
+        // new TestMotorCmd(Constants.Tests.kIntakeMotor2, intakeSub, testManager),
 
         new TestMotorCmd(Constants.Tests.kArmMotor, armSub, testManager),
 
-        new TestMotorCmd(Constants.Tests.kClimbMotor, climbSub, testManager),
+        // new TestMotorCmd(Constants.Tests.kClimbMotor, climbSub, testManager),
         new InstantCommand(() -> testManager.updateOverallStatus()));
   }
 }

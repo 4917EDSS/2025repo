@@ -39,10 +39,11 @@ public class TestMotorCmd extends Command {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    m_subsystem.testEnableMotorTestMode(m_parameters.kMotorId); //no code for this yet
-    m_startTime = Instant.now();
+    m_subsystem.testEnableMotorTestMode(m_parameters.kMotorId);
+    m_subsystem.testResetMotorPosition(m_parameters.kMotorId);
 
-    m_subsystem.testSetMotorPower(m_parameters.kMotorId, 0.1);
+    m_startTime = Instant.now();
+    m_subsystem.testSetMotorPower(m_parameters.kMotorId, m_parameters.kPower);
   }
 
   // Called every time the scheduler runs while the command is scheduled.
@@ -90,9 +91,7 @@ public class TestMotorCmd extends Command {
     }
 
     // Update the test results
-    m_testManager.updateTestStatus(m_testId, testResult, ampsText + " " + positionText);
-
-
+    m_testManager.updateTestStatus(m_testId, testResult, positionText + " " + ampsText);
   }
 
   // Returns true when the command should end.
