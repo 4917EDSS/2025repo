@@ -20,6 +20,8 @@ public class AlgaeRemovalL3L4Grp extends SequentialCommandGroup {
     // Add your commands in the addCommands() call, e.g.
     // addCommands(new FooCommand(), new BarCommand());
     addCommands(
+        new InstantCommand(() -> elevatorSub.setTargetHeight(100), elevatorSub),
+        new WaitCommand(2), // Wait 2 seconds
         new InstantCommand(() -> armSub.setTargetAngle(83.2), armSub),
         new WaitCommand(2), // Wait 2 seconds
         new InstantCommand(() -> elevatorSub.setTargetHeight(700), elevatorSub), // Set elevator below 
