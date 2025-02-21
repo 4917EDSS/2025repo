@@ -25,6 +25,7 @@ public class VisionSub extends SubsystemBase {
   GenericEntry m_shuffleboardID, m_shuffleboardTv, m_shuffleboardT2d, m_shuffleboardTx, m_shuffleboardTy,
       m_shuffleboardTa,
       m_shuffleboardPipeline, m_shuffleboardPipetype;
+  LimelightHelpers.PoseEstimate mt2;
 
   NetworkTableEntry m_tid;
   NetworkTableEntry m_t2d;
@@ -115,8 +116,12 @@ public class VisionSub extends SubsystemBase {
     return x;
   }
 
+  public Pose2d getRobotPos() {
+    return mt2.pose;
+  }
+
   public void updateOdometry(SwerveDriveState swerveDriveState) {
-    LimelightHelpers.PoseEstimate mt2 = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2("limelight");
+    mt2 = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2("limelight");
     double timestamp = mt2.timestampSeconds;
 
     if(timestamp != m_previousTimestamp) {
