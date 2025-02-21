@@ -14,6 +14,8 @@ import com.revrobotics.spark.config.SparkMaxConfig;
 import edu.wpi.first.math.controller.ArmFeedforward;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.networktables.GenericEntry;
+import edu.wpi.first.units.VelocityUnit;
+import edu.wpi.first.units.measure.Velocity;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import frc.robot.Constants;
@@ -31,7 +33,7 @@ public class ArmSub extends TestableSubsystem {
   private boolean m_automationEnabled = false;
 
   private final ShuffleboardTab m_shuffleboardTab = Shuffleboard.getTab("Arm");
-  private final GenericEntry m_sbArmPower, m_sbArmPosition, m_sbArmAngle;
+  private final GenericEntry m_sbArmPower, m_sbArmPosition, m_sbArmAngle, m_sbArmVelocity;
 
 
   /** Creates a new ArmSub. */
@@ -39,7 +41,7 @@ public class ArmSub extends TestableSubsystem {
     SparkMaxConfig motorConfig = new SparkMaxConfig();
     motorConfig
         .inverted(true) // Set to true to invert the forward motor direction
-        .smartCurrentLimit(15) // Current limit in amps // TODO: Determine real current limit
+        .smartCurrentLimit(60) // Current limit in amps // TODO: Determine real current limit
         .idleMode(IdleMode.kBrake).encoder
             .positionConversionFactor(Constants.Arm.kEncoderPositionConversionFactor)
             .velocityConversionFactor(Constants.Arm.kEncoderVelocityConversionFactor);
@@ -56,6 +58,7 @@ public class ArmSub extends TestableSubsystem {
     m_sbArmPower = m_shuffleboardTab.add("Arm power", 0.0).getEntry();
     m_sbArmPosition = m_shuffleboardTab.add("Arm raw enc", getPosition()).getEntry();
     m_sbArmAngle = m_shuffleboardTab.add("Arm angle", getAngle()).getEntry();
+    m_sbArmVelocity = m_shuffleboardTab.add("Arm Velocity", getVelocity()).getEntry();
   }
 
   @Override
@@ -75,6 +78,7 @@ public class ArmSub extends TestableSubsystem {
       m_sbArmPower.setDouble(m_armMotor.get());
       m_sbArmPosition.setDouble(getPosition());
       m_sbArmAngle.setDouble(getAngle());
+      m_sbArmVelocity.setDouble(getVelocity());
     }
   }
 
@@ -173,15 +177,25 @@ public class ArmSub extends TestableSubsystem {
     if(!justCalculate) {
       double tempPower = (pidPower + fedPower);
 
-      double maxPower = 0.15;
-      if(Math.abs(tempPower) > maxPower) {
+
+      if(Math.abs(tempPower) > Constants.Arm.kMaxPower) {
         double sign = (tempPower >= 0.0) ? 1.0 : -1.0;
-        tempPower = maxPower * sign;
+        tempPower = Constants.Arm.kMaxPower * sign;
       }
       setPower(tempPower);
     }
   }
 
+  public boolean IsAtTargetAngle() {
+    // If we are within tolerance and our velocity is low, we're at our target
+    // TODO:  Add velocity check
+    if((Math.abs(m_targetAngle - getAngle()) < Constants.Arm.kAngleTolerance)
+        && (Math.abs(getVelocity()) < Constants.Arm.kAtTargetMaxVelocity)) {
+      return true;
+    } else {
+      return false;
+    }
+  }
 
   //////////////////// Methods used for automated testing ////////////////////
   /**

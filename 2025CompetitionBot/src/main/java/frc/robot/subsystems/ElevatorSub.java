@@ -41,7 +41,7 @@ public class ElevatorSub extends TestableSubsystem {
 
     // This is how you set a current limit inside the motor (vs on the input power supply)
     CurrentLimitsConfigs limitConfigs = new CurrentLimitsConfigs();
-    limitConfigs.StatorCurrentLimit = 40; // Limit in Amps  // TODO:  Determine reasonable limit
+    limitConfigs.StatorCurrentLimit = 80; // Limit in Amps  // TODO:  Determine reasonable limit
     limitConfigs.StatorCurrentLimitEnable = true;
     talonFxConfiguarator.apply(limitConfigs);
     talonFxConfiguarator2.apply(limitConfigs);
@@ -142,7 +142,7 @@ public class ElevatorSub extends TestableSubsystem {
   /**
    * Returns the current velocity of the elevator
    * 
-   * @return velocity in degrees per second
+   * @return velocity in mm per second
    */
   public double getVelocity() {
     return m_elevatorMotor.getVelocity().getValueAsDouble();
@@ -230,8 +230,8 @@ public class ElevatorSub extends TestableSubsystem {
    */
   public boolean isElevatorAtTargetHeight() {
     // If we are within tolerance and our velocity is low, we're at our target
-    // TODO:  Add velocity check
-    if(Math.abs(m_targetHeight - getPositionMm()) < Constants.Elevator.kHeightTolerance) {
+    if((Math.abs(m_targetHeight - getPositionMm()) < Constants.Elevator.kHeightTolerance)
+        && (getVelocity() < Constants.Elevator.kAtTargetMaxVelocity)) {
       return true;
     } else {
       return false;
