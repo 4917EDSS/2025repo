@@ -10,7 +10,6 @@ import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.SparkMaxConfig;
 import edu.wpi.first.wpilibj.DigitalInput;
-import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.utils.TestableSubsystem;
 
@@ -134,8 +133,8 @@ public class IntakeSub extends TestableSubsystem {
     return m_intakeDeployMotor.getOutputCurrent();
   }
 
-  
-//////////////////// Methods used for automated testing ////////////////////
+
+  //////////////////// Methods used for automated testing ////////////////////
   /**
    * Makes the motor ready for testing. This includes disabling any automation that uses this
    * motor

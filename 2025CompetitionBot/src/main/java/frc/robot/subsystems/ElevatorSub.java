@@ -4,8 +4,6 @@
 
 package frc.robot.subsystems;
 
-import static edu.wpi.first.units.Units.Degrees;
-import static edu.wpi.first.units.Units.Meters;
 import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
 import com.ctre.phoenix6.configs.MotorOutputConfigs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
@@ -15,15 +13,8 @@ import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import edu.wpi.first.math.controller.PIDController;
-import edu.wpi.first.units.AngleUnit;
-import edu.wpi.first.units.DistanceUnit;
-import edu.wpi.first.units.PerUnit;
-import edu.wpi.first.units.measure.Per;
-import edu.wpi.first.wpilibj.Alert;
-import edu.wpi.first.wpilibj.Alert.AlertType;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.utils.TestableSubsystem;
 
@@ -37,8 +28,6 @@ public class ElevatorSub extends TestableSubsystem {
   private final DigitalInput m_elevatorStageTwoLimit = new DigitalInput(Constants.DioIds.kElevatorStageTwoLimit);
 
   // TODO:  Either finish off the proper units implementation or get rid of it
-  private static final PerUnit<DistanceUnit, AngleUnit> MetersPerDegrees = Meters.per(Degrees);
-  private static final Per<DistanceUnit, AngleUnit> kConversionToHeight = MetersPerDegrees.ofNative(0.000416);
 
   // TODO:  Need a feed-forward controller here
   private final PIDController m_elevatorPID = new PIDController(0.002, 0.0, 0.0);

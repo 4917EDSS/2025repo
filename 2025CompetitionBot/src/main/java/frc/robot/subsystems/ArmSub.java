@@ -9,10 +9,8 @@ import com.revrobotics.spark.SparkBase;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.config.AbsoluteEncoderConfig;
-import com.revrobotics.spark.config.AbsoluteEncoderConfigAccessor;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.SparkMaxConfig;
-import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.math.controller.ArmFeedforward;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.networktables.GenericEntry;
@@ -20,7 +18,6 @@ import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.RobotContainer;
 import frc.robot.utils.TestableSubsystem;
@@ -31,12 +28,10 @@ public class ArmSub extends TestableSubsystem {
   private final SparkMax m_armMotor = new SparkMax(Constants.CanIds.kArmMotor, MotorType.kBrushless);
   private final DigitalInput m_armLowerLimit = new DigitalInput(Constants.DioIds.kArmLowerLimit);
   private final DigitalInput m_armUpperLimit = new DigitalInput(Constants.DioIds.kArmUpperLimit);
-  //private final SparkAbsoluteEncoder m_armEncoder = m_armMotor.getAbsoluteEncoder();  // TODO: Figure out if we'll have one of these or not
+  private final SparkAbsoluteEncoder m_absoluteEncoder = m_armMotor.getAbsoluteEncoder();
 
   private final ArmFeedforward m_armFeedforward = new ArmFeedforward(0.001, 0.001, 0.0);
   private final PIDController m_armPid = new PIDController(0.01, 0, 0); // really needs some tuning
-
-  private final SparkAbsoluteEncoder m_armMotorAbsoluteEncoder = m_armMotor.getAbsoluteEncoder();
 
   private double m_targetAngle = 0;
   private boolean m_automationEnabled = false;
@@ -116,7 +111,7 @@ public class ArmSub extends TestableSubsystem {
    */
   public double getPosition() {
 
-    return m_armMotor.getAbsoluteEncoder().getPosition(); // returns rotations
+    return m_absoluteEncoder.getPosition(); // returns rotations
 
   }
 
@@ -128,7 +123,7 @@ public class ArmSub extends TestableSubsystem {
    */
   public double getAngle() {
 
-    return m_armMotor.getAbsoluteEncoder().getPosition() * 360; // returns angle
+    return m_absoluteEncoder.getPosition() * 360; // returns angle
 
   }
 
@@ -138,8 +133,7 @@ public class ArmSub extends TestableSubsystem {
    * @return velocity in degrees per second
    */
   public double getVelocity() {
-    // TODO:  If we have an absolute encoder, use that instead of the motor's internal encoder
-    return m_armMotor.getAbsoluteEncoder().getVelocity();
+    return m_absoluteEncoder.getVelocity();
   }
 
   /**
@@ -307,7 +301,7 @@ public class ArmSub extends TestableSubsystem {
 
     switch(motorId) {
       case 1:
-        angle = m_armMotor.getAbsoluteEncoder().getPosition() * 360; // gives you the angle
+        angle = m_absoluteEncoder.getPosition() * 360; // gives you the angle
         break;
       default:
         // Return an invalid value
