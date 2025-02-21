@@ -155,8 +155,10 @@ public class RobotContainer {
     }
 
     // L2
+    m_driverController.L2().onTrue(new InstantCommand(() -> m_armSub.setTargetAngle(90), m_armSub));
 
     // R2
+    m_driverController.R2().onTrue(new InstantCommand(() -> m_armSub.setTargetAngle(45), m_armSub));
 
     // Share
 

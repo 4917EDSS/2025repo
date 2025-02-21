@@ -99,7 +99,10 @@ public final class Constants {
     public static final double kAbsoluteEncoderOffset = 0.4; // From range to 0 - 1
     public static final double kMinArmAngle = 0.0; // In degrees
     public static final double kMaxArmAngle = 170.0; // In degrees
+    public static final double kMaxPower = 0.04;
     public static final double kTargetAngleDeadband = 2.0; // In degrees
+    public static final double kAngleTolerance = 5; // In degrees
+    public static final double kAtTargetMaxVelocity = 0.02; // In degrees per second?
   }
 
   public final static class Climb {
