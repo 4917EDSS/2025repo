@@ -12,6 +12,8 @@ import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
+import edu.wpi.first.math.controller.ArmFeedforward;
+import edu.wpi.first.math.controller.ElevatorFeedforward;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -24,6 +26,7 @@ public class ElevatorSub extends TestableSubsystem {
   private final DigitalInput m_elevatorUpperLimit = new DigitalInput(Constants.DioIds.kElevatorUpperLimit);
   private final DigitalInput m_encoderResetSwitch = new DigitalInput(Constants.DioIds.kElevatorEncoderResetSwitch);
 
+  private final ElevatorFeedforward m_feedforward = new ElevatorFeedforward(0.001, .1, 0.0);
   private final PIDController m_elevatorPID = new PIDController(0.002, 0.0, 0.0);
 
   private double m_targetHeight = 0.0;
@@ -77,6 +80,8 @@ public class ElevatorSub extends TestableSubsystem {
     SmartDashboard.putNumber("El Enc", getPositionMm());
     SmartDashboard.putBoolean("El Auto", m_enableAutomation);
     SmartDashboard.putBoolean("El UpLimit", isAtUpperLimit());
+    SmartDashboard.putBoolean("El Set Enc", m_isElevatorEncoderSet);
+    SmartDashboard.putBoolean("El RstEnc", encoderResetSwitchHit());
 
     // If we haven't set the relative encoder's position yet, check if we are at the switch that tells us to do so
     if(!m_isElevatorEncoderSet) {
@@ -87,6 +92,7 @@ public class ElevatorSub extends TestableSubsystem {
         m_hitEncoderSwitchCounter = 0;
       }
 
+      // If we hit the reset switch twice in a row, reset encoder
       if(m_hitEncoderSwitchCounter >= 2) {
         m_elevatorMotor2.setPosition(Constants.Elevator.kResetHeight);
         m_isElevatorEncoderSet = true;
@@ -203,7 +209,7 @@ public class ElevatorSub extends TestableSubsystem {
    * @return true when it's at the switch, false otherwise
    */
   public boolean encoderResetSwitchHit() {
-    return m_encoderResetSwitch.get();
+    return !m_encoderResetSwitch.get();
   }
 
   /**
@@ -212,14 +218,17 @@ public class ElevatorSub extends TestableSubsystem {
    * @param updatePower set to false to update the Feedforward and PID controllers without changing the motor power
    */
   private void runHeightControl(boolean updatePower) {
+    double ffPower = m_feedforward.calculate(getVelocity());
     double pidPower = (m_elevatorPID.calculate(getPositionMm(), m_targetHeight));
     if(pidPower > .5) {
       pidPower = .5;
     }
-    double fedPower = 0.01;
 
     if(updatePower) {
-      setPower(pidPower + fedPower);
+      if(ffPower > 0.25) {
+        ffPower = 0.25;
+      }
+      setPower(ffPower);
     }
   }
 
