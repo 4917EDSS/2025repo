@@ -250,7 +250,7 @@ public class RobotContainer {
   }
 
   void autoChooserSetup() {
-    m_Chooser.addOption("Testing Auto", new PathPlannerAuto("Testing Auto"));
+    m_Chooser.addOption("Leave Auto", new PathPlannerAuto("Leave Auto"));
     m_Chooser.addOption("DoNothingAuto", new DoNothingGrp());
     SmartDashboard.putData("auto choices", m_Chooser);
   }
