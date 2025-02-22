@@ -24,6 +24,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
+import frc.robot.Constants;
 import frc.robot.generated.TunerConstants.TunerSwerveDrivetrain;
 
 /**
@@ -124,6 +125,11 @@ public class DrivetrainSub extends TunerSwerveDrivetrain implements Subsystem {
     if(Utils.isSimulation()) {
       startSimThread();
     }
+
+      /* Using the constants for the respective robot */
+  if(Constants.RobotSpecific.serialNumber.equals(Constants.RobotSpecific.PracticeSerialNumber)){
+    
+  }
 
     RobotConfig config;
     try {

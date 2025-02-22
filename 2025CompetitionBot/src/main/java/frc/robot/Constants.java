@@ -4,7 +4,9 @@
 
 package frc.robot;
 
+import edu.wpi.first.units.measure.Angle;
 import frc.robot.utils.TestMotorParameters;
+import static edu.wpi.first.units.Units.*;
 
 /**
  * The Constants class provides a convenient place for teams to hold robot-wide numerical or boolean
@@ -141,6 +143,47 @@ public final class Constants {
     public static final double kRollersEncoderPositionConversionFactor = 1.00; // From rotations to degrees
     public static final double kRollersEncoderVelocityConversionFactor = 1.00; // From rotations per minute? to degrees per second
   }
+
+
+  // Values that are specific to a particular physical robot
+  public static final class RobotSpecific {
+    public static final String PracticeSerialNumber = "03147322";
+    public static final String CompetitionSerialNumber = "03264244";
+    public static final String serialNumber = System.getenv("serialnum");
+
+    public static final class Practice {
+      public static final Angle kFrontLeftEncoderOffset = Rotations.of(-0.318115234375);
+      public static final Angle kFrontRightEncoderOffset = Rotations.of(0.023193359375);
+      public static final Angle kBackLeftEncoderOffset = Rotations.of(-0.064453125);
+      public static final Angle kBackRightEncoderOffset = Rotations.of(0.025146484375);
+      public static final double kGearRatio = 6.12; //from last year
+      public static final double kDriveGearRatio = 5.142857142857142;
+      public static final double kSteerGearRatio = 12.8;
+      public static final boolean kInvertLowerFeeder = false;
+    }
+
+    public static final class Competition {
+      public static final Angle kFrontLeftEncoderOffset = Rotations.of(-0.37744140625);
+      public static final Angle kFrontRightEncoderOffset = Rotations.of(-0.03759765625);
+      public static final Angle kBackLeftEncoderOffset = Rotations.of(-0.148193359375);
+      public static final Angle kBackRightEncoderOffset = Rotations.of(-0.4365234375);
+      public static final boolean kInvertLowerFeeder = true;
+      public static final double kGearRatio = 6.05; //from last year
+      public static final double kDriveGearRatio = 5.142857142857142;
+      public static final double kSteerGearRatio = 12.8;
+    }
+
+    public static final class Unknown {
+      public static final Angle kAbsoluteEncoderOffsetFL = Rotations.of(0);
+      public static final Angle kAbsoluteEncoderOffsetFR = Rotations.of(0);
+      public static final Angle kAbsoluteEncoderOffsetBL = Rotations.of(0);
+      public static final Angle kAbsoluteEncoderOffsetBR = Rotations.of(0);
+      public static final boolean kInvertLowerFeeder = true;
+      public static final double kGearRatio = 0.0;
+    }
+  }
+
+
 
   public final static class Vision {
     //TODO: change apriltag heights to actual heights, as well as the offsets. This is from last year.
