@@ -4,7 +4,9 @@
 
 package frc.robot;
 
+import edu.wpi.first.units.measure.Angle;
 import frc.robot.utils.TestMotorParameters;
+import static edu.wpi.first.units.Units.*;
 
 /**
  * The Constants class provides a convenient place for teams to hold robot-wide numerical or boolean
@@ -128,7 +130,7 @@ public final class Constants {
     public final static double kStartingHeight = 440.0; // In mm
     public final static double kResetHeight = 450.0; // In mm
 
-    public final static double kHeightTolerance = 5;
+    public final static double kHeightTolerance = 5; // Height tolerance for elevator position
 
     //Sets max power for isElevatorAtTargetHeight function
     public final static double kAtTargetMaxVelocity = 150;
@@ -141,6 +143,46 @@ public final class Constants {
     public static final double kRollersEncoderPositionConversionFactor = 1.00; // From rotations to degrees
     public static final double kRollersEncoderVelocityConversionFactor = 1.00; // From rotations per minute? to degrees per second
   }
+
+
+  // Values that are specific to a particular physical robot
+  public static final class RobotSpecific {
+    public static final String PracticeSerialNumber = "03147322";
+    public static final String CompetitionSerialNumber = "03264244";
+    public static final String serialNumber = System.getenv("serialnum");
+
+    public static final class Practice {
+      public static final Angle kFrontLeftEncoderOffset = Rotations.of(-0.318115234375);
+      public static final Angle kFrontRightEncoderOffset = Rotations.of(0.023193359375);
+      public static final Angle kBackLeftEncoderOffset = Rotations.of(-0.064453125);
+      public static final Angle kBackRightEncoderOffset = Rotations.of(0.025146484375);
+      public static final double kGearRatio = 6.12; //from last year
+      public static final double kDriveGearRatio = 5.142857142857142;
+      public static final double kSteerGearRatio = 12.8;
+      public static final boolean kInvertLowerFeeder = false;
+    }
+
+    public static final class Competition {
+      public static final Angle kFrontLeftEncoderOffset = Rotations.of(-0.37744140625);
+      public static final Angle kFrontRightEncoderOffset = Rotations.of(-0.03759765625);
+      public static final Angle kBackLeftEncoderOffset = Rotations.of(-0.148193359375);
+      public static final Angle kBackRightEncoderOffset = Rotations.of(-0.4365234375);
+      public static final boolean kInvertLowerFeeder = true;
+      public static final double kGearRatio = 6.05; //from last year
+      public static final double kDriveGearRatio = 5.142857142857142;
+      public static final double kSteerGearRatio = 12.8;
+    }
+
+    public static final class Unknown {
+      public static final Angle kAbsoluteEncoderOffsetFL = Rotations.of(0);
+      public static final Angle kAbsoluteEncoderOffsetFR = Rotations.of(0);
+      public static final Angle kAbsoluteEncoderOffsetBL = Rotations.of(0);
+      public static final Angle kAbsoluteEncoderOffsetBR = Rotations.of(0);
+      public static final boolean kInvertLowerFeeder = true;
+      public static final double kGearRatio = 0.0;
+    }
+  }
+
 
   public final static class Vision {
     //TODO: change apriltag heights to actual heights, as well as the offsets. This is from last year.
@@ -177,20 +219,20 @@ public final class Constants {
 
     /* Elevator Motors */
     public static final TestMotorParameters kElevatorMotor1 =
-        new TestMotorParameters("ElevatorMotor1", 1, 0.1, 1000, 75, 3.0, 10, 1.5, 0.1, 0.5);
+        new TestMotorParameters("ElevatorMotor1", 1, 0.1, 1000, 75, 74, 10, 1.5, 20, 5);
     public static final TestMotorParameters kElevatorMotor2 =
-        new TestMotorParameters("ElevatorMotor2", 2, 0.1, 1000, 75, 3.0, 10, 1.5, 0.1, 0.5);
+        new TestMotorParameters("ElevatorMotor2", 2, 0.1, 1000, 75, 74, 10, 1.5, 20, 5);
     /* Intake Motors */
     public static final TestMotorParameters kIntakeMotor1 =
-        new TestMotorParameters("IntakeMotor1", 3, 0.1, 1000, 75, 3.0, 10, 1.5, 0.1, 0.5);
+        new TestMotorParameters("IntakeMotor1", 1, 0.1, 1000, 75, 3.0, 10, 1.5, 0.1, 0.5);
     public static final TestMotorParameters kIntakeMotor2 =
-        new TestMotorParameters("IntakeMotor2", 4, 0.1, 1000, 75, 3.0, 10, 1.5, 0.1, 0.5);
+        new TestMotorParameters("IntakeMotor2", 1, 0.1, 1000, 75, 3.0, 10, 1.5, 0.1, 0.5);
     /* Arm Motor */
     public static final TestMotorParameters kArmMotor =
-        new TestMotorParameters("ArmMotor", 5, 0.1, 1000, 75, 3.0, 10, 1.5, 0.1, 0.5);
+        new TestMotorParameters("ArmMotor", 1, 0.1, 1000, 75, 3.0, 10, 1.5, 0.1, 0.5);
     /* Climb Motor */
     public static final TestMotorParameters kClimbMotor =
-        new TestMotorParameters("ClimbMotor", 6, 0.1, 1000, 75, 3.0, 10, 1.5, 0.1, 0.5);
+        new TestMotorParameters("ClimbMotor", 1, 0.1, 1000, 75, 3.0, 10, 1.5, 0.1, 0.5);
   }
 
 
