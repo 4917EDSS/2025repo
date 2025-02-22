@@ -23,7 +23,9 @@ import com.pathplanner.lib.path.PathConstraints;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.net.WebServer;
 import edu.wpi.first.networktables.NetworkTableEvent;
+import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -127,7 +129,9 @@ public class RobotContainer {
     m_elevatorSub.setDefaultCommand(new ElevatorMoveWithJoystickCmd(m_operatorController, m_elevatorSub));
 
     // Register Swerve telemetry
-    m_drivetrainSub.registerTelemetry(swerveLogger::telemeterize);
+    //m_drivetrainSub.registerTelemetry(swerveLogger::telemeterize);
+
+    WebServer.start(5800, Filesystem.getDeployDirectory().getPath());
 
     // Configure the trigger bindings
     configureBindings();
@@ -169,7 +173,7 @@ public class RobotContainer {
     }
 
     // L2
-    m_driverController.L2().onTrue(new InstantCommand(() -> m_armSub.setTargetAngle(90), m_armSub));
+    m_driverController.L2().onTrue(new InstantCommand(() -> m_armSub.setTargetAngle(0), m_armSub));
 
     // R2
     m_driverController.R2().onTrue(new InstantCommand(() -> m_armSub.setTargetAngle(45), m_armSub));

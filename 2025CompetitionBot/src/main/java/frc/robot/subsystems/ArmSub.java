@@ -6,6 +6,7 @@ package frc.robot.subsystems;
 
 import com.revrobotics.spark.SparkAbsoluteEncoder;
 import com.revrobotics.spark.SparkBase;
+import com.revrobotics.spark.SparkLimitSwitch;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.config.AbsoluteEncoderConfig;
@@ -26,14 +27,18 @@ public class ArmSub extends TestableSubsystem {
   private final SparkMax m_armMotor = new SparkMax(Constants.CanIds.kArmMotor, MotorType.kBrushless);
   private final SparkAbsoluteEncoder m_absoluteEncoder = m_armMotor.getAbsoluteEncoder();
 
-  private final ArmFeedforward m_armFeedforward = new ArmFeedforward(0.001, 0.001, 0.0);
+  private final SparkLimitSwitch m_forwardLimitSwitch = m_armMotor.getForwardLimitSwitch();
+  private final SparkLimitSwitch m_revLimitSwitch = m_armMotor.getReverseLimitSwitch();
+
+  private final ArmFeedforward m_armFeedforward = new ArmFeedforward(0.00, 0.01, 0.0);
   private final PIDController m_armPid = new PIDController(0.01, 0, 0); // TODO: Tune
 
   private double m_targetAngle = 0;
   private boolean m_automationEnabled = false;
 
   private final ShuffleboardTab m_shuffleboardTab = Shuffleboard.getTab("Arm");
-  private final GenericEntry m_sbArmPower, m_sbArmPosition, m_sbArmAngle, m_sbArmVelocity;
+  private final GenericEntry m_sbArmPower, m_sbArmPosition, m_sbArmAngle, m_sbArmVelocity, m_sbArmForwardLimit,
+      m_revsbArmFowardLimit;
 
 
   /** Creates a new ArmSub. */
@@ -59,6 +64,8 @@ public class ArmSub extends TestableSubsystem {
     m_sbArmPosition = m_shuffleboardTab.add("Arm raw enc", getPosition()).getEntry();
     m_sbArmAngle = m_shuffleboardTab.add("Arm angle", getAngle()).getEntry();
     m_sbArmVelocity = m_shuffleboardTab.add("Arm Velocity", getVelocity()).getEntry();
+    m_sbArmForwardLimit = m_shuffleboardTab.add("Arm Limit Forward", m_forwardLimitSwitch.isPressed()).getEntry();
+    m_revsbArmFowardLimit = m_shuffleboardTab.add("Arm Limit Reverse", m_revLimitSwitch.isPressed()).getEntry();
   }
 
   @Override
@@ -79,6 +86,8 @@ public class ArmSub extends TestableSubsystem {
       m_sbArmPosition.setDouble(getPosition());
       m_sbArmAngle.setDouble(getAngle());
       m_sbArmVelocity.setDouble(getVelocity());
+      m_sbArmForwardLimit.setBoolean(m_forwardLimitSwitch.isPressed());
+      m_revsbArmFowardLimit.setBoolean(m_revLimitSwitch.isPressed());
     }
   }
 
