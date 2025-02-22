@@ -17,8 +17,8 @@ public class SetArmToPositionCmd extends Command {
   private final ArmSub m_armSub;
 
   /** Creates a new MoveArmWithJoystickCmd. */
-  public SetArmToPositionCmd(double height, ArmSub armSub) {
-    m_targetAngle = height;
+  public SetArmToPositionCmd(double angle, ArmSub armSub) {
+    m_targetAngle = angle;
     m_armSub = armSub;
     // Use addRequirements() here to declare subsystem dependencies.
     addRequirements(armSub);
@@ -27,10 +27,8 @@ public class SetArmToPositionCmd extends Command {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    m_armSub.setTargetAngle(m_targetAngle);
     m_armSub.enableAutomation();
-
-
+    m_armSub.setTargetAngle(m_targetAngle);
   }
 
   // Called every time the scheduler runs while the command is scheduled.
@@ -47,7 +45,7 @@ public class SetArmToPositionCmd extends Command {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    if(Math.abs(m_armSub.getPosition() - m_targetAngle) < Constants.Arm.kTargetAngleDeadband) {
+    if(Math.abs(m_armSub.getAngle() - m_targetAngle) < Constants.Arm.kTargetAngleDeadband) {
       return true;
     }
     return false;

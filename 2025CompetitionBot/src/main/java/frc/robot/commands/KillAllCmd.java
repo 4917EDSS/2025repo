@@ -6,6 +6,7 @@ package frc.robot.commands;
 
 import java.util.logging.Logger;
 import edu.wpi.first.wpilibj2.command.Command;
+import frc.robot.subsystems.ArmSub;
 import frc.robot.subsystems.ClimbSub;
 import frc.robot.subsystems.DrivetrainSub;
 import frc.robot.subsystems.ElevatorSub;
@@ -15,9 +16,9 @@ import frc.robot.subsystems.IntakeSub;
 public class KillAllCmd extends Command {
   private static Logger m_logger = Logger.getLogger(KillAllCmd.class.getName());
 
-  public KillAllCmd(ClimbSub climbSub, DrivetrainSub drivetrainSub, ElevatorSub elevatorSub,
+  public KillAllCmd(ArmSub armSub, ClimbSub climbSub, DrivetrainSub drivetrainSub, ElevatorSub elevatorSub,
       IntakeSub intakeSub) {
-    addRequirements(climbSub, drivetrainSub, elevatorSub, intakeSub);
+    addRequirements(armSub, climbSub, drivetrainSub, elevatorSub, intakeSub);
   }
 
   // Called when the command is initially scheduled.

@@ -4,56 +4,68 @@
 
 package frc.robot.subsystems;
 
+import com.revrobotics.spark.SparkAbsoluteEncoder;
 import com.revrobotics.spark.SparkBase;
+import com.revrobotics.spark.SparkLimitSwitch;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.SparkMax;
+import com.revrobotics.spark.config.AbsoluteEncoderConfig;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.SparkMaxConfig;
 import edu.wpi.first.math.controller.ArmFeedforward;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.networktables.GenericEntry;
-import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.units.VelocityUnit;
+import edu.wpi.first.units.measure.Velocity;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
-import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.RobotContainer;
+import frc.robot.utils.TestableSubsystem;
 
-public class ArmSub extends SubsystemBase {
-  private final ShuffleboardTab m_shuffleboardTab = Shuffleboard.getTab("Arm");
-  private final GenericEntry m_sbArmPower, m_sbLowerLimit, m_sbUpperLimit, m_sbArmPosition;
+public class ArmSub extends TestableSubsystem {
   private final SparkMax m_armMotor = new SparkMax(Constants.CanIds.kArmMotor, MotorType.kBrushless);
-  private final DigitalInput m_armLowerLimit = new DigitalInput(Constants.DioIds.kArmLowerLimit);
-  private final DigitalInput m_armUpperLimit = new DigitalInput(Constants.DioIds.kArmUpperLimit);
-  //private final SparkAbsoluteEncoder m_armEncoder = m_armMotor.getAbsoluteEncoder();  // TODO: Figure out if we'll have one of these or not
+  private final SparkAbsoluteEncoder m_absoluteEncoder = m_armMotor.getAbsoluteEncoder();
+
+  private final SparkLimitSwitch m_forwardLimitSwitch = m_armMotor.getForwardLimitSwitch();
+  private final SparkLimitSwitch m_revLimitSwitch = m_armMotor.getReverseLimitSwitch();
 
   private final ArmFeedforward m_armFeedforward = new ArmFeedforward(0.001, 0.001, 0.0);
-  private final PIDController m_armPid = new PIDController(0.01, 0.001, 0.001); // really needs some tuning
+  private final PIDController m_armPid = new PIDController(0.01, 0, 0); // TODO: Tune
 
   private double m_targetAngle = 0;
   private boolean m_automationEnabled = false;
 
+  private final ShuffleboardTab m_shuffleboardTab = Shuffleboard.getTab("Arm");
+  private final GenericEntry m_sbArmPower, m_sbArmPosition, m_sbArmAngle, m_sbArmVelocity, m_sbArmForwardLimit,
+      m_revsbArmFowardLimit;
+
 
   /** Creates a new ArmSub. */
   public ArmSub() {
-    m_sbArmPower = m_shuffleboardTab.add("Arm power", 0).getEntry();
-    m_sbArmPosition = m_shuffleboardTab.add("Arm position", getPosition()).getEntry();
-    m_sbLowerLimit = m_shuffleboardTab.add("Lower limit", isAtLowerLimit()).getEntry();
-    m_sbUpperLimit = m_shuffleboardTab.add("Upper limit", isAtUpperLimit()).getEntry();
-    SparkMaxConfig config = new SparkMaxConfig();
-    config
+    SparkMaxConfig motorConfig = new SparkMaxConfig();
+    motorConfig
         .inverted(true) // Set to true to invert the forward motor direction
-        .smartCurrentLimit(15) // Current limit in amps
+        .smartCurrentLimit(60) // Current limit in amps // TODO: Determine real current limit
         .idleMode(IdleMode.kBrake).encoder
             .positionConversionFactor(Constants.Arm.kEncoderPositionConversionFactor)
-            .velocityConversionFactor(Constants.Arm.kEncoderVelocityConversionFactor); // Set to kCoast to allow the motor to coast when power is 0.0
+            .velocityConversionFactor(Constants.Arm.kEncoderVelocityConversionFactor);
+
+    AbsoluteEncoderConfig encoderConfig = new AbsoluteEncoderConfig();
+    encoderConfig.zeroOffset(Constants.Arm.kAbsoluteEncoderOffset);
+    motorConfig.apply(encoderConfig);
 
     // Save the configuration to the motor
     // Only persist parameters when configuring the motor on start up as this operation can be slow
-    m_armMotor.configure(config, SparkBase.ResetMode.kResetSafeParameters,
+    m_armMotor.configure(motorConfig, SparkBase.ResetMode.kResetSafeParameters,
         SparkBase.PersistMode.kPersistParameters);
 
-    resetPosition();
+    m_sbArmPower = m_shuffleboardTab.add("Arm power", 0.0).getEntry();
+    m_sbArmPosition = m_shuffleboardTab.add("Arm raw enc", getPosition()).getEntry();
+    m_sbArmAngle = m_shuffleboardTab.add("Arm angle", getAngle()).getEntry();
+    m_sbArmVelocity = m_shuffleboardTab.add("Arm Velocity", getVelocity()).getEntry();
+    m_sbArmForwardLimit = m_shuffleboardTab.add("Arm Limit Forward", m_forwardLimitSwitch.isPressed()).getEntry();
+    m_revsbArmFowardLimit = m_shuffleboardTab.add("Arm Limit Forward", m_revLimitSwitch.isPressed()).getEntry();
   }
 
   @Override
@@ -72,8 +84,10 @@ public class ArmSub extends SubsystemBase {
     if(!RobotContainer.disableShuffleboardPrint) {
       m_sbArmPower.setDouble(m_armMotor.get());
       m_sbArmPosition.setDouble(getPosition());
-      m_sbLowerLimit.setBoolean(isAtLowerLimit());
-      m_sbUpperLimit.setBoolean(isAtUpperLimit());
+      m_sbArmAngle.setDouble(getAngle());
+      m_sbArmVelocity.setDouble(getVelocity());
+      m_sbArmForwardLimit.setBoolean(m_forwardLimitSwitch.isPressed());
+      m_revsbArmFowardLimit.setBoolean(m_revLimitSwitch.isPressed());
     }
   }
 
@@ -83,36 +97,27 @@ public class ArmSub extends SubsystemBase {
    * @param power power value -1.0 to 1.0
    */
   public void setPower(double power) {
-    // Prevent motor from moving past limit switch
-    // if((power < 0.0) && isAtLowerLimit()) {
-    //   power = 0.0;
-    // } else if((power > 0.0) && isAtUpperLimit()) {
-    //   power = 0.0;
-    // }
-
     m_armMotor.set(power);
-    // System.out.println(power);
   }
 
   /**
-   * Sets the current angle as the zero angle
+   * Returns the raw current position of the arm
+   * 
+   * @return position in rotations
    */
-  public void resetPosition() {
-    // TODO:  If we have an absolute encoder, use that instead of the motor's internal encoder
-    // Would need to save an offset to permit resetting the position
-    m_armMotor.getEncoder().setPosition(0);
+  public double getPosition() {
+    return m_absoluteEncoder.getPosition(); // returns rotations
   }
+
 
   /**
    * Returns the current angular position of the arm
    * 
    * @return position in degrees
    */
-  public double getPosition() {
-    // TODO:  If we have an absolute encoder, use that instead of the motor's internal encoder
-
-    return m_armMotor.getEncoder().getPosition() * 360; // returns degrees from revolutions
-
+  public double getAngle() {
+    // TODO:  Do we need to account for the 0 to 360 rollover?
+    return m_absoluteEncoder.getPosition() * 360; // returns angle
   }
 
   /**
@@ -121,8 +126,7 @@ public class ArmSub extends SubsystemBase {
    * @return velocity in degrees per second
    */
   public double getVelocity() {
-    // TODO:  If we have an absolute encoder, use that instead of the motor's internal encoder
-    return m_armMotor.getEncoder().getVelocity();
+    return m_absoluteEncoder.getVelocity();
   }
 
   /**
@@ -146,8 +150,7 @@ public class ArmSub extends SubsystemBase {
    * @return true when it's at the limit, false otherwise
    */
   public boolean isAtLowerLimit() {
-    return m_armLowerLimit.get(); // If switch is normally closed, return !m_armLowerLimit.get()
-    // to return a true when switch is false and false when it's true
+    return false; // TODO: Read this from the SparkMax since the switch would be wired directly into it
   }
 
   /**
@@ -156,28 +159,18 @@ public class ArmSub extends SubsystemBase {
    * @return true when it's at the limit, false otherwise
    */
   public boolean isAtUpperLimit() {
-    return m_armUpperLimit.get(); // If switch is normally closed, return !m_armUpperLimit.get()
-    // to return a true when switch is false and false when it's true
+    return false; // TODO: Read this from the SparkMax since the switch would be wired directly into it
   }
 
   /**
-   * Returns how much current the motor is currently drawing
-   * 
-   * @return current in amps or -1.0 if motor can't measure current
-   */
-  public double getElectricalCurrent() {
-    return -1.0;
-  }
-
-  /**
-   * enables automation
+   * Enables automation
    */
   public void enableAutomation() {
     m_automationEnabled = true;
   }
 
   /**
-   * disables automation
+   * Disables automation
    */
   public void disableAutomation() {
     m_automationEnabled = false;
@@ -187,16 +180,135 @@ public class ArmSub extends SubsystemBase {
    * Calculates and sets the current power to apply to the arm to get to or stay at its target
    */
   private void runAngleControl(boolean justCalculate) {
-
-
-    double pidPower = m_armPid.calculate(getPosition(), m_targetAngle);
-    double fedPower = m_armFeedforward.calculate(Math.toRadians(getPosition()), pidPower); // Feed forward expects 0 degrees as horizontal
-
+    double pidPower = m_armPid.calculate(getAngle(), m_targetAngle);
+    double fedPower = m_armFeedforward.calculate(Math.toRadians(getAngle()), pidPower); // Feed forward expects 0 degrees as horizontal
 
     if(!justCalculate) {
-      setPower(pidPower + fedPower);
+      double tempPower = (pidPower + fedPower);
+
+
+      if(Math.abs(tempPower) > Constants.Arm.kMaxPower) {
+        double sign = (tempPower >= 0.0) ? 1.0 : -1.0;
+        tempPower = Constants.Arm.kMaxPower * sign;
+      }
+      setPower(tempPower);
+    }
+  }
+
+  public boolean IsAtTargetAngle() {
+    // If we are within tolerance and our velocity is low, we're at our target
+    // TODO:  Add velocity check
+    if((Math.abs(m_targetAngle - getAngle()) < Constants.Arm.kAngleTolerance)
+        && (Math.abs(getVelocity()) < Constants.Arm.kAtTargetMaxVelocity)) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  //////////////////// Methods used for automated testing ////////////////////
+  /**
+   * Makes the motor ready for testing. This includes disabling any automation that uses this
+   * motor
+   * 
+   * @param motorId 1 for the first motor in the subsystem, 2 for the second, etc.
+   */
+  @Override
+  public void testEnableMotorTestMode(int motorId) {
+    disableAutomation();
+  }
+
+  /**
+   * Puts the motor back into normal opeation mode.
+   * 
+   * @param motorId 1 for the first motor in the subsystem, 2 for the second, etc.
+   */
+  @Override
+  public void testDisableMotorTestMode(int motorId) {
+    // Re-ensable any mechanism automation
+    enableAutomation();
+  }
+
+  /**
+   * Resets the motor's encoder such that it reads zero
+   * 
+   * @param motorId 1 for the first motor in the subsystem, 2 for the second, etc.
+   */
+  @Override
+  public void testResetMotorPosition(int motorId) {
+    switch(motorId) {
+      case 1:
+        m_armMotor.getEncoder().setPosition(0.0);
+        break;
+      default:
+        // Do nothing
+        break;
+    }
+  }
+
+  /**
+   * Sets the motor's power to the specified value. This needs to also disable anything else from
+   * changing the motor power.
+   * 
+   * @param motorId 1 for the first motor in the subsystem, 2 for the second, etc.
+   * @param power Desired power -1.0 to 1.0
+   */
+  @Override
+  public void testSetMotorPower(int motorId, double power) {
+    switch(motorId) {
+      case 1:
+        m_armMotor.set(power);
+        break;
+      default:
+        // Do nothing
+        break;
+    }
+  }
+
+  /**
+   * Returns the motor's current encoder value. Ideally this is the raw value, not the converted
+   * value. This should be the INTERNAL encoder to minimize dependencies on other hardware.
+   * 
+   * @param motorId 1 for the first motor in the subsystem, 2 for the second, etc.
+   * @return Encoder value in raw or converted units
+   */
+  @Override
+  public double testGetMotorPosition(int motorId) {
+    double position = 0.0;
+
+    switch(motorId) {
+      case 1:
+        position = m_armMotor.getEncoder().getPosition();
+        break;
+      default:
+        // Return an invalid value
+        position = -99999999.0;
+        break;
     }
 
+    return position;
+  }
 
+  /**
+   * Returns the motor's current current-draw.
+   * 
+   * @param motorId 1 for the first motor in the subsystem, 2 for the second, etc.
+   * @return Electrical current draw in amps, or -1 if feature not supported
+   */
+  @Override
+  public double testGetMotorAmps(int motorId) {
+    double current = 0.0;
+
+    switch(motorId) {
+      case 1:
+        current = m_armMotor.getOutputCurrent(); // SparkMax doesn't support current reading
+        break;
+      default:
+        // Return an invalid value
+        current = -1.0;
+        break;
+    }
+
+    return current;
   }
 }
