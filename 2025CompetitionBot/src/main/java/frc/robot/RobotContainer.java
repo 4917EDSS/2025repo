@@ -19,7 +19,9 @@ import com.ctre.phoenix6.swerve.SwerveRequest;
 import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.commands.PathPlannerAuto;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.net.WebServer;
 import edu.wpi.first.networktables.NetworkTableEvent;
+import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -62,7 +64,7 @@ public class RobotContainer {
   boolean isLimelight = true;
   // Swerve constants and objects (from CTRE Phoenix Tuner X)
   private double MaxSpeed = TunerConstants.kSpeedAt12Volts.in(MetersPerSecond); // kSpeedAt12Volts desired top speed
-  private double MaxAngularRate = RotationsPerSecond.of(0.75).in(RadiansPerSecond); // 3/4 of a rotation per second max angular velocity
+  private double MaxAngularRate = RotationsPerSecond.of(2.08 / 2.0).in(RadiansPerSecond); // 3/4 of a rotation per second max angular velocity, 2.08 is the speed that made it tip over, very funny video
   // Setting up bindings for necessary control of the swerve drive platform
   private final SwerveRequest.FieldCentric drive = new SwerveRequest.FieldCentric()
       .withDeadband(MaxSpeed * 0.1).withRotationalDeadband(MaxAngularRate * 0.1) // Add a 10% deadband
@@ -119,7 +121,9 @@ public class RobotContainer {
     m_elevatorSub.setDefaultCommand(new ElevatorMoveWithJoystickCmd(m_operatorController, m_elevatorSub));
 
     // Register Swerve telemetry
-    m_drivetrainSub.registerTelemetry(swerveLogger::telemeterize);
+    //m_drivetrainSub.registerTelemetry(swerveLogger::telemeterize);
+
+    WebServer.start(5800, Filesystem.getDeployDirectory().getPath());
 
     // Configure the trigger bindings
     configureBindings();
@@ -155,7 +159,7 @@ public class RobotContainer {
     }
 
     // L2
-    m_driverController.L2().onTrue(new InstantCommand(() -> m_armSub.setTargetAngle(90), m_armSub));
+    m_driverController.L2().onTrue(new InstantCommand(() -> m_armSub.setTargetAngle(0), m_armSub));
 
     // R2
     m_driverController.R2().onTrue(new InstantCommand(() -> m_armSub.setTargetAngle(45), m_armSub));
@@ -250,7 +254,7 @@ public class RobotContainer {
   }
 
   void autoChooserSetup() {
-    m_Chooser.addOption("Testing Auto", new PathPlannerAuto("Testing Auto"));
+    m_Chooser.addOption("Leave Auto", new PathPlannerAuto("Leave Auto"));
     m_Chooser.addOption("DoNothingAuto", new DoNothingGrp());
     SmartDashboard.putData("auto choices", m_Chooser);
   }

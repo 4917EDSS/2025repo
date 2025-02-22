@@ -21,17 +21,17 @@ public class L4PlacementGrp extends SequentialCommandGroup {
     addCommands(
         new InstantCommand(() -> elevatorSub.setTargetHeight(525)), // just high enough for arm with coral to be able to go to 165
         new WaitCommand(2),
-        new InstantCommand(() -> armSub.setTargetAngle(165)), // 165 is just high enough to get the coral to a height that it can get to the branch
+        new InstantCommand(() -> armSub.setTargetAngle(75)), // 165 is just high enough to get the coral to a height that it can get to the branch
         new WaitCommand(5),
         new InstantCommand(() -> elevatorSub.setTargetHeight(1070)), // as tall as possible so that the coral can reach l4
         new WaitCommand(5), // wait a second for the driver or a vision command to align the robot with a branch
-        new InstantCommand(() -> armSub.setTargetAngle(135)), // down enough to put the coral on the branch
+        new InstantCommand(() -> armSub.setTargetAngle(45)), // down enough to put the coral on the branch
         new WaitCommand(5),
         new InstantCommand(() -> elevatorSub.setTargetHeight(650)), // Lower elevator to remove coral
         new WaitCommand(5), // Wait time for the driver to move back so that the arm does not hit any other branches
         new InstantCommand(() -> elevatorSub.setTargetHeight(440)), //use the resting elevator height, this is an estimation
         new WaitCommand(2),
-        new InstantCommand(() -> armSub.setTargetAngle(0)) // set the arm back to the starting angle
+        new InstantCommand(() -> armSub.setTargetAngle(-90)) // set the arm back to the starting angle
     );
   }
 

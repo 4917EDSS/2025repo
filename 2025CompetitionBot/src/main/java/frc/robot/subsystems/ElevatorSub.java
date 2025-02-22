@@ -63,6 +63,7 @@ public class ElevatorSub extends TestableSubsystem {
     TalonFXConfiguration config = new TalonFXConfiguration();
     config.Feedback.SensorToMechanismRatio = Constants.Elevator.kRotationsToMm;
     m_elevatorMotor.getConfigurator().apply(config);
+    m_elevatorMotor2.getConfigurator().apply(config);
 
     m_elevatorMotor.setPosition(Constants.Elevator.kStartingHeight);
     setPositionMm(Constants.Elevator.kStartingHeight);
