@@ -4,38 +4,12 @@
 
 package frc.robot.commands;
 
-import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
-import com.ctre.phoenix6.swerve.SwerveModule.ModuleRequest;
-import com.ctre.phoenix6.swerve.SwerveModule;
-import com.ctre.phoenix6.swerve.SwerveRequest;
-import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.Constants;
-import frc.robot.subsystems.DrivetrainSub;
-import frc.robot.utils.LimelightHelpers;
 
-/*
- * You should consider using the more terse Command factories API instead
- * https://docs.wpilib.org/en/stable/docs/software/commandbased/organizing-command-based.html#defining-commands
- */
+/* You should consider using the more terse Command factories API instead https://docs.wpilib.org/en/stable/docs/software/commandbased/organizing-command-based.html#defining-commands */
 public class DriveToPosRobotRelativeCmd extends Command {
-  private final SwerveRequest.RobotCentric driveRobotCentric = new SwerveRequest.RobotCentric()
-      .withDriveRequestType(DriveRequestType.OpenLoopVoltage);;
-  private final DrivetrainSub m_drivetrainSub;
-  double targetX;
-  double targetY;
-  double currentX;
-  double currentY;
-  double power;
-
-  /** Creates a new DriveToPosobotRelativeCmd. */
-  public DriveToPosRobotRelativeCmd(double targetX, double targetY, double targetRot, Double power,
-      DrivetrainSub drivetrainSub) {
-    m_drivetrainSub = drivetrainSub;
-    this.targetX = targetX;
-    this.targetY = targetY;
-    this.power = power;
+  /** Creates a new DriveToPosRobotRelativeCmd. */
+  public DriveToPosRobotRelativeCmd() {
     // Use addRequirements() here to declare subsystem dependencies.
   }
 
@@ -45,18 +19,7 @@ public class DriveToPosRobotRelativeCmd extends Command {
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
-  public void execute() {
-    Translation2d[] modulePosArray = m_drivetrainSub.getModuleLocations();
-
-    double totalDist = Math.sqrt((targetX * targetX) + (targetY * targetY));
-    double xPower = targetX / totalDist;
-    double yPower = targetY / totalDist;
-
-    m_drivetrainSub.setControl(
-        driveRobotCentric.withVelocityX(xPower * Constants.DriveTrain.MaxSpeed * power)
-            .withVelocityY(yPower * Constants.DriveTrain.MaxSpeed * power)
-            .withRotationalRate(Constants.DriveTrain.MaxAngularRate * 0.5));
-  }
+  public void execute() {}
 
   // Called once the command ends or is interrupted.
   @Override
