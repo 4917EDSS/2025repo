@@ -30,7 +30,7 @@ public class ArmSub extends TestableSubsystem {
   private final SparkLimitSwitch m_forwardLimitSwitch = m_armMotor.getForwardLimitSwitch();
   private final SparkLimitSwitch m_revLimitSwitch = m_armMotor.getReverseLimitSwitch();
 
-  private final ArmFeedforward m_armFeedforward = new ArmFeedforward(0.00, 0.01, 0.0);
+  private final ArmFeedforward m_armFeedforward = new ArmFeedforward(0.00, 0.1, 0.0);
   private final PIDController m_armPid = new PIDController(0.01, 0, 0); // TODO: Tune
 
   private double m_targetAngle = 0;
@@ -117,7 +117,7 @@ public class ArmSub extends TestableSubsystem {
    */
   public double getAngle() {
     // TODO:  Do we need to account for the 0 to 360 rollover?
-    return m_absoluteEncoder.getPosition() * 360; // returns angle
+    return (m_absoluteEncoder.getPosition() * 360)- 303.12; // returns angle
   }
 
   /**
