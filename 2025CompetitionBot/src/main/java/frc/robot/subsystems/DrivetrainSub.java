@@ -226,6 +226,9 @@ public class DrivetrainSub extends TunerSwerveDrivetrain implements Subsystem {
       });
     }
     m_field.setRobotPose(getPose());
+    SmartDashboard.putNumber("X Position", getState().Pose.getX());
+    SmartDashboard.putNumber("Y Position", getState().Pose.getY());
+    SmartDashboard.putNumber("Heading", getState().Pose.getRotation().getDegrees());
   }
 
   private void startSimThread() {
