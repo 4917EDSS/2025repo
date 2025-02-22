@@ -21,11 +21,11 @@ public class L2PlacementGrp extends SequentialCommandGroup {
     addCommands(
         new InstantCommand(() -> elevatorSub.setTargetHeight(487)), // Set height to clear frame when moving arm
         new WaitCommand(2),
-        new InstantCommand(() -> armSub.setTargetAngle(159)), // Move arm angle above L2
+        new InstantCommand(() -> armSub.setTargetAngle(69)), // Move arm angle above L2
         new WaitCommand(2),
         new InstantCommand(() -> elevatorSub.setTargetHeight(54)),
         new WaitCommand(5),
-        new InstantCommand(() -> armSub.setTargetAngle(139)), // Set height to near L2
+        new InstantCommand(() -> armSub.setTargetAngle(49)), // Set height to near L2
         new WaitCommand(2),
         new InstantCommand(() -> elevatorSub.setTargetHeight(5))); // Move elevator down to place coral
   }

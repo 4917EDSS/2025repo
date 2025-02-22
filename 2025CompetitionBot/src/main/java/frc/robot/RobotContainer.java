@@ -119,7 +119,7 @@ public class RobotContainer {
     m_elevatorSub.setDefaultCommand(new ElevatorMoveWithJoystickCmd(m_operatorController, m_elevatorSub));
 
     // Register Swerve telemetry
-    m_drivetrainSub.registerTelemetry(swerveLogger::telemeterize);
+    //m_drivetrainSub.registerTelemetry(swerveLogger::telemeterize);
 
     // Configure the trigger bindings
     configureBindings();
