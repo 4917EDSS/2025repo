@@ -16,9 +16,13 @@ import static edu.wpi.first.units.Units.RotationsPerSecond;
 import java.util.Arrays;
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.swerve.SwerveRequest;
+import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.commands.PathPlannerAuto;
+import com.pathplanner.lib.path.PathConstraints;
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.NetworkTableEvent;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -66,7 +70,7 @@ public class RobotContainer {
   // Setting up bindings for necessary control of the swerve drive platform
   private final SwerveRequest.FieldCentric drive = new SwerveRequest.FieldCentric()
       .withDeadband(MaxSpeed * 0.1).withRotationalDeadband(MaxAngularRate * 0.1) // Add a 10% deadband
-      .withDriveRequestType(DriveRequestType.OpenLoopVoltage); // Use open-loop control for drive motors
+      .withDriveRequestType(DriveRequestType.Velocity);
   private final SwerveRequest.SwerveDriveBrake brake = new SwerveRequest.SwerveDriveBrake();
   private final SwerveRequest.PointWheelsAt point = new SwerveRequest.PointWheelsAt();
   private final SwerveTelemetry swerveLogger = new SwerveTelemetry(MaxSpeed);
@@ -95,6 +99,10 @@ public class RobotContainer {
 
   SendableChooser<Command> m_Chooser = new SendableChooser<>();
 
+  private final PathConstraints m_constraints = new PathConstraints(
+      6.21, 3.0,
+      Units.degreesToRadians(360), Units.degreesToRadians(720));
+
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
     // Only initialize vision if a camera is connected (prevents crash)
@@ -111,8 +119,8 @@ public class RobotContainer {
     // Default commands
     m_drivetrainSub.setDefaultCommand(
         // Note: X is defined as forward and Y as left according to WPILib convention
-        m_drivetrainSub.applyRequest(() -> drive.withVelocityX(-m_driverController.getLeftY() * MaxSpeed) // Drive forward with negative Y (forward)
-            .withVelocityY(-m_driverController.getLeftX() * MaxSpeed) // Drive left with negative X (left)
+        m_drivetrainSub.applyRequest(() -> drive.withVelocityX(-Math.abs(m_driverController.getLeftY()) * m_driverController.getLeftY() * MaxSpeed) // Drive forward with negative Y (forward)
+            .withVelocityY(-Math.abs(m_driverController.getLeftX())  * m_driverController.getLeftX() * MaxSpeed) // Drive left with negative X (left)
             .withRotationalRate(-m_driverController.getRightX() * MaxAngularRate) // Drive counterclockwise with negative X (left)
         ));
     m_armSub.setDefaultCommand(new ArmMoveWithJoystickCmd(m_operatorController, m_armSub));
@@ -138,6 +146,12 @@ public class RobotContainer {
     // Drive controller bindings ////////////////////////////////////////////////////////////////////////////////////////////////
 
     // Square
+    m_driverController.square().whileTrue(AutoBuilder.pathfindToPose(
+        new Pose2d(2, 6.5, new Rotation2d(0)),
+        m_constraints,
+        0.0 // Goal end velocity in meters/sec
+    ));
+
 
     // Cross
     m_driverController.cross().whileTrue(m_drivetrainSub.applyRequest(() -> brake));
@@ -245,6 +259,7 @@ public class RobotContainer {
    *
    * @return the command to run in autonomous
    */
+
   public Command getAutonomousCommand() {
     return m_Chooser.getSelected();
   }
@@ -255,4 +270,3 @@ public class RobotContainer {
     SmartDashboard.putData("auto choices", m_Chooser);
   }
 }
-
