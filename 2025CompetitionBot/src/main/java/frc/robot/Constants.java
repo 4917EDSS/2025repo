@@ -184,7 +184,6 @@ public final class Constants {
   }
 
 
-
   public final static class Vision {
     //TODO: change apriltag heights to actual heights, as well as the offsets. This is from last year.
     public static final double kApriltagOffset = 0.0825; // Apriltag height + bot height (Will need to be changed in the future)
@@ -220,20 +219,20 @@ public final class Constants {
 
     /* Elevator Motors */
     public static final TestMotorParameters kElevatorMotor1 =
-        new TestMotorParameters("ElevatorMotor1", 1, 0.1, 1000, 75, 3.0, 10, 1.5, 0.1, 0.5);
+        new TestMotorParameters("ElevatorMotor1", 1, 0.1, 1000, 75, 74, 10, 1.5, 20, 5);
     public static final TestMotorParameters kElevatorMotor2 =
-        new TestMotorParameters("ElevatorMotor2", 2, 0.1, 1000, 75, 3.0, 10, 1.5, 0.1, 0.5);
+        new TestMotorParameters("ElevatorMotor2", 2, 0.1, 1000, 75, 74, 10, 1.5, 20, 5);
     /* Intake Motors */
     public static final TestMotorParameters kIntakeMotor1 =
-        new TestMotorParameters("IntakeMotor1", 3, 0.1, 1000, 75, 3.0, 10, 1.5, 0.1, 0.5);
+        new TestMotorParameters("IntakeMotor1", 1, 0.1, 1000, 75, 3.0, 10, 1.5, 0.1, 0.5);
     public static final TestMotorParameters kIntakeMotor2 =
-        new TestMotorParameters("IntakeMotor2", 4, 0.1, 1000, 75, 3.0, 10, 1.5, 0.1, 0.5);
+        new TestMotorParameters("IntakeMotor2", 1, 0.1, 1000, 75, 3.0, 10, 1.5, 0.1, 0.5);
     /* Arm Motor */
     public static final TestMotorParameters kArmMotor =
-        new TestMotorParameters("ArmMotor", 5, 0.1, 1000, 75, 3.0, 10, 1.5, 0.1, 0.5);
+        new TestMotorParameters("ArmMotor", 1, 0.1, 1000, 75, 3.0, 10, 1.5, 0.1, 0.5);
     /* Climb Motor */
     public static final TestMotorParameters kClimbMotor =
-        new TestMotorParameters("ClimbMotor", 6, 0.1, 1000, 75, 3.0, 10, 1.5, 0.1, 0.5);
+        new TestMotorParameters("ClimbMotor", 1, 0.1, 1000, 75, 3.0, 10, 1.5, 0.1, 0.5);
   }
 
 
