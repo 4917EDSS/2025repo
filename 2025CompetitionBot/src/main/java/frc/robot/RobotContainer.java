@@ -19,7 +19,9 @@ import com.ctre.phoenix6.swerve.SwerveRequest;
 import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.commands.PathPlannerAuto;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.net.WebServer;
 import edu.wpi.first.networktables.NetworkTableEvent;
+import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -120,6 +122,8 @@ public class RobotContainer {
 
     // Register Swerve telemetry
     //m_drivetrainSub.registerTelemetry(swerveLogger::telemeterize);
+
+    WebServer.start(5800, Filesystem.getDeployDirectory().getPath());
 
     // Configure the trigger bindings
     configureBindings();
