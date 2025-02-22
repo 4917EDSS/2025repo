@@ -30,7 +30,7 @@ public class ArmSub extends TestableSubsystem {
   private final SparkLimitSwitch m_forwardLimitSwitch = m_armMotor.getForwardLimitSwitch();
   private final SparkLimitSwitch m_revLimitSwitch = m_armMotor.getReverseLimitSwitch();
 
-  private final ArmFeedforward m_armFeedforward = new ArmFeedforward(0.001, 0.001, 0.0);
+  private final ArmFeedforward m_armFeedforward = new ArmFeedforward(0.00, 0.01, 0.0);
   private final PIDController m_armPid = new PIDController(0.01, 0, 0); // TODO: Tune
 
   private double m_targetAngle = 0;
@@ -65,7 +65,7 @@ public class ArmSub extends TestableSubsystem {
     m_sbArmAngle = m_shuffleboardTab.add("Arm angle", getAngle()).getEntry();
     m_sbArmVelocity = m_shuffleboardTab.add("Arm Velocity", getVelocity()).getEntry();
     m_sbArmForwardLimit = m_shuffleboardTab.add("Arm Limit Forward", m_forwardLimitSwitch.isPressed()).getEntry();
-    m_revsbArmFowardLimit = m_shuffleboardTab.add("Arm Limit Forward", m_revLimitSwitch.isPressed()).getEntry();
+    m_revsbArmFowardLimit = m_shuffleboardTab.add("Arm Limit Reverse", m_revLimitSwitch.isPressed()).getEntry();
   }
 
   @Override
