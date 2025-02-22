@@ -61,15 +61,15 @@ import frc.robot.utils.TestManager;
 public class RobotContainer {
   boolean isLimelight = true;
   // Swerve constants and objects (from CTRE Phoenix Tuner X)
+  private double MaxSpeed = TunerConstants.kSpeedAt12Volts.in(MetersPerSecond); // kSpeedAt12Volts desired top speed
+  private double MaxAngularRate = RotationsPerSecond.of(0.75).in(RadiansPerSecond); // 3/4 of a rotation per second max angular velocity
   // Setting up bindings for necessary control of the swerve drive platform
   private final SwerveRequest.FieldCentric drive = new SwerveRequest.FieldCentric()
-      .withDeadband(Constants.DriveTrain.MaxSpeed * 0.1)
-      .withRotationalDeadband(Constants.DriveTrain.MaxAngularRate * 0.1) // Add a 10% deadband
+      .withDeadband(MaxSpeed * 0.1).withRotationalDeadband(MaxAngularRate * 0.1) // Add a 10% deadband
       .withDriveRequestType(DriveRequestType.OpenLoopVoltage); // Use open-loop control for drive motors
-
   private final SwerveRequest.SwerveDriveBrake brake = new SwerveRequest.SwerveDriveBrake();
   private final SwerveRequest.PointWheelsAt point = new SwerveRequest.PointWheelsAt();
-  private final SwerveTelemetry swerveLogger = new SwerveTelemetry(Constants.DriveTrain.MaxSpeed);
+  private final SwerveTelemetry swerveLogger = new SwerveTelemetry(MaxSpeed);
 
   // RobotContainer constants
   private final TestManager m_testManager = new TestManager();
@@ -111,11 +111,10 @@ public class RobotContainer {
     // Default commands
     m_drivetrainSub.setDefaultCommand(
         // Note: X is defined as forward and Y as left according to WPILib convention
-        m_drivetrainSub
-            .applyRequest(() -> drive.withVelocityX(-m_driverController.getLeftY() * Constants.DriveTrain.MaxSpeed) // Drive forward with negative Y (forward)
-                .withVelocityY(-m_driverController.getLeftX() * Constants.DriveTrain.MaxSpeed) // Drive left with negative X (left)
-                .withRotationalRate(-m_driverController.getRightX() * Constants.DriveTrain.MaxAngularRate) // Drive counterclockwise with negative X (left)
-            ));
+        m_drivetrainSub.applyRequest(() -> drive.withVelocityX(-m_driverController.getLeftY() * MaxSpeed) // Drive forward with negative Y (forward)
+            .withVelocityY(-m_driverController.getLeftX() * MaxSpeed) // Drive left with negative X (left)
+            .withRotationalRate(-m_driverController.getRightX() * MaxAngularRate) // Drive counterclockwise with negative X (left)
+        ));
     m_armSub.setDefaultCommand(new ArmMoveWithJoystickCmd(m_operatorController, m_armSub));
     m_elevatorSub.setDefaultCommand(new ElevatorMoveWithJoystickCmd(m_operatorController, m_elevatorSub));
 
@@ -156,8 +155,10 @@ public class RobotContainer {
     }
 
     // L2
+    m_driverController.L2().onTrue(new InstantCommand(() -> m_armSub.setTargetAngle(90), m_armSub));
 
     // R2
+    m_driverController.R2().onTrue(new InstantCommand(() -> m_armSub.setTargetAngle(45), m_armSub));
 
     // Share
 
