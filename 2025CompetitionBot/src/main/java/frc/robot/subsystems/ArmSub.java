@@ -117,7 +117,7 @@ public class ArmSub extends TestableSubsystem {
    */
   public double getAngle() {
     // TODO:  Do we need to account for the 0 to 360 rollover?
-    return (m_absoluteEncoder.getPosition() * 360)- 303.12; // returns angle
+    return (m_absoluteEncoder.getPosition() * 360) - 303.12; // returns angle
   }
 
   /**

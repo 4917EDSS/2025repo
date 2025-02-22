@@ -160,10 +160,10 @@ public class RobotContainer {
 
     // L2
     // m_driverController.L2().onTrue(new InstantCommand(() -> m_armSub.setTargetAngle(0), m_armSub));
-    m_driverController.L2().onTrue(new SetArmToPositionCmd(0, m_armSub));
+    m_driverController.L2().onTrue(new SetArmToPositionCmd(30, m_armSub));
 
-    // R2
-    m_driverController.R2().onTrue(new SetArmToPositionCmd(-45, m_armSub));
+    // R2S
+    m_driverController.R2().onTrue(new SetArmToPositionCmd(0, m_armSub));
     // m_driverController.R2().onTrue(new InstantCommand(() -> m_armSub.setTargetAngle(45), m_armSub));
 
     // Share
