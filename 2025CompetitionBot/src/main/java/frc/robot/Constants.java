@@ -196,6 +196,16 @@ public final class Constants {
     public static final int kOperatorControllerPort = 1;
   }
 
+  public final static class DangerZones {
+    public static final double kElevatorDangerZone1 = 341.53;
+    public static final double kArmDangerZone1 = -86.0;
+    public static final double kElevatorDangerZoneRange1 = 774.47; // All of these values are temporary
+    public static final double kElevatorDangerZoneRange2 = 1166.2;
+    public static final double kArmDangerZoneRange1 = -69.9;
+    public static final double kArmDangerZoneRange2 = -87.8;
+
+  }
+
   ////////// Test pass/fail/warn parameters ///////////////////////////////////////////////////////
   public static final class Tests {
     public static final String kTabName = "Tests";
