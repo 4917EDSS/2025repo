@@ -121,8 +121,9 @@ public class RobotContainer {
     // Default commands
     m_drivetrainSub.setDefaultCommand(
         // Note: X is defined as forward and Y as left according to WPILib convention
-        m_drivetrainSub.applyRequest(() -> drive.withVelocityX(-Math.abs(m_driverController.getLeftY()) * m_driverController.getLeftY() * MaxSpeed) // Drive forward with negative Y (forward)
-            .withVelocityY(-Math.abs(m_driverController.getLeftX())  * m_driverController.getLeftX() * MaxSpeed) // Drive left with negative X (left)
+        m_drivetrainSub.applyRequest(() -> drive
+            .withVelocityX(-Math.abs(m_driverController.getLeftY()) * m_driverController.getLeftY() * MaxSpeed) // Drive forward with negative Y (forward)
+            .withVelocityY(-Math.abs(m_driverController.getLeftX()) * m_driverController.getLeftX() * MaxSpeed) // Drive left with negative X (left)
             .withRotationalRate(-m_driverController.getRightX() * MaxAngularRate) // Drive counterclockwise with negative X (left)
         ));
     m_armSub.setDefaultCommand(new ArmMoveWithJoystickCmd(m_operatorController, m_armSub));

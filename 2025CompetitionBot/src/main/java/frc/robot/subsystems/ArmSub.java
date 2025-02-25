@@ -4,6 +4,7 @@
 
 package frc.robot.subsystems;
 
+import java.util.logging.Logger;
 import com.revrobotics.spark.SparkAbsoluteEncoder;
 import com.revrobotics.spark.SparkBase;
 import com.revrobotics.spark.SparkLimitSwitch;
@@ -24,6 +25,7 @@ import frc.robot.RobotContainer;
 import frc.robot.utils.TestableSubsystem;
 
 public class ArmSub extends TestableSubsystem {
+  private static Logger m_logger = Logger.getLogger(ArmSub.class.getName());
   private final SparkMax m_armMotor = new SparkMax(Constants.CanIds.kArmMotor, MotorType.kBrushless);
   private final SparkAbsoluteEncoder m_absoluteEncoder = m_armMotor.getAbsoluteEncoder();
 
@@ -66,6 +68,13 @@ public class ArmSub extends TestableSubsystem {
     m_sbArmVelocity = m_shuffleboardTab.add("Arm Velocity", getVelocity()).getEntry();
     m_sbArmForwardLimit = m_shuffleboardTab.add("Arm Limit Forward", m_forwardLimitSwitch.isPressed()).getEntry();
     m_revsbArmFowardLimit = m_shuffleboardTab.add("Arm Limit Reverse", m_revLimitSwitch.isPressed()).getEntry();
+    init();
+  }
+
+  public void init() {
+    m_logger.info("Initializing ArmSub Subsystem");
+
+
   }
 
   @Override

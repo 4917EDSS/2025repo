@@ -128,7 +128,7 @@ public class LedSub extends SubsystemBase {
    * Use this method to reset all of the hardware and states to safe starting values
    */
   public void init() {
-    m_logger.info("Initializing LedSub");
+    m_logger.info("Initializing LedSub Subsystem");
     setZoneColour(LedZones.ALL, LedColour.START_GREEN);
   }
 

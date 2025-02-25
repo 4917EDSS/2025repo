@@ -4,6 +4,7 @@
 
 package frc.robot.subsystems;
 
+import java.util.logging.Logger;
 import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
 import com.ctre.phoenix6.configs.MotorOutputConfigs;
 import com.ctre.phoenix6.configs.TalonFXConfigurator;
@@ -19,6 +20,9 @@ import frc.robot.RobotContainer;
 import frc.robot.utils.TestableSubsystem;
 
 public class ClimbSub extends TestableSubsystem {
+
+
+  private static Logger m_logger = Logger.getLogger(ClimbSub.class.getName());
   // Create the climb motor
   private final TalonFX m_climbMotor = new TalonFX(Constants.CanIds.kClimbMotor);
 
@@ -53,7 +57,14 @@ public class ClimbSub extends TestableSubsystem {
     m_sbClimbInLimit = m_shuffleboardTab.add("Climb In Limit", isAtInLimit()).getEntry(); // in limit
     m_sbClimbOutLimit = m_shuffleboardTab.add("Climb Out Limit", isAtOutLimit()).getEntry(); // out limit
 
+    init();
+  }
+
+  public void init() {
+    m_logger.info("Initializing ClimbSub Subsystem");
+    setPower(0.0);
     resetPosition();
+
   }
 
   @Override

@@ -4,6 +4,7 @@
 
 package frc.robot.subsystems;
 
+import java.util.logging.Logger;
 import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
@@ -14,6 +15,7 @@ import frc.robot.Constants;
 import frc.robot.RobotContainer;
 
 public class PowerSub extends SubsystemBase {
+  private static Logger m_logger = Logger.getLogger(PowerSub.class.getName());
 
   PowerDistribution powerDistributionModule = new PowerDistribution(1, ModuleType.kRev);
 
@@ -98,9 +100,11 @@ public class PowerSub extends SubsystemBase {
         m_shuffleboardTab.add("Arduino" + Constants.Breakers.kArduino, 0).withPosition(5, 1).getEntry();
     m_sbRadio =
         m_shuffleboardTab.add("Radio" + Constants.Breakers.kRadio, 0).withPosition(5, 2).getEntry();
+    init();
   }
 
   public void init() {
+    m_logger.info("Initializing PowerSub Subsystem");
     updateShuffleBoard();
   }
 
