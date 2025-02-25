@@ -10,12 +10,9 @@ import com.ctre.phoenix6.configs.TalonFXConfigurator;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
-import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.wpilibj.DigitalInput;
-import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
-import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants;
-import frc.robot.RobotContainer;
 import frc.robot.utils.TestableSubsystem;
 
 public class ClimbSub extends TestableSubsystem {
@@ -24,9 +21,6 @@ public class ClimbSub extends TestableSubsystem {
 
   private final DigitalInput m_climbInLimit = new DigitalInput(Constants.DioIds.kClimbInLimitSwitch);
   private final DigitalInput m_climbOutLimit = new DigitalInput(Constants.DioIds.kClimbOutLimitSwitch);
-
-  private final ShuffleboardTab m_shuffleboardTab = Shuffleboard.getTab("Climb");
-  private final GenericEntry m_sbClimbPower, m_sbClimbInLimit, m_sbClimbOutLimit;
 
 
   /** Creates a new ClimbSub. */
@@ -48,10 +42,11 @@ public class ClimbSub extends TestableSubsystem {
     outputConfigs.NeutralMode = NeutralModeValue.Brake;
     talonFxConfiguarator.apply(outputConfigs);
 
-    /* Add motor and limit switche(s) to shuffleboard */
-    m_sbClimbPower = m_shuffleboardTab.add("Climb Motor Power", 0.0).getEntry(); //power
-    m_sbClimbInLimit = m_shuffleboardTab.add("Climb In Limit", isAtInLimit()).getEntry(); // in limit
-    m_sbClimbOutLimit = m_shuffleboardTab.add("Climb Out Limit", isAtOutLimit()).getEntry(); // out limit
+    /* Add motor and limit switche(s) to Smartdashboard */
+    // Climb power widget is in setPower method
+    // Tells us if climb is all the way in or out
+    SmartDashboard.putBoolean("Cl InLimit", isAtInLimit());
+    SmartDashboard.putBoolean("Cl OutLimit", isAtOutLimit());
 
     resetPosition();
   }
@@ -59,16 +54,6 @@ public class ClimbSub extends TestableSubsystem {
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
-    updateShuffleBoard();
-  }
-
-  private void updateShuffleBoard() {
-    if(!RobotContainer.disableShuffleboardPrint) {
-      m_sbClimbPower.setDouble(m_climbMotor.get());
-    }
-    // m_sbClimbLeftheight.setDouble(getLeftHeight()); //TODO: add height
-    m_sbClimbInLimit.setBoolean(isAtInLimit());
-    m_sbClimbOutLimit.setBoolean(isAtOutLimit());
   }
 
   public boolean isAtInLimit() {
@@ -87,6 +72,7 @@ public class ClimbSub extends TestableSubsystem {
    */
   public void setPower(double power) {
     m_climbMotor.set(power);
+    SmartDashboard.putNumber("Cl Power", power); // Climb power
   }
 
   /**

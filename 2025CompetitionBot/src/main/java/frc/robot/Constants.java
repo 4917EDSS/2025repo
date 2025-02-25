@@ -132,7 +132,7 @@ public final class Constants {
 
     public final static double kHeightTolerance = 5; // Height tolerance for elevator position
 
-    //Sets max power for isElevatorAtTargetHeight function
+    // Sets max power for isElevatorAtTargetHeight function
     public final static double kAtTargetMaxVelocity = 150;
   }
 

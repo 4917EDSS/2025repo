@@ -12,7 +12,6 @@ import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
-import edu.wpi.first.math.controller.ArmFeedforward;
 import edu.wpi.first.math.controller.ElevatorFeedforward;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.DigitalInput;
@@ -78,11 +77,12 @@ public class ElevatorSub extends TestableSubsystem {
       runHeightControl(false);
     }
 
-    SmartDashboard.putNumber("El Enc", getPositionMm());
-    SmartDashboard.putBoolean("El Auto", m_enableAutomation);
-    SmartDashboard.putBoolean("El UpLimit", isAtUpperLimit());
-    SmartDashboard.putBoolean("El Set Enc", m_isElevatorEncoderSet);
-    SmartDashboard.putBoolean("El RstEnc", encoderResetSwitchHit());
+    // Power widget is in setPower method
+    SmartDashboard.putNumber("El Enc", getPositionMm()); // Elevator position
+    SmartDashboard.putBoolean("El Auto", m_enableAutomation); // True if automation is running
+    SmartDashboard.putBoolean("El UpLimit", isAtUpperLimit()); // True if we are at the upper limit
+    SmartDashboard.putBoolean("El Set Enc", m_isElevatorEncoderSet); // True once the encoder is set
+    SmartDashboard.putBoolean("El RstEnc", encoderResetSwitchHit()); // True if we hit the encoder reset switch
 
     // If we haven't set the relative encoder's position yet, check if we are at the switch that tells us to do so
     if(!m_isElevatorEncoderSet) {
@@ -127,7 +127,7 @@ public class ElevatorSub extends TestableSubsystem {
     }
 
     m_elevatorMotor.set(powerValue);
-    SmartDashboard.putNumber("El Power", powerValue);
+    SmartDashboard.putNumber("El Power", powerValue); // Elevator power
   }
 
   /**
