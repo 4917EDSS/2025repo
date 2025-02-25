@@ -4,6 +4,7 @@
 
 package frc.robot;
 
+import java.util.logging.Level;
 import edu.wpi.first.units.measure.Angle;
 import frc.robot.utils.TestMotorParameters;
 import static edu.wpi.first.units.Units.*;
@@ -18,6 +19,9 @@ import static edu.wpi.first.units.Units.*;
  * constants are needed, to reduce verbosity.
  */
 public final class Constants {
+  // Max log level to print (SEVERE, WARNING, INFO, CONFIG, FINE, FINER, or FINEST)
+  // e.g. Level.WARNING will only print WARNING and SEVERE log messages
+  public static final Level kLogLevel = Level.FINE;
 
   ////////// Hardware mapping /////////////////////////////////////////////////////////////////////
   public static class CanIds {
@@ -132,7 +136,7 @@ public final class Constants {
 
     public final static double kHeightTolerance = 5; // Height tolerance for elevator position
 
-    //Sets max power for isElevatorAtTargetHeight function
+    // Sets max power for isElevatorAtTargetHeight function
     public final static double kAtTargetMaxVelocity = 150;
   }
 

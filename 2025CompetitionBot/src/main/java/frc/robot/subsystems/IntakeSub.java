@@ -4,6 +4,7 @@
 
 package frc.robot.subsystems;
 
+import java.util.logging.Logger;
 import com.revrobotics.spark.SparkBase;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.SparkMax;
@@ -15,6 +16,7 @@ import frc.robot.utils.TestableSubsystem;
 
 
 public class IntakeSub extends TestableSubsystem {
+  private static Logger m_logger = Logger.getLogger(IntakeSub.class.getName());
   private final SparkMax m_intakeDeployMotor = new SparkMax(Constants.CanIds.kIntakeDeployMotor, MotorType.kBrushless);
   private final SparkMax m_intakeRollersMotor =
       new SparkMax(Constants.CanIds.kIntakeRollersMotor, MotorType.kBrushless);
@@ -52,7 +54,13 @@ public class IntakeSub extends TestableSubsystem {
     // we should not save the changes to flash (i.e. want kNoPersistParameters)
     //m_intakeMotor.configure(config, SparkBase.ResetMode.kNoResetSafeParameters, 
     //  SparkBase.PersistMode.kNoPersistParameters);
+    init();
+  }
+
+  public void init() {
+    m_logger.info("Initializing IntakeSub Subsystem");
     resetPosition();
+
   }
 
   @Override

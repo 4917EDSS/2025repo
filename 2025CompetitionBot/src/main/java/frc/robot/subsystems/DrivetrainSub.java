@@ -3,6 +3,7 @@ package frc.robot.subsystems;
 import static edu.wpi.first.units.Units.Second;
 import static edu.wpi.first.units.Units.Volts;
 import java.util.function.Supplier;
+import java.util.logging.Logger;
 import com.ctre.phoenix6.SignalLogger;
 import com.ctre.phoenix6.Utils;
 import com.ctre.phoenix6.swerve.SwerveDrivetrainConstants;
@@ -37,6 +38,7 @@ import frc.robot.generated.TunerConstants.TunerSwerveDrivetrain;
  */
 
 public class DrivetrainSub extends TunerSwerveDrivetrain implements Subsystem {
+  private static Logger m_logger = Logger.getLogger(DrivetrainSub.class.getName());
   private static final double kSimLoopPeriod = 0.005; // 5 ms
   private Notifier m_simNotifier = null;
   private double m_lastSimTime;
@@ -126,10 +128,10 @@ public class DrivetrainSub extends TunerSwerveDrivetrain implements Subsystem {
       startSimThread();
     }
 
-      /* Using the constants for the respective robot */
-  if(Constants.RobotSpecific.serialNumber.equals(Constants.RobotSpecific.PracticeSerialNumber)){
-    
-  }
+    /* Using the constants for the respective robot */
+    if(Constants.RobotSpecific.serialNumber.equals(Constants.RobotSpecific.PracticeSerialNumber)) {
+
+    }
 
     RobotConfig config;
     try {
@@ -166,6 +168,11 @@ public class DrivetrainSub extends TunerSwerveDrivetrain implements Subsystem {
 
 
     initializeFieldDashboard();
+    init();
+  }
+
+  public void init() {
+    m_logger.info("Initializing DrivetrainSub Subsystem");
   }
 
 
@@ -212,6 +219,7 @@ public class DrivetrainSub extends TunerSwerveDrivetrain implements Subsystem {
   public void driveRobotRelative(ChassisSpeeds speeds) {
     setControl(new SwerveRequest.ApplyRobotSpeeds().withSpeeds(speeds));
   }
+
 
   @Override
   public void periodic() {

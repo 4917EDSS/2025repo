@@ -65,7 +65,7 @@ import frc.robot.utils.TestManager;
  * subsystems, commands, and trigger mappings) should be declared here.
  */
 public class RobotContainer {
-  boolean isLimelight = true;
+  boolean m_isLimelight = true;
   // Swerve constants and objects (from CTRE Phoenix Tuner X)
   private double MaxSpeed = TunerConstants.kSpeedAt12Volts.in(MetersPerSecond); // kSpeedAt12Volts desired top speed
   private double MaxAngularRate = RotationsPerSecond.of(2.08 / 2.0).in(RadiansPerSecond); // 3/4 of a rotation per second max angular velocity, 2.08 is the speed that made it tip over, very funny video
@@ -108,21 +108,25 @@ public class RobotContainer {
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
     // Only initialize vision if a camera is connected (prevents crash)
-    NetworkTableEvent.Kind[] topicsArray = NetworkTableEvent.Kind.values();
-    if(!Arrays.asList(topicsArray).contains("limelight")) {
-      isLimelight = false;
-      m_visionSub = null;
-    } else {
-      m_visionSub = new VisionSub(m_drivetrainSub);
-    }
+    // NetworkTableEvent.Kind[] topicsArray = NetworkTableEvent.Kind.values();
+    // if(!Arrays.asList(topicsArray).contains("limelight-left")
+    //   && !Arrays.asList(topicsArray).contains("limelight-right")) {
+    m_isLimelight = false;
+    m_visionSub = null;
+    //   System.out.println("No limelights found");
+    // } else {
+    //m_visionSub = new VisionSub(m_drivetrainSub);
+    //System.out.println("Limelight Found");
+    //}
 
     m_testManager.setTestCommand(new RunTestsGrp(m_climbSub, m_armSub, m_elevatorSub, m_intakeSub, m_testManager));
 
     // Default commands
     m_drivetrainSub.setDefaultCommand(
         // Note: X is defined as forward and Y as left according to WPILib convention
-        m_drivetrainSub.applyRequest(() -> drive.withVelocityX(-Math.abs(m_driverController.getLeftY()) * m_driverController.getLeftY() * MaxSpeed) // Drive forward with negative Y (forward)
-            .withVelocityY(-Math.abs(m_driverController.getLeftX())  * m_driverController.getLeftX() * MaxSpeed) // Drive left with negative X (left)
+        m_drivetrainSub.applyRequest(() -> drive
+            .withVelocityX(-Math.abs(m_driverController.getLeftY()) * m_driverController.getLeftY() * MaxSpeed) // Drive forward with negative Y (forward)
+            .withVelocityY(-Math.abs(m_driverController.getLeftX()) * m_driverController.getLeftX() * MaxSpeed) // Drive left with negative X (left)
             .withRotationalRate(-m_driverController.getRightX() * MaxAngularRate) // Drive counterclockwise with negative X (left)
         ));
     m_armSub.setDefaultCommand(new ArmMoveWithJoystickCmd(m_operatorController, m_armSub));
@@ -165,7 +169,7 @@ public class RobotContainer {
         .applyRequest(() -> point
             .withModuleDirection(new Rotation2d(-m_driverController.getLeftY(), -m_driverController.getLeftX()))));
 
-    if(isLimelight) {
+    if(m_isLimelight) {
       // L1
       m_driverController.L1().onTrue(new AutoDriveCmd(m_visionSub, m_drivetrainSub));
       // R1

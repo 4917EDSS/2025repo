@@ -4,6 +4,9 @@
 
 package frc.robot;
 
+import java.util.logging.Handler;
+import java.util.logging.LogManager;
+import java.util.logging.Logger;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
@@ -14,6 +17,8 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
  * this project, you must also update the Main.java file in the project.
  */
 public class Robot extends TimedRobot {
+
+  private static Logger m_logger = Logger.getLogger(Robot.class.getName());
   private Command m_autonomousCommand;
 
   private final RobotContainer m_robotContainer;
@@ -28,11 +33,32 @@ public class Robot extends TimedRobot {
     m_robotContainer = new RobotContainer();
   }
 
+
+  @Override
+  public void robotInit() {
+    // Setup the logger
+    Logger rootLogger = LogManager.getLogManager().getLogger("");
+    rootLogger.setLevel(Constants.kLogLevel);
+    for(Handler handler : rootLogger.getHandlers()) {
+      handler.setLevel(Constants.kLogLevel);
+    }
+
+    // Log a message to each level to show which levels are currently enabled
+    m_logger.severe("Severe log level enabled");
+    m_logger.warning("Warning log level enabled");
+    m_logger.info("Info log level enabled");
+    m_logger.config("Config log level enabled");
+    m_logger.fine("Fine log level enabled");
+    m_logger.finer("Finer log level enabled");
+    m_logger.finest("Finest log level enabled");
+  }
+
   /**
    * This function is called every 20 ms, no matter the mode. Use this for items like diagnostics
    * that you want ran during disabled, autonomous, teleoperated and test.
    *
-   * <p>This runs after the mode specific periodic functions, but before LiveWindow and
+   * <p>
+   * This runs after the mode specific periodic functions, but before LiveWindow and
    * SmartDashboard integrated updating.
    */
   @Override
@@ -57,7 +83,7 @@ public class Robot extends TimedRobot {
     m_autonomousCommand = m_robotContainer.getAutonomousCommand();
 
     // schedule the autonomous command (example)
-    if (m_autonomousCommand != null) {
+    if(m_autonomousCommand != null) {
       m_autonomousCommand.schedule();
     }
   }
@@ -72,7 +98,7 @@ public class Robot extends TimedRobot {
     // teleop starts running. If you want the autonomous to
     // continue until interrupted by another command, remove
     // this line or comment it out.
-    if (m_autonomousCommand != null) {
+    if(m_autonomousCommand != null) {
       m_autonomousCommand.cancel();
     }
   }
