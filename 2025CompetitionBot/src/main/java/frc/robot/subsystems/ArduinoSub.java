@@ -4,22 +4,16 @@
 
 package frc.robot.subsystems;
 
-import edu.wpi.first.networktables.GenericEntry;
+import java.util.logging.Logger;
 import edu.wpi.first.wpilibj.SerialPort;
 import edu.wpi.first.wpilibj.SerialPort.Parity;
 import edu.wpi.first.wpilibj.SerialPort.StopBits;
-import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
-import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 
 public class ArduinoSub extends SubsystemBase {
-
-  private final ShuffleboardTab m_shuffleboardTab = Shuffleboard.getTab("Arduino");
-  private final GenericEntry m_sensorFlywheelNear, m_sensorFlywheelMid, m_sensorFlywheelFar, m_sensorCentreFlywheelSide,
-      m_sensorCentreIntakeSide, m_sensorIntakeFar,
-      m_sensorIntakeMid, m_sensorIntakeNear;
+  private static Logger m_logger = Logger.getLogger(ArduinoSub.class.getName());
 
   /** Creates a new ArduinoSub. */
   private static byte[] m_LEDUpdateMessage = new byte[75];
@@ -36,19 +30,11 @@ public class ArduinoSub extends SubsystemBase {
       new SerialPort(Constants.Arduino.kBaudRate, SerialPort.Port.kMXP, 8, Parity.kNone, StopBits.kOne);
 
   public ArduinoSub() {
-    m_sensorFlywheelNear = m_shuffleboardTab.add("S FW Near", 0).getEntry();
-    m_sensorFlywheelMid = m_shuffleboardTab.add("S FW Mid", 0).getEntry();
-    m_sensorFlywheelFar = m_shuffleboardTab.add("S FW Far", 0).getEntry();
-    m_sensorCentreFlywheelSide = m_shuffleboardTab.add("S Centre FW", 0).getEntry();
-    m_sensorCentreIntakeSide = m_shuffleboardTab.add("S Centre Intake", 0).getEntry();
-    m_sensorIntakeFar = m_shuffleboardTab.add("S Intk Far", 0).getEntry();
-    m_sensorIntakeMid = m_shuffleboardTab.add("Se Intk Mid", 0).getEntry();
-    m_sensorIntakeNear = m_shuffleboardTab.add("S Intk Near", 0).getEntry();
-
     init();
   }
 
   public void init() {
+    m_logger.info("Initializing ArduinoSub Subsystem");
     //Set led section to green
     m_SerialPort.setReadBufferSize(m_LEDUpdateMessage.length);
     m_LEDUpdateMessage[0] = Constants.Arduino.kMessageHeader;
@@ -61,24 +47,12 @@ public class ArduinoSub extends SubsystemBase {
     m_SerialPort.setTimeout(Constants.Arduino.kTimeOutLength); // John c: consider setting this to zero to only read the available bytes
   }
 
+
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
     RS232Listen();
     writeToSerial();
-    updateShuffleBoard();
-  }
-
-
-  private void updateShuffleBoard() {
-    m_sensorFlywheelNear.setDouble(m_intakeSensors[0]);
-    m_sensorFlywheelMid.setDouble(m_intakeSensors[1]);
-    m_sensorFlywheelFar.setDouble(m_intakeSensors[2]);
-    m_sensorCentreFlywheelSide.setDouble(m_intakeSensors[3]);
-    m_sensorCentreIntakeSide.setDouble(m_intakeSensors[4]);
-    m_sensorIntakeFar.setDouble(m_intakeSensors[5]);
-    m_sensorIntakeMid.setDouble(m_intakeSensors[6]);
-    m_sensorIntakeNear.setDouble(m_intakeSensors[7]);
   }
 
   public void writePixel(int x, int y, int r, int g, int b) {

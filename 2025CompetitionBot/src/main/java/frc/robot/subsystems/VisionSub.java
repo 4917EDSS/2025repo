@@ -4,6 +4,7 @@
 
 package frc.robot.subsystems;
 
+import java.util.logging.Logger;
 import com.ctre.phoenix6.swerve.SwerveDrivetrain.SwerveDriveState;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -18,9 +19,14 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.utils.LimelightHelpers;
 
 public class VisionSub extends SubsystemBase {
+
   String mt2Camera;
   int test = 0;
   NetworkTable m_networkTableMain;
+
+
+  private static Logger m_logger = Logger.getLogger(VisionSub.class.getName());
+
   double m_previousTimestamp;
   DrivetrainSub m_drivetrainSub;
   NetworkTable m_networkTableLowDist = NetworkTableInstance.getDefault().getTable("limelight-left");
@@ -90,6 +96,11 @@ public class VisionSub extends SubsystemBase {
     m_shuffleboardPipetype = m_ShuffleboardTab.add("Pipetype", "unknown").getEntry();
 
     m_drivetrainSub = drivetrainSub;
+    init();
+  }
+
+  public void init() {
+    m_logger.info("Initializing VisionSub Subsystem");
   }
 
   @Override

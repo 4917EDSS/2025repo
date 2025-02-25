@@ -4,6 +4,7 @@
 
 package frc.robot.subsystems;
 
+import java.util.logging.Logger;
 import com.revrobotics.spark.SparkAbsoluteEncoder;
 import com.revrobotics.spark.SparkBase;
 import com.revrobotics.spark.SparkLimitSwitch;
@@ -14,31 +15,23 @@ import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.SparkMaxConfig;
 import edu.wpi.first.math.controller.ArmFeedforward;
 import edu.wpi.first.math.controller.PIDController;
-import edu.wpi.first.networktables.GenericEntry;
-import edu.wpi.first.units.VelocityUnit;
-import edu.wpi.first.units.measure.Velocity;
-import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
-import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants;
-import frc.robot.RobotContainer;
 import frc.robot.utils.TestableSubsystem;
 
 public class ArmSub extends TestableSubsystem {
+  private static Logger m_logger = Logger.getLogger(ArmSub.class.getName());
   private final SparkMax m_armMotor = new SparkMax(Constants.CanIds.kArmMotor, MotorType.kBrushless);
   private final SparkAbsoluteEncoder m_absoluteEncoder = m_armMotor.getAbsoluteEncoder();
 
   private final SparkLimitSwitch m_forwardLimitSwitch = m_armMotor.getForwardLimitSwitch();
   private final SparkLimitSwitch m_revLimitSwitch = m_armMotor.getReverseLimitSwitch();
 
-  private final ArmFeedforward m_armFeedforward = new ArmFeedforward(0.00, 0.1, 0.0);
-  private final PIDController m_armPid = new PIDController(0.01, 0, 0); // TODO: Tune
+  private final ArmFeedforward m_armFeedforward = new ArmFeedforward(0.00, 0.01, 0.0);
+  private final PIDController m_armPid = new PIDController(0.0, 0, 0); // TODO: Tune
 
   private double m_targetAngle = 0;
   private boolean m_automationEnabled = false;
-
-  private final ShuffleboardTab m_shuffleboardTab = Shuffleboard.getTab("Arm");
-  private final GenericEntry m_sbArmPower, m_sbArmPosition, m_sbArmAngle, m_sbArmVelocity, m_sbArmForwardLimit,
-      m_revsbArmFowardLimit;
 
 
   /** Creates a new ArmSub. */
@@ -59,35 +52,25 @@ public class ArmSub extends TestableSubsystem {
     // Only persist parameters when configuring the motor on start up as this operation can be slow
     m_armMotor.configure(motorConfig, SparkBase.ResetMode.kResetSafeParameters,
         SparkBase.PersistMode.kPersistParameters);
+  }
 
-    m_sbArmPower = m_shuffleboardTab.add("Arm power", 0.0).getEntry();
-    m_sbArmPosition = m_shuffleboardTab.add("Arm raw enc", getPosition()).getEntry();
-    m_sbArmAngle = m_shuffleboardTab.add("Arm angle", getAngle()).getEntry();
-    m_sbArmVelocity = m_shuffleboardTab.add("Arm Velocity", getVelocity()).getEntry();
-    m_sbArmForwardLimit = m_shuffleboardTab.add("Arm Limit Forward", m_forwardLimitSwitch.isPressed()).getEntry();
-    m_revsbArmFowardLimit = m_shuffleboardTab.add("Arm Limit Reverse", m_revLimitSwitch.isPressed()).getEntry();
+  public void init() {
+    m_logger.info("Initializing ArmSub Subsystem");
+
   }
 
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
-    updateShuffleBoard();
+    // Smartdashboard widgets
+    // Arm power Smartdashboard is in setPower method
+    SmartDashboard.putNumber("Arm Raw Enc", getPosition()); // Raw encoder position
+    SmartDashboard.putNumber("Arm Ang", getAngle()); // Arm angle
 
     if(m_automationEnabled) {
       runAngleControl(false);
     } else {
       runAngleControl(true);
-    }
-  }
-
-  public void updateShuffleBoard() {
-    if(!RobotContainer.disableShuffleboardPrint) {
-      m_sbArmPower.setDouble(m_armMotor.get());
-      m_sbArmPosition.setDouble(getPosition());
-      m_sbArmAngle.setDouble(getAngle());
-      m_sbArmVelocity.setDouble(getVelocity());
-      m_sbArmForwardLimit.setBoolean(m_forwardLimitSwitch.isPressed());
-      m_revsbArmFowardLimit.setBoolean(m_revLimitSwitch.isPressed());
     }
   }
 
@@ -98,6 +81,7 @@ public class ArmSub extends TestableSubsystem {
    */
   public void setPower(double power) {
     m_armMotor.set(power);
+    SmartDashboard.putNumber("Arm Power", power); // Arm power
   }
 
   /**
@@ -205,6 +189,7 @@ public class ArmSub extends TestableSubsystem {
       return false;
     }
   }
+
 
   //////////////////// Methods used for automated testing ////////////////////
   /**

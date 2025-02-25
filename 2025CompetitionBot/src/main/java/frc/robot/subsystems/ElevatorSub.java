@@ -4,6 +4,7 @@
 
 package frc.robot.subsystems;
 
+import java.util.logging.Logger;
 import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
 import com.ctre.phoenix6.configs.MotorOutputConfigs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
@@ -12,7 +13,6 @@ import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
-import edu.wpi.first.math.controller.ArmFeedforward;
 import edu.wpi.first.math.controller.ElevatorFeedforward;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.DigitalInput;
@@ -21,13 +21,14 @@ import frc.robot.Constants;
 import frc.robot.utils.TestableSubsystem;
 
 public class ElevatorSub extends TestableSubsystem {
+  private static Logger m_logger = Logger.getLogger(ElevatorSub.class.getName());
   private final TalonFX m_elevatorMotor = new TalonFX(Constants.CanIds.kElevatorMotor);
   private final TalonFX m_elevatorMotor2 = new TalonFX(Constants.CanIds.kElevatorMotor2);
   private final DigitalInput m_elevatorUpperLimit = new DigitalInput(Constants.DioIds.kElevatorUpperLimit);
   private final DigitalInput m_encoderResetSwitch = new DigitalInput(Constants.DioIds.kElevatorEncoderResetSwitch);
 
-  private final ElevatorFeedforward m_feedforward = new ElevatorFeedforward(0.001, .1, 0.0);
-  private final PIDController m_elevatorPID = new PIDController(0.002, 0.0, 0.0);
+  private final ElevatorFeedforward m_feedforward = new ElevatorFeedforward(0.0, 0.065, 0.0);
+  private final PIDController m_elevatorPID = new PIDController(0.00, 0.0, 0.0);
 
   private double m_targetHeight = 0.0;
   private boolean m_enableAutomation = false;
@@ -39,6 +40,8 @@ public class ElevatorSub extends TestableSubsystem {
 
   /** Creates a new ElevatorSub. */
   public ElevatorSub() {
+
+
     TalonFXConfigurator talonFxConfiguarator = m_elevatorMotor.getConfigurator();
     TalonFXConfigurator talonFxConfiguarator2 = m_elevatorMotor2.getConfigurator();
 
@@ -65,6 +68,11 @@ public class ElevatorSub extends TestableSubsystem {
     m_elevatorMotor.getConfigurator().apply(config);
     m_elevatorMotor2.getConfigurator().apply(config);
 
+    init();
+  }
+
+  public void init() {
+    m_logger.info("Initializing ElevatorSub Subsystem");
     m_elevatorMotor.setPosition(Constants.Elevator.kStartingHeight);
     setPositionMm(Constants.Elevator.kStartingHeight);
   }
@@ -78,11 +86,12 @@ public class ElevatorSub extends TestableSubsystem {
       runHeightControl(false);
     }
 
-    SmartDashboard.putNumber("El Enc", getPositionMm());
-    SmartDashboard.putBoolean("El Auto", m_enableAutomation);
-    SmartDashboard.putBoolean("El UpLimit", isAtUpperLimit());
-    SmartDashboard.putBoolean("El Set Enc", m_isElevatorEncoderSet);
-    SmartDashboard.putBoolean("El RstEnc", encoderResetSwitchHit());
+    // Power widget is in setPower method
+    SmartDashboard.putNumber("El Enc", getPositionMm()); // Elevator position
+    SmartDashboard.putBoolean("El Auto", m_enableAutomation); // True if automation is running
+    SmartDashboard.putBoolean("El UpLimit", isAtUpperLimit()); // True if we are at the upper limit
+    SmartDashboard.putBoolean("El Set Enc", m_isElevatorEncoderSet); // True once the encoder is set
+    SmartDashboard.putBoolean("El RstEnc", encoderResetSwitchHit()); // True if we hit the encoder reset switch
 
     // If we haven't set the relative encoder's position yet, check if we are at the switch that tells us to do so
     if(!m_isElevatorEncoderSet) {
@@ -127,7 +136,7 @@ public class ElevatorSub extends TestableSubsystem {
     }
 
     m_elevatorMotor.set(powerValue);
-    SmartDashboard.putNumber("El Power", powerValue);
+    SmartDashboard.putNumber("El Power", powerValue); // Elevator power
   }
 
   /**
