@@ -4,6 +4,7 @@
 
 package frc.robot.subsystems;
 
+import java.util.logging.Logger;
 import edu.wpi.first.wpilibj.SerialPort;
 import edu.wpi.first.wpilibj.SerialPort.Parity;
 import edu.wpi.first.wpilibj.SerialPort.StopBits;
@@ -12,6 +13,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 
 public class ArduinoSub extends SubsystemBase {
+  private static Logger m_logger = Logger.getLogger(ArduinoSub.class.getName());
 
   /** Creates a new ArduinoSub. */
   private static byte[] m_LEDUpdateMessage = new byte[75];
@@ -32,6 +34,7 @@ public class ArduinoSub extends SubsystemBase {
   }
 
   public void init() {
+    m_logger.info("Initializing ArduinoSub Subsystem");
     //Set led section to green
     m_SerialPort.setReadBufferSize(m_LEDUpdateMessage.length);
     m_LEDUpdateMessage[0] = Constants.Arduino.kMessageHeader;
@@ -43,6 +46,7 @@ public class ArduinoSub extends SubsystemBase {
     m_SerialPort.setReadBufferSize(Constants.Arduino.kBufferSize); // John cthis should only be called once during initialization
     m_SerialPort.setTimeout(Constants.Arduino.kTimeOutLength); // John c: consider setting this to zero to only read the available bytes
   }
+
 
   @Override
   public void periodic() {

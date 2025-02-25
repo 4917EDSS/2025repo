@@ -4,6 +4,7 @@
 
 package frc.robot.subsystems;
 
+import java.util.logging.Logger;
 import com.revrobotics.spark.SparkAbsoluteEncoder;
 import com.revrobotics.spark.SparkBase;
 import com.revrobotics.spark.SparkLimitSwitch;
@@ -19,14 +20,15 @@ import frc.robot.Constants;
 import frc.robot.utils.TestableSubsystem;
 
 public class ArmSub extends TestableSubsystem {
+  private static Logger m_logger = Logger.getLogger(ArmSub.class.getName());
   private final SparkMax m_armMotor = new SparkMax(Constants.CanIds.kArmMotor, MotorType.kBrushless);
   private final SparkAbsoluteEncoder m_absoluteEncoder = m_armMotor.getAbsoluteEncoder();
 
   private final SparkLimitSwitch m_forwardLimitSwitch = m_armMotor.getForwardLimitSwitch();
   private final SparkLimitSwitch m_revLimitSwitch = m_armMotor.getReverseLimitSwitch();
 
-  private final ArmFeedforward m_armFeedforward = new ArmFeedforward(0.00, 0.1, 0.0);
-  private final PIDController m_armPid = new PIDController(0.01, 0, 0); // TODO: Tune
+  private final ArmFeedforward m_armFeedforward = new ArmFeedforward(0.00, 0.01, 0.0);
+  private final PIDController m_armPid = new PIDController(0.0, 0, 0); // TODO: Tune
 
   private double m_targetAngle = 0;
   private boolean m_automationEnabled = false;
@@ -50,6 +52,11 @@ public class ArmSub extends TestableSubsystem {
     // Only persist parameters when configuring the motor on start up as this operation can be slow
     m_armMotor.configure(motorConfig, SparkBase.ResetMode.kResetSafeParameters,
         SparkBase.PersistMode.kPersistParameters);
+  }
+
+  public void init() {
+    m_logger.info("Initializing ArmSub Subsystem");
+
   }
 
   @Override

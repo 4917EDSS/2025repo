@@ -4,6 +4,7 @@
 
 package frc.robot.subsystems;
 
+import java.util.logging.Logger;
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -11,6 +12,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 
 public class PowerSub extends SubsystemBase {
+  private static Logger m_logger = Logger.getLogger(PowerSub.class.getName());
 
   PowerDistribution m_powerDistributionModule = new PowerDistribution(1, ModuleType.kRev);
 
