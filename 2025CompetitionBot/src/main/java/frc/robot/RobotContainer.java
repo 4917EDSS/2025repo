@@ -39,7 +39,7 @@ import frc.robot.commands.AlgaeRemovalL3L4Grp;
 import frc.robot.commands.ArmMoveWithJoystickCmd;
 import frc.robot.commands.AutoDriveCmd;
 import frc.robot.commands.DoNothingGrp;
-import frc.robot.commands.DriveToScoringLocationCmd;
+import frc.robot.commands.DriveToNearestScoreLocationCmd;
 import frc.robot.commands.ElevatorMoveWithJoystickCmd;
 import frc.robot.commands.HomeButton;
 import frc.robot.commands.KillAllCmd;
@@ -139,7 +139,7 @@ public class RobotContainer {
     WebServer.start(5800, Filesystem.getDeployDirectory().getPath());
 
     // Warmup MUST happen before we configure buttons or autos.
-    DriveToScoringLocationCmd.warmUpMap(m_constraints);
+    DriveToNearestScoreLocationCmd.warmUpMap(m_constraints);
     // Configure the trigger bindings
     configureBindings();
     autoChooserSetup();

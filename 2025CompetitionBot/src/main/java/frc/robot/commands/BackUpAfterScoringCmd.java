@@ -22,7 +22,7 @@ public class BackUpAfterScoringCmd extends DeferredCommand {
     super(() -> AutoBuilder.pathfindToPose(
         new Pose2d(2, 6.5, new Rotation2d(0)), // TODO - fill this is in with a pose calculated by us!
         constraints,
-        0.0 // Goal end velocity in meters/sec
+        0.5 // In m/s - don't need it to be stopped when finished, we are just backing off.
         ), Set.of(drivetrainSub));
         
   }

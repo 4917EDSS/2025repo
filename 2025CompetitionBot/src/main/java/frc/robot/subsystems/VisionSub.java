@@ -4,7 +4,10 @@
 
 package frc.robot.subsystems;
 
+import java.util.Map;
 import java.util.logging.Logger;
+
+import com.ctre.phoenix6.mechanisms.swerve.LegacySwerveRequest.SwerveDriveBrake;
 import com.ctre.phoenix6.swerve.SwerveDrivetrain.SwerveDriveState;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -19,18 +22,14 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.utils.LimelightHelpers;
 
 public class VisionSub extends SubsystemBase {
-
-  String mt2Camera;
-  int test = 0;
-  NetworkTable m_networkTableMain;
-
-
+  private static String LEFT = "limelight-left";
+  private static String RIGHT = "limelight-right";
   private static Logger m_logger = Logger.getLogger(VisionSub.class.getName());
 
-  double m_previousTimestamp;
+  Map<String, Double> m_previousTimestamps = Map.of(LEFT, 0.0, RIGHT, 0.0);
   DrivetrainSub m_drivetrainSub;
-  NetworkTable m_networkTableLowDist = NetworkTableInstance.getDefault().getTable("limelight-left");
-  NetworkTable m_networkTableHighDist = NetworkTableInstance.getDefault().getTable("limelight-right");
+  NetworkTable m_networkTableL = NetworkTableInstance.getDefault().getTable("limelight-left");
+  NetworkTable m_networkTableR = NetworkTableInstance.getDefault().getTable("limelight-right");
 
   ShuffleboardTab m_ShuffleboardTab = Shuffleboard.getTab("Vision");
   GenericEntry m_shuffleboardID, m_shuffleboardTv, m_shuffleboardT2d, m_shuffleboardTx, m_shuffleboardTy,
@@ -64,27 +63,18 @@ public class VisionSub extends SubsystemBase {
 
   /** Creates a new VisionSub. */
   public VisionSub(DrivetrainSub drivetrainSub) {
-    NetworkTableEntry t_visible = m_networkTableLowDist.getEntry("tv");
-    long visible = t_visible.getInteger(-1);
-    if(visible == 1) {
-      m_networkTableMain = NetworkTableInstance.getDefault().getTable("limelight-left");
-      mt2Camera = "limelight-left";
-    } else {
-      m_networkTableMain = NetworkTableInstance.getDefault().getTable("limelight-right");
-      mt2Camera = "limelight-right";
-      test = 5;
-    }
-
-    m_t2d = m_networkTableMain.getEntry("t2d");
-    m_tid = m_networkTableMain.getEntry("tid");
-    m_tv = m_networkTableMain.getEntry("tv");
-    m_tx = m_networkTableMain.getEntry("tx");
-    m_ty = m_networkTableMain.getEntry("ty");
-    m_ta = m_networkTableMain.getEntry("ta");
-    m_pipeline = m_networkTableMain.getEntry("getpipe");
-    m_pipetype = m_networkTableMain.getEntry("getpipetype");
-    m_botposeTarget = m_networkTableMain.getEntry("botpose_targetspace");
-    m_botpose = m_networkTableMain.getEntry("botpose");
+    // For now, we will just use the left camera for shuffleboard.
+    // TODO - add the right camera in here.
+    m_t2d = m_networkTableL.getEntry("t2d");
+    m_tid = m_networkTableL.getEntry("tid");
+    m_tv = m_networkTableL.getEntry("tv");
+    m_tx = m_networkTableL.getEntry("tx");
+    m_ty = m_networkTableL.getEntry("ty");
+    m_ta = m_networkTableL.getEntry("ta");
+    m_pipeline = m_networkTableL.getEntry("getpipe");
+    m_pipetype = m_networkTableL.getEntry("getpipetype");
+    m_botposeTarget = m_networkTableL.getEntry("botpose_targetspace");
+    m_botpose = m_networkTableL.getEntry("botpose");
 
     m_shuffleboardID = m_ShuffleboardTab.add("Primary ID", 0).getEntry();
     m_shuffleboardTv = m_ShuffleboardTab.add("Sees tag?", 0).getEntry();
@@ -141,26 +131,33 @@ public class VisionSub extends SubsystemBase {
     return x;
   }
 
-  public void updateOdometry(SwerveDriveState swerveDriveState) {
+  private void updateOdometry(SwerveDriveState swerveDriveState) {
+    updateOdemetry(swerveDriveState, LEFT);
+    updateOdemetry(swerveDriveState, RIGHT);
+  }
 
-    LimelightHelpers.PoseEstimate mt2 = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(mt2Camera);
-    if(mt2 == null) {
-      System.out.println(mt2Camera);
-    }
+  private void updateOdemetry(SwerveDriveState swerveDriveState, String camera) {
+    LimelightHelpers.PoseEstimate mt2 = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(camera);
     double timestamp = mt2.timestampSeconds;
 
-    if(timestamp != m_previousTimestamp) {
+    if(timestamp != m_previousTimestamps.get(camera)) {
       boolean doRejectUpdate = false;
       double standardDeviation = 0.7; // 0.7 is a good starting value according to limelight docs.
 
-      LimelightHelpers.SetRobotOrientation(mt2Camera, swerveDriveState.Pose.getRotation().getDegrees(), 0, 0, 0, 0, 0);
-      if(Math.abs(swerveDriveState.Speeds.omegaRadiansPerSecond) > 4 * Math.PI) // if our angular velocity is greater than 720 degrees per second, ignore vision updates
+      LimelightHelpers.SetRobotOrientation(camera, swerveDriveState.Pose.getRotation().getDegrees(), 0, 0, 0, 0, 0);
+      if(Math.abs(swerveDriveState.Speeds.omegaRadiansPerSecond) > Math.PI) // if our angular velocity is greater than 360 degrees per second, ignore vision updates
       {
         doRejectUpdate = true;
       }
       if(mt2.tagCount == 0) {
         doRejectUpdate = true;
       }
+      // TODO:
+      // Lower uncertainty (standardDevation) when:
+      //   - we see more tags (the more, the better)
+      //   - we see a big tag (the bigger the better)
+      //   - we are moving slowly (slower is better)
+      // Raise uncertainty (standardDeviation) when the opposites happen
       if(!doRejectUpdate) {
         m_drivetrainSub.addVisionMeasurement(
             mt2.pose,
@@ -169,14 +166,8 @@ public class VisionSub extends SubsystemBase {
             com.ctre.phoenix6.Utils.fpgaToCurrentTime(timestamp),
             VecBuilder.fill(standardDeviation, standardDeviation, 9999999));
       }
-      m_previousTimestamp = timestamp;
+      m_previousTimestamps.replace(camera, timestamp);
     }
-
-    if(m_printPosCounter > 50) {
-      System.out.println(mt2.pose.toString());
-      m_printPosCounter = 0;
-    }
-    m_printPosCounter++;
 
   }
 
