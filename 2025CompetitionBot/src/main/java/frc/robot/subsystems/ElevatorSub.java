@@ -27,8 +27,8 @@ public class ElevatorSub extends TestableSubsystem {
   private final DigitalInput m_elevatorUpperLimit = new DigitalInput(Constants.DioIds.kElevatorUpperLimit);
   private final DigitalInput m_encoderResetSwitch = new DigitalInput(Constants.DioIds.kElevatorEncoderResetSwitch);
 
-  private final ElevatorFeedforward m_feedforward = new ElevatorFeedforward(0.0, 0.065, 0.0);
-  private final PIDController m_elevatorPID = new PIDController(0.00, 0.0, 0.0);
+  private final ElevatorFeedforward m_feedforward = new ElevatorFeedforward(0.0, 0.035, 0.0);
+  private PIDController m_elevatorPID = new PIDController(0.0, 0.0, 0.0);
 
   private double m_targetHeight = 0.0;
   private boolean m_enableAutomation = false;
@@ -40,7 +40,6 @@ public class ElevatorSub extends TestableSubsystem {
 
   /** Creates a new ElevatorSub. */
   public ElevatorSub() {
-
 
     TalonFXConfigurator talonFxConfiguarator = m_elevatorMotor.getConfigurator();
     TalonFXConfigurator talonFxConfiguarator2 = m_elevatorMotor2.getConfigurator();
@@ -79,7 +78,8 @@ public class ElevatorSub extends TestableSubsystem {
 
   @Override
   public void periodic() {
-    // This method will be called once per scheduler run
+
+
     if(m_enableAutomation) {
       runHeightControl(true);
     } else {
@@ -93,7 +93,7 @@ public class ElevatorSub extends TestableSubsystem {
     SmartDashboard.putBoolean("El Set Enc", m_isElevatorEncoderSet); // True once the encoder is set
     SmartDashboard.putBoolean("El RstEnc", encoderResetSwitchHit()); // True if we hit the encoder reset switch
 
-    // If we haven't set the relative encoder's position yet, check if we are at the switch that tells us to do so
+    // If we haven't set the relative encoder's position yet, check if we are at the switch that tells us to do so                                                                                                                                                                                                                                                                                                                                                                                                                          
     if(!m_isElevatorEncoderSet) {
       // Adds a counter to the encoder reset switch so that we don't reset position by accident
       if(encoderResetSwitchHit() && (m_elevatorMotor.get() > 0.0)) {
