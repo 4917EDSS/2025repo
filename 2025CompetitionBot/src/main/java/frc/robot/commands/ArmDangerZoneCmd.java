@@ -36,13 +36,13 @@ public class ArmDangerZoneCmd extends Command {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    if(eHeight <= Constants.DangerZones.kElevatorDangerZone1) {
+    if(eHeight <= Constants.Elevator.kDangerZoneBraceBottom) {
       if(aHeight <= Constants.DangerZones.kArmDangerZoneRange1
           && aHeight >= Constants.DangerZones.kArmDangerZoneRange2) {
         m_elevatorSub.setPower(0.0);
       }
-    } else if(Constants.DangerZones.kElevatorDangerZoneRange1 <= eHeight
-        && eHeight <= Constants.DangerZones.kElevatorDangerZoneRange2) { // values in mm, PLEASE CHANGE THEM NOW
+    } else if(Constants.Elevator.kDangerZoneBraceBottom <= eHeight
+        && eHeight <= Constants.Elevator.kDangerZoneBraceTop) { // values in mm, PLEASE CHANGE THEM NOW
       if(aHeight <= Constants.DangerZones.kArmDangerZone1) {
         m_elevatorSub.setPower(0.0);
       }
