@@ -28,7 +28,7 @@ public class ArmSub extends TestableSubsystem {
   private final SparkLimitSwitch m_revLimitSwitch = m_armMotor.getReverseLimitSwitch();
 
   private final ArmFeedforward m_armFeedforward = new ArmFeedforward(0.00, 0.01, 0.0);
-  private final PIDController m_armPid = new PIDController(0.0, 0, 0); // TODO: Tune
+  private final PIDController m_armPid = new PIDController(0.1, 0, 0); // TODO: Tune
 
   private double m_targetAngle = 0;
   private boolean m_automationEnabled = false;
@@ -126,6 +126,8 @@ public class ArmSub extends TestableSubsystem {
       targetAngle = Constants.Arm.kMinArmAngle;
     }
     m_targetAngle = targetAngle;
+    enableAutomation();
+    runAngleControl(false);
   }
 
   /**

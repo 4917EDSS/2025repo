@@ -127,7 +127,7 @@ public final class Constants {
     public final static double kSlowDownLowerStagePower = -0.1;
     public final static double kSlowDownLowerStageHeight = 20.0; // In mm
     public final static double kSlowDownUpperStagePower = 0.1;
-    public final static double kSlowDownUpperStageHeight = 900.0; // In mm
+    public final static double kSlowDownUpperStageHeight = 1100.0; // In mm
     public final static double kTargetHeightDeadbandMM = 5.0; // In mm
 
     public final static double kRotationsToMm = 5 / (0.75 * 25.4 * Math.PI); // Gearing / Spool diameter in inches * mm/in * PI
@@ -138,6 +138,11 @@ public final class Constants {
 
     // Sets max power for isElevatorAtTargetHeight function
     public final static double kAtTargetMaxVelocity = 150;
+
+    public static final double kDangerZoneBraceBottom = 774.47; // All of these values are temporary
+    public static final double kDangerZoneBraceTop = 1166.2;
+    public static final double kDangerZoneBottom = 341.53;
+    public static final double kDangerZoneArmBraceAngle = -60;
   }
 
   public static class Intake {
@@ -201,10 +206,7 @@ public final class Constants {
   }
 
   public final static class DangerZones {
-    public static final double kElevatorDangerZone1 = 341.53;
     public static final double kArmDangerZone1 = -86.0;
-    public static final double kElevatorDangerZoneRange1 = 774.47; // All of these values are temporary
-    public static final double kElevatorDangerZoneRange2 = 1166.2;
     public static final double kArmDangerZoneRange1 = -69.9;
     public static final double kArmDangerZoneRange2 = -87.8;
 
