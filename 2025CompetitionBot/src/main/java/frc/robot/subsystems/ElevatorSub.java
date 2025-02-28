@@ -28,7 +28,7 @@ public class ElevatorSub extends TestableSubsystem {
   private final DigitalInput m_encoderResetSwitch = new DigitalInput(Constants.DioIds.kElevatorEncoderResetSwitch);
 
   private final ElevatorFeedforward m_feedforward = new ElevatorFeedforward(0.0, 0.035, 0.0);
-  private PIDController m_elevatorPID = new PIDController(0.0, 0.0, 0.0);
+  private PIDController m_elevatorPID = new PIDController(0.7, 0.0, 0.0);
 
   private double m_targetHeight = 0.0;
   private boolean m_enableAutomation = false;
@@ -171,7 +171,7 @@ public class ElevatorSub extends TestableSubsystem {
    */
   public void setTargetHeight(double targetHeight) {
     if(targetHeight >= Constants.Elevator.kMaxHeight) {
-      targetHeight = Constants.Elevator.kMaxHeight;
+      //Constants.Elevator.kMaxHeight;
     } else if(targetHeight <= Constants.Elevator.kMinHeight) {
       targetHeight = Constants.Elevator.kMinHeight;
     }
@@ -230,17 +230,12 @@ public class ElevatorSub extends TestableSubsystem {
   private void runHeightControl(boolean updatePower) {
     double ffPower = m_feedforward.calculate(getVelocity());
     double pidPower = (m_elevatorPID.calculate(getPositionMm(), m_targetHeight));
-    if(pidPower > .5) {
-      pidPower = .5;
-    }
 
     if(updatePower) {
-      if(ffPower > 0.25) {
-        ffPower = 0.25;
-      }
-      setPower(ffPower);
+      setPower(ffPower + pidPower);
     }
   }
+
 
   /**
    * Returns if the elevator has reached it's target height or not

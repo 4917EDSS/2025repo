@@ -127,7 +127,7 @@ public final class Constants {
     public final static double kSlowDownLowerStagePower = -0.1;
     public final static double kSlowDownLowerStageHeight = 20.0; // In mm
     public final static double kSlowDownUpperStagePower = 0.1;
-    public final static double kSlowDownUpperStageHeight = 900.0; // In mm
+    public final static double kSlowDownUpperStageHeight = 1100.0; // In mm
     public final static double kTargetHeightDeadbandMM = 5.0; // In mm
 
     public final static double kRotationsToMm = 5 / (0.75 * 25.4 * Math.PI); // Gearing / Spool diameter in inches * mm/in * PI
