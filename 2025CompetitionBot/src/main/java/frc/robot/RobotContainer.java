@@ -160,40 +160,46 @@ public class RobotContainer {
     // Drive controller bindings ////////////////////////////////////////////////////////////////////////////////////////////////
 
     // Square
-    m_driverController.square().onTrue(new L3PlacementGrp(m_armSub, m_elevatorSub));
+    m_driverController.square().onTrue(new L3PlacementGrp(m_armSub, m_elevatorSub)); //TODO Make Coral Recieval Command
     // m_driverController.square().whileTrue(AutoBuilder.pathfindToPose(
     //     new Pose2d(2, 6.5, new Rotation2d(0)),
     //     m_constraints,
     //     0.0 // Goal end velocity in meters/sec
     // ));
 
-    //Triangle
+    //Triangle - L4 Coral Placement
     m_driverController.triangle().onTrue(new L4PlacementGrp(m_armSub, m_elevatorSub));
 
-    // Cross
+    // Cross - L2 Coral Placement
     //m_driverController.cross().whileTrue(m_drivetrainSub.applyRequest(() -> brake));
     m_driverController.cross().onTrue(new L2PlacementGrp(m_armSub, m_elevatorSub));
 
-    // Circle
-    m_driverController.circle().onTrue(new PlaceReefGrp(m_armSub));
+    // Circle - L3 Coral Placement
+    m_driverController.circle().onTrue(new L3PlacementGrp(m_armSub, m_elevatorSub));
     // m_driverController.circle().whileTrue(m_drivetrainSub
     //     .applyRequest(() -> point
     //         .withModuleDirection(new Rotation2d(-m_driverController.getLeftY(), -m_driverController.getLeftX()))));
 
-    if(m_isLimelight) {
-      // L1
-      m_driverController.L1().onTrue(new AutoDriveCmd(m_visionSub, m_drivetrainSub));
-      // R1
-      m_driverController.R1().onTrue(new HomeButton(m_armSub, m_elevatorSub));
-      //new AutoDriveCmd(m_visionSub, m_drivetrainSub));
-    }
+    //L1 - Remove L2-L3 Algae
+    m_driverController.L1().onTrue(new AlgaeRemovalL2L3Grp(m_armSub, m_elevatorSub));
+
+    //R1 - Remove L3-L4 Algae
+    m_driverController.R1().onTrue(new AlgaeRemovalL3L4Grp(m_armSub, m_elevatorSub));
+
+    // if(m_isLimelight) {
+    //   // L1
+    //   m_driverController.L1().onTrue(new AutoDriveCmd(m_visionSub, m_drivetrainSub));
+    //   // R1
+    //   m_driverController.R1().onTrue(new HomeButton(m_armSub, m_elevatorSub));
+    //   //new AutoDriveCmd(m_visionSub, m_drivetrainSub));
+    // }
 
     // L2
     // m_driverController.L2().onTrue(new InstantCommand(() -> m_armSub.setTargetAngle(0), m_armSub));
-    m_driverController.L2().onTrue(new SetArmToPositionCmd(30, m_armSub));
+    //m_driverController.L2().onTrue(new SetArmToPositionCmd(30, m_armSub));
 
     // R2S
-    m_driverController.R2().onTrue(new SetArmToPositionCmd(0, m_armSub));
+    //m_driverController.R2().onTrue(new SetArmToPositionCmd(0, m_armSub));
     // m_driverController.R2().onTrue(new InstantCommand(() -> m_armSub.setTargetAngle(45), m_armSub));
 
     // Share
@@ -204,13 +210,18 @@ public class RobotContainer {
     // Reset the field-centric heading
     m_driverController.PS().onTrue(m_drivetrainSub.runOnce(() -> m_drivetrainSub.seedFieldCentric()));
 
+    //L3
+
+    //R3
+
+    //Pov up - Move climb up to a set position
+    //m_driverController.povUp().onTrue() // TODO add command to raise and lower climb.
+    //Pov down - Move Climb down to a set position
+    //m_driverController.povDown().onTrue() 
+
     // Touchpad
-
-    // L3
-    m_driverController.L3().onTrue(new KillAllCmd(m_armSub, m_climbSub, m_drivetrainSub, m_elevatorSub, m_intakeSub));
-
-    // R3
-    m_driverController.R3().onTrue(new KillAllCmd(m_armSub, m_climbSub, m_drivetrainSub, m_elevatorSub, m_intakeSub));
+    m_driverController.touchpad()
+        .onTrue(new KillAllCmd(m_armSub, m_climbSub, m_drivetrainSub, m_elevatorSub, m_intakeSub));
 
     // Combination buttons for diagnostics
     // Run SysId routines when holding share/options and square/triangle.
