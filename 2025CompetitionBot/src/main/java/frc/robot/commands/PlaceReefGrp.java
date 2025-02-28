@@ -4,24 +4,24 @@
 
 package frc.robot.commands;
 
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.subsystems.ArmSub;
-import frc.robot.subsystems.ElevatorSub;
 
-// NOTE: Consider using this command inline, rather than writing a subclass. For more
-// information, see:
-// https://docs.wpilib.org/en/stable/docs/software/commandbased/convenience-features.html
-public class HomeButton extends SequentialCommandGroup {
+/*
+ * You should consider using the more terse Command factories API instead
+ * https://docs.wpilib.org/en/stable/docs/software/commandbased/organizing-command-based.html#defining-commands
+ */
+public class PlaceReefGrp extends SequentialCommandGroup {
   /** Creates a new L4PlacementGrp. */
-  public HomeButton(ArmSub armSub, ElevatorSub elevatorSub) {
+  public PlaceReefGrp(ArmSub armSub) {
     // Add your commands in the addCommands() call, e.g.
     // addCommands(new FooCommand(), new BarCommand());
     addCommands(
-        new InstantCommand(() -> elevatorSub.setTargetHeight(440)),
-        //new WaitCommand(1), // wait a second for the instant command
-        new SetArmToPositionCmd(-80, armSub));
-    //new WaitCommand(1));
+        new InstantCommand(() -> armSub.setTargetAngle(0)), // 165 is just high enough to get the coral to a height that it can get to the branch
+        new WaitCommand(2));
   }
+
 }

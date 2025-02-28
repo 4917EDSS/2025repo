@@ -46,10 +46,12 @@ import frc.robot.commands.KillAllCmd;
 import frc.robot.commands.L2PlacementGrp;
 import frc.robot.commands.L3PlacementGrp;
 import frc.robot.commands.L4PlacementGrp;
+import frc.robot.commands.PlaceReefGrp;
 import frc.robot.commands.SetArmToPositionCmd;
 import frc.robot.commands.tests.RunTestsGrp;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.ArmSub;
+import frc.robot.subsystems.CanSub;
 import frc.robot.subsystems.ClimbSub;
 import frc.robot.subsystems.DrivetrainSub;
 import frc.robot.subsystems.ElevatorSub;
@@ -88,6 +90,7 @@ public class RobotContainer {
   public final DrivetrainSub m_drivetrainSub = TunerConstants.createDrivetrain();
   private final ElevatorSub m_elevatorSub = new ElevatorSub();
   private final IntakeSub m_intakeSub = new IntakeSub();
+  private final CanSub m_canSub = new CanSub(4);
   //private final LedSub m_ledSub = new LedSub(m_arduinoSub);  // TODO:  Implement with new Arduino
   private final VisionSub m_visionSub;
 
@@ -139,7 +142,7 @@ public class RobotContainer {
     WebServer.start(5800, Filesystem.getDeployDirectory().getPath());
 
     // Warmup MUST happen before we configure buttons or autos.
-    DriveToNearestScoreLocationCmd.warmUpMap(m_constraints);
+    //DriveToNearestScoreLocationCmd.warmUpMap(m_constraints);
     // Configure the trigger bindings
     configureBindings();
     autoChooserSetup();
@@ -157,26 +160,32 @@ public class RobotContainer {
     // Drive controller bindings ////////////////////////////////////////////////////////////////////////////////////////////////
 
     // Square
-    m_driverController.square().whileTrue(AutoBuilder.pathfindToPose(
-        new Pose2d(2, 6.5, new Rotation2d(0)),
-        m_constraints,
-        0.0 // Goal end velocity in meters/sec
-    ));
+    m_driverController.square().onTrue(new L3PlacementGrp(m_armSub, m_elevatorSub));
+    // m_driverController.square().whileTrue(AutoBuilder.pathfindToPose(
+    //     new Pose2d(2, 6.5, new Rotation2d(0)),
+    //     m_constraints,
+    //     0.0 // Goal end velocity in meters/sec
+    // ));
 
+    //Triangle
+    m_driverController.triangle().onTrue(new L4PlacementGrp(m_armSub, m_elevatorSub));
 
     // Cross
-    m_driverController.cross().whileTrue(m_drivetrainSub.applyRequest(() -> brake));
+    //m_driverController.cross().whileTrue(m_drivetrainSub.applyRequest(() -> brake));
+    m_driverController.cross().onTrue(new L2PlacementGrp(m_armSub, m_elevatorSub));
 
     // Circle
-    m_driverController.circle().whileTrue(m_drivetrainSub
-        .applyRequest(() -> point
-            .withModuleDirection(new Rotation2d(-m_driverController.getLeftY(), -m_driverController.getLeftX()))));
+    m_driverController.circle().onTrue(new PlaceReefGrp(m_armSub));
+    // m_driverController.circle().whileTrue(m_drivetrainSub
+    //     .applyRequest(() -> point
+    //         .withModuleDirection(new Rotation2d(-m_driverController.getLeftY(), -m_driverController.getLeftX()))));
 
     if(m_isLimelight) {
       // L1
       m_driverController.L1().onTrue(new AutoDriveCmd(m_visionSub, m_drivetrainSub));
       // R1
-      m_driverController.R1().onTrue(new AutoDriveCmd(m_visionSub, m_drivetrainSub));
+      m_driverController.R1().onTrue(new HomeButton(m_armSub, m_elevatorSub));
+      //new AutoDriveCmd(m_visionSub, m_drivetrainSub));
     }
 
     // L2

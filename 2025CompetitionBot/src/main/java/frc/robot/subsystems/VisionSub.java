@@ -26,6 +26,7 @@ public class VisionSub extends SubsystemBase {
   private static String RIGHT = "limelight-right";
   private static Logger m_logger = Logger.getLogger(VisionSub.class.getName());
 
+  LimelightHelpers.PoseEstimate mt2;
   Map<String, Double> m_previousTimestamps = Map.of(LEFT, 0.0, RIGHT, 0.0);
   DrivetrainSub m_drivetrainSub;
   NetworkTable m_networkTableL = NetworkTableInstance.getDefault().getTable("limelight-left");
@@ -136,15 +137,19 @@ public class VisionSub extends SubsystemBase {
     updateOdemetry(swerveDriveState, RIGHT);
   }
 
+  public Pose2d getRobotPose() {
+    return mt2.pose;
+  }
+
   private void updateOdemetry(SwerveDriveState swerveDriveState, String camera) {
     LimelightHelpers.SetRobotOrientation(camera, swerveDriveState.Pose.getRotation().getDegrees(), 0, 0, 0, 0, 0);
-    LimelightHelpers.PoseEstimate mt2 = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(camera);
+    mt2 = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(camera);
     double timestamp = mt2.timestampSeconds;
 
     if(timestamp != m_previousTimestamps.get(camera)) {
       boolean doRejectUpdate = false;
       double standardDeviation = 0.7; // 0.7 is a good starting value according to limelight docs.
-      
+
       if(Math.abs(swerveDriveState.Speeds.omegaRadiansPerSecond) > Math.PI) // if our angular velocity is greater than 360 degrees per second, ignore vision updates
       {
         doRejectUpdate = true;
