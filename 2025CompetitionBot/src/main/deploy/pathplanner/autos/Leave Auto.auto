@@ -9,6 +9,42 @@
           "data": {
             "pathName": "3 Meters 90 Degrees"
           }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "L2 placement"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 5.0
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "L3 placement"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 5.0
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "L4 placement"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 5.0
+          }
         }
       ]
     }

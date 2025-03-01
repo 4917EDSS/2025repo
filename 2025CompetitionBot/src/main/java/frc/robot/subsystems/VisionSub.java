@@ -27,8 +27,8 @@ public class VisionSub extends SubsystemBase {
   LimelightHelpers.PoseEstimate mt2;
   Map<String, Double> m_previousTimestamps = Map.of(LEFT, 0.0, RIGHT, 0.0);
   DrivetrainSub m_drivetrainSub;
-  NetworkTable m_networkTableL = NetworkTableInstance.getDefault().getTable("limelight-left");
-  NetworkTable m_networkTableR = NetworkTableInstance.getDefault().getTable("limelight-right");
+  NetworkTable m_networkTableL = NetworkTableInstance.getDefault().getTable(LEFT);
+  NetworkTable m_networkTableR = NetworkTableInstance.getDefault().getTable(RIGHT);
 
   ShuffleboardTab m_ShuffleboardTab = Shuffleboard.getTab("Vision");
   GenericEntry m_shuffleboardID, m_shuffleboardTv, m_shuffleboardT2d, m_shuffleboardTx, m_shuffleboardTy,
@@ -138,34 +138,38 @@ public class VisionSub extends SubsystemBase {
   private void updateOdemetry(SwerveDriveState swerveDriveState, String camera) {
     LimelightHelpers.SetRobotOrientation(camera, swerveDriveState.Pose.getRotation().getDegrees(), 0, 0, 0, 0, 0);
     mt2 = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(camera);
+    if(mt2 == null) {
+      return;
+    }
     double timestamp = mt2.timestampSeconds;
 
     if(timestamp != m_previousTimestamps.get(camera)) {
-      boolean doRejectUpdate = false;
+      m_previousTimestamps.replace(camera, timestamp);
       double standardDeviation = 0.7; // 0.7 is a good starting value according to limelight docs.
 
       if(Math.abs(swerveDriveState.Speeds.omegaRadiansPerSecond) > Math.PI) // if our angular velocity is greater than 360 degrees per second, ignore vision updates
       {
-        doRejectUpdate = true;
+        return;
       }
-      if(mt2.tagCount == 0) {
-        doRejectUpdate = true;
+      if(mt2.tagCount == 0 || mt2.avgTagArea == 0) {
+        return;
       }
+      standardDeviation = (standardDeviation / mt2.tagCount) / (mt2.avgTagArea * 20);
+
       // TODO:
       // Lower uncertainty (standardDevation) when:
       //   - we see more tags (the more, the better)
       //   - we see a big tag (the bigger the better)
       //   - we are moving slowly (slower is better)
       // Raise uncertainty (standardDeviation) when the opposites happen
-      if(!doRejectUpdate) {
-        m_drivetrainSub.addVisionMeasurement(
-            mt2.pose,
-            // Always pass 999999 as the last argument, as megatag 2 requires heading as input, so it does not actually calculate heading.
-            // Passing in a very large number to that parameter basically tells the Kalman filter to ignore our calculated heading.
-            com.ctre.phoenix6.Utils.fpgaToCurrentTime(timestamp),
-            VecBuilder.fill(standardDeviation, standardDeviation, 9999999));
-      }
-      m_previousTimestamps.replace(camera, timestamp);
+      m_drivetrainSub.addVisionMeasurement(
+          mt2.pose,
+          // Always pass 999999 as the last argument, as megatag 2 requires heading as input, so it does not actually calculate heading.
+          // Passing in a very large number to that parameter basically tells the Kalman filter to ignore our calculated heading.
+          com.ctre.phoenix6.Utils.fpgaToCurrentTime(timestamp),
+          VecBuilder.fill(standardDeviation, standardDeviation, 9999999));
+
+
     }
 
   }
