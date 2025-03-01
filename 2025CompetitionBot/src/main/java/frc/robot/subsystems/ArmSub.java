@@ -30,8 +30,8 @@ public class ArmSub extends TestableSubsystem {
   private final SparkLimitSwitch m_forwardLimitSwitch = m_armMotor.getForwardLimitSwitch();
   private final SparkLimitSwitch m_revLimitSwitch = m_armMotor.getReverseLimitSwitch();
 
-  private final ArmFeedforward m_armFeedforward = new ArmFeedforward(0.02, 0.0, 0.0);
-  private final PIDController m_armPid = new PIDController(0.01, 0, 0); // TODO: Tune
+  private final ArmFeedforward m_armFeedforward = new ArmFeedforward(0.018, 0.0, 0.0);
+  private final PIDController m_armPid = new PIDController(0.005, 0, 0); // TODO: Tune
 
   private double m_targetAngle = 0;
   private boolean m_automationEnabled = false;

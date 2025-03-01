@@ -40,8 +40,8 @@ public class ElevatorSub extends TestableSubsystem {
   private final DigitalInput m_elevatorUpperLimit = new DigitalInput(Constants.DioIds.kElevatorUpperLimit);
   private final DigitalInput m_encoderResetSwitch = new DigitalInput(Constants.DioIds.kElevatorEncoderResetSwitch);
 
-  private final ElevatorFeedforward m_feedforward = new ElevatorFeedforward(0.0, 0.035, 0.0);
-  private PIDController m_elevatorPID = new PIDController(0.02, 0.0, 0.0);
+  private final ElevatorFeedforward m_feedforward = new ElevatorFeedforward(0.05, 0.06, 0.0);
+  private PIDController m_elevatorPID = new PIDController(0.01, 0.0, 0.0);
 
   private double m_targetHeight = 0.0;
   private boolean m_enableAutomation = false;
@@ -143,7 +143,7 @@ public class ElevatorSub extends TestableSubsystem {
       powerValue = 0.0;
       System.out.println("Lower limit hit");
     } else if(isAtUpperLimit() && power > 0.0) {
-      powerValue = 0.0;
+      powerValue = m_feedforward.calculate(getVelocity()) + m_elevatorPID.calculate(getPositionMm(), m_targetHeight);
       System.out.println("Upper limit hit");
     } else if((getPositionMm() < Constants.Elevator.kSlowDownLowerStageHeight)
         && (power < Constants.Elevator.kSlowDownLowerStagePower)) {
