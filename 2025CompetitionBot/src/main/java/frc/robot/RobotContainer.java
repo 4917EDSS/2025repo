@@ -273,8 +273,7 @@ public class RobotContainer {
         .whileTrue(new L4PlacementGrp(m_armSub, m_elevatorSub, m_coralPlacementGrp, MaxAngularRate));
 
     // Triangle
-    m_operatorController.triangle().whileTrue(new StartEndCommand(() -> m_intakeSub.setRollersPower(1.0),
-        () -> m_intakeSub.setRollersPower(0.0), m_intakeSub));
+    //m_operatorController.triangle().whileTrue();
 
     // L1
     m_operatorController.L1()
