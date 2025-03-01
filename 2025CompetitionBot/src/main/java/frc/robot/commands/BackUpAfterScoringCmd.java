@@ -31,7 +31,7 @@ public class BackUpAfterScoringCmd extends DeferredCommand {
     return AutoBuilder.pathfindToPose(
         new Pose2d(
             drivetrainSub.getPose().getTranslation()
-                .plus(new Translation2d(0.5, drivetrainSub.getPose().getRotation().minus(Rotation2d.k180deg))),
+                .plus(new Translation2d(0.75, drivetrainSub.getPose().getRotation().minus(Rotation2d.k180deg))),
             drivetrainSub.getPose().getRotation()), // TODO - fill this is in with a pose calculated by us!
         constraints,
         0 // In m/s - don't need it to be stopped when finished, we are just backing off.

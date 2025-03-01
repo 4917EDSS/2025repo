@@ -31,7 +31,7 @@ import frc.robot.commands.AlgaeRemovalL2L3Grp;
 import frc.robot.commands.AlgaeRemovalL3L4Grp;
 import frc.robot.commands.ArmMoveWithJoystickCmd;
 import frc.robot.commands.BackUpAfterScoringCmd;
-import frc.robot.commands.CoralPlacementGrp;
+import frc.robot.commands.DriveToNearestScoreLocationCmd;
 import frc.robot.commands.DoNothingGrp;
 import frc.robot.commands.ElevatorMoveWithJoystickCmd;
 import frc.robot.commands.HomeButton;
@@ -86,7 +86,6 @@ public class RobotContainer {
   private final CanSub m_canSub = new CanSub(4);
   //private final LedSub m_ledSub = new LedSub(m_arduinoSub);  // TODO:  Implement with new Arduino
   private final VisionSub m_visionSub;
-  private final CoralPlacementGrp m_coralPlacementGrp = new CoralPlacementGrp(m_elevatorSub, m_armSub);
 
 
   // Controllers
@@ -133,7 +132,7 @@ public class RobotContainer {
     WebServer.start(5800, Filesystem.getDeployDirectory().getPath());
 
     // Warmup MUST happen before we configure buttons or autos.
-    //DriveToNearestScoreLocationCmd.warmUpMap(m_constraints);
+    DriveToNearestScoreLocationCmd.warmUpMap(m_constraints);
     // Configure the trigger bindings
     configureBindings();
     autoChooserSetup();
@@ -148,13 +147,13 @@ public class RobotContainer {
         new SetElevatorToHeightCmd(100, m_elevatorSub)); // put whatever number you want in here. probably mm
 
     NamedCommands.registerCommand("L2 placement",
-        new L2PlacementGrp(m_armSub, m_elevatorSub, m_coralPlacementGrp, MaxAngularRate));
+        new L2PlacementGrp(m_armSub, m_elevatorSub));
 
     NamedCommands.registerCommand("L3 placement",
-        new L3PlacementGrp(m_armSub, m_elevatorSub, m_coralPlacementGrp, MaxAngularRate));
+        new L3PlacementGrp(m_armSub, m_elevatorSub));
 
     NamedCommands.registerCommand("L4 placement",
-        new L4PlacementGrp(m_armSub, m_elevatorSub, m_coralPlacementGrp, MaxAngularRate));
+        new L4PlacementGrp(m_armSub, m_elevatorSub));
 
     NamedCommands.registerCommand("BackUpAfterScoringCmd",
         new BackUpAfterScoringCmd(m_drivetrainSub, m_constraints));
@@ -179,15 +178,15 @@ public class RobotContainer {
 
     //Triangle - L4 Coral Placement
     m_driverController.triangle()
-        .onTrue(new L4PlacementGrp(m_armSub, m_elevatorSub, m_coralPlacementGrp, MaxAngularRate));
+        .onTrue(new L4PlacementGrp(m_armSub, m_elevatorSub));
 
     // Cross - L2 Coral Placement
     //m_driverController.cross().whileTrue(m_drivetrainSub.applyRequest(() -> brake));
-    m_driverController.cross().onTrue(new CoralPlacementGrp(m_elevatorSub, m_armSub));
+    m_driverController.cross().onTrue(new L2PlacementGrp(m_armSub, m_elevatorSub));
 
     // Circle - L3 Coral Placement
     m_driverController.circle()
-        .onTrue(new L3PlacementGrp(m_armSub, m_elevatorSub, m_coralPlacementGrp, MaxAngularRate));
+        .onTrue(new L3PlacementGrp(m_armSub, m_elevatorSub));
     // m_driverController.circle().whileTrue(m_drivetrainSub
     //     .applyRequest(() -> point
     //         .withModuleDirection(new Rotation2d(-m_driverController.getLeftY(), -m_driverController.getLeftX()))));
@@ -263,6 +262,7 @@ public class RobotContainer {
     m_operatorController.circle().onTrue(new InstantCommand(() -> m_armSub.setTargetAngle(-88), m_armSub));
 
     // Triangle
+
     m_operatorController.triangle().onTrue(new InstantCommand(() -> m_elevatorSub.setTargetHeight(600), m_elevatorSub));
 
     // L1
@@ -284,7 +284,7 @@ public class RobotContainer {
 
     // Options
     m_operatorController.options()
-        .onTrue(new L2PlacementGrp(m_armSub, m_elevatorSub, m_coralPlacementGrp, MaxAngularRate));
+        .onTrue(new L2PlacementGrp(m_armSub, m_elevatorSub));
 
     // PS
     m_operatorController.PS().onTrue(new InstantCommand(() -> {

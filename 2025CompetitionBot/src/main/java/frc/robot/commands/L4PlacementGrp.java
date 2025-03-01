@@ -11,16 +11,13 @@ import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.subsystems.ArmSub;
 import frc.robot.subsystems.ElevatorSub;
 import frc.robot.Constants;
-import frc.robot.commands.CoralPlacementGrp;
 
 // NOTE: Consider using this command inline, rather than writing a subclass. For more
 // information, see:
 // https://docs.wpilib.org/en/stable/docs/software/commandbased/convenience-features.html
 public class L4PlacementGrp extends SequentialCommandGroup {
   /** Creates a new L4PlacementGrp. */
-  public L4PlacementGrp(ArmSub armSub, ElevatorSub elevatorSub, CoralPlacementGrp coralPlacementGrp,
-      double scoringBranch) {
-    double m_scoringBranch = scoringBranch;
+  public L4PlacementGrp(ArmSub armSub, ElevatorSub elevatorSub) {
     // Add your commands in the addCommands() call, e.g.
     // addCommands(new FooCommand(), new BarCommand());
 
@@ -44,7 +41,6 @@ public class L4PlacementGrp extends SequentialCommandGroup {
     // new WaitCommand(2),
     // new InstantCommand(() -> armSub.setTargetAngle(-90)) // set the arm back to the starting angle
     );
-    scoringBranch = 4;
   }
 
 }
