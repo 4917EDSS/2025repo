@@ -16,8 +16,7 @@ import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
-import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
-import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.utils.LimelightHelpers;
 
@@ -31,11 +30,6 @@ public class VisionSub extends SubsystemBase {
   DrivetrainSub m_drivetrainSub;
   NetworkTable m_networkTableL = NetworkTableInstance.getDefault().getTable("limelight-left");
   NetworkTable m_networkTableR = NetworkTableInstance.getDefault().getTable("limelight-right");
-
-  ShuffleboardTab m_ShuffleboardTab = Shuffleboard.getTab("Vision");
-  GenericEntry m_shuffleboardID, m_shuffleboardTv, m_shuffleboardT2d, m_shuffleboardTx, m_shuffleboardTy,
-      m_shuffleboardTa,
-      m_shuffleboardPipeline, m_shuffleboardPipetype;
 
   NetworkTableEntry m_tid;
   NetworkTableEntry m_t2d;
@@ -77,14 +71,14 @@ public class VisionSub extends SubsystemBase {
     m_botposeTarget = m_networkTableL.getEntry("botpose_targetspace");
     m_botpose = m_networkTableL.getEntry("botpose");
 
-    m_shuffleboardID = m_ShuffleboardTab.add("Primary ID", 0).getEntry();
-    m_shuffleboardTv = m_ShuffleboardTab.add("Sees tag?", 0).getEntry();
-    m_shuffleboardT2d = m_ShuffleboardTab.add("# of Tags", 0).getEntry();
-    m_shuffleboardTx = m_ShuffleboardTab.add("tag x", 0).getEntry();
-    m_shuffleboardTy = m_ShuffleboardTab.add("tag y", 0).getEntry();
-    m_shuffleboardTa = m_ShuffleboardTab.add("Area of tag", 0).getEntry();
-    m_shuffleboardPipeline = m_ShuffleboardTab.add("Pipeline", -1).getEntry();
-    m_shuffleboardPipetype = m_ShuffleboardTab.add("Pipetype", "unknown").getEntry();
+    SmartDashboard.putNumber("Primary ID", id);
+    SmartDashboard.putNumberArray("Sees Tag", t2d);
+    SmartDashboard.putNumber("# of Tags", tv);
+    SmartDashboard.putNumber("tag x", x);
+    SmartDashboard.putNumber("tag y", y);
+    SmartDashboard.putNumber("Area of Tag", a);
+    SmartDashboard.putNumber("Pipeline", pipeline);
+    SmartDashboard.putString("Pipetype", "unknown");
 
     m_drivetrainSub = drivetrainSub;
     init();
@@ -107,15 +101,6 @@ public class VisionSub extends SubsystemBase {
     pipetype = m_pipetype.getString("");
     botposeTarget = m_botposeTarget.getDoubleArray(new double[8]);
     botpose = m_botpose.getDoubleArray(new double[8]);
-
-    m_shuffleboardID.setInteger(id);
-    m_shuffleboardT2d.setDouble(t2d[1]);
-    m_shuffleboardTv.setInteger(tv);
-    m_shuffleboardTx.setDouble(x);
-    m_shuffleboardTy.setDouble(y);
-    m_shuffleboardTa.setDouble(a);
-    m_shuffleboardPipeline.setInteger(pipeline);
-    m_shuffleboardPipetype.setString(pipetype);
 
     updateOdometry(m_drivetrainSub.getState());
   }
