@@ -74,7 +74,7 @@ public class RobotContainer {
   private double MaxAngularRate = RotationsPerSecond.of(2.08 / 2.0).in(RadiansPerSecond); // 3/4 of a rotation per second max angular velocity, 2.08 is the speed that made it tip over, very funny video
   // Setting up bindings for necessary control of the swerve drive platform
   private final SwerveRequest.FieldCentric drive = new SwerveRequest.FieldCentric()
-      .withDeadband(MaxSpeed * 0.1).withRotationalDeadband(MaxAngularRate * 0.1) // Add a 10% deadband
+      .withDeadband(MaxSpeed * 0.01).withRotationalDeadband(MaxAngularRate * 0.01) // Add a 10% deadband
       .withDriveRequestType(DriveRequestType.Velocity);
   private final SwerveRequest.SwerveDriveBrake brake = new SwerveRequest.SwerveDriveBrake();
   private final SwerveRequest.PointWheelsAt point = new SwerveRequest.PointWheelsAt();
@@ -199,6 +199,7 @@ public class RobotContainer {
     // L2
     // m_driverController.L2().onTrue(new InstantCommand(() -> m_armSub.setTargetAngle(0), m_armSub));
     //m_driverController.L2().onTrue(new SetArmToPositionCmd(30, m_armSub));
+    m_driverController.L2().onTrue(new InstantCommand(() -> slowDown())).onFalse(new InstantCommand(() -> speedUp()));
 
     // R2S
     //m_driverController.R2().onTrue(new SetArmToPositionCmd(0, m_armSub));
@@ -286,6 +287,16 @@ public class RobotContainer {
 
     // R3
     m_operatorController.R3().onTrue(new KillAllCmd(m_armSub, m_climbSub, m_drivetrainSub, m_elevatorSub, m_intakeSub));
+  }
+
+  private void slowDown() {
+    MaxSpeed = MaxSpeed * 0.1;
+    MaxAngularRate = MaxAngularRate * 0.1;
+  }
+
+  private void speedUp() {
+    MaxSpeed = MaxSpeed * 10;
+    MaxAngularRate = MaxAngularRate * 10;
   }
 
 

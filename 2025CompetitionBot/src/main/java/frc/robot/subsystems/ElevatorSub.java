@@ -418,17 +418,9 @@ public class ElevatorSub extends TestableSubsystem {
    */
   @Override
   public void testSetMotorPower(int motorId, double power) {
-    switch(motorId) {
-      case 1:
-        m_elevatorMotor.set(power);
-        break;
-      case 2:
-        m_elevatorMotor2.set(power);
-        break;
-      default:
-        // Do nothing
-        break;
-    }
+
+    m_elevatorMotor.set(power);
+
   }
 
   /**

@@ -143,7 +143,11 @@ public final class Constants {
     public static final double kDangerZoneBraceTop = 1166.2;
     public static final double kDangerZoneBottom = 341.53;
     public static final double kDangerZoneArmBraceAngle = -60;
+
+
   }
+
+
 
   public static class Intake {
     public static final double kDeployEncoderPositionConversionFactor = 1.00; // From rotations to degrees
