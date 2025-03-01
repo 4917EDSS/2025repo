@@ -103,12 +103,16 @@ public final class Constants {
     public static final double kEncoderPositionConversionFactor = 0.01;//1 / 100 * 360; // From rotations to degrees (Gear Ration / 360 deg)
     public static final double kEncoderVelocityConversionFactor = 1.00; // From rotations per minute? to degrees per second
     public static final double kAbsoluteEncoderOffset = 0.0;//practice bot 0.65 // From range to 0 - 1
-    public static final double kMinArmAngle = -92.0; // In degrees
+    public static final double kMinArmAngle = -90.0; // In degrees
     public static final double kMaxArmAngle = 30.0; // In degrees
     public static final double kMaxPower = 0.1;
     public static final double kTargetAngleDeadband = 2.0; // In degrees
     public static final double kAngleTolerance = 5; // In degrees
     public static final double kAtTargetMaxVelocity = 0.02; // In degrees per second?
+
+    public static final double kDangerZoneBottomVertical = -88.0; // In degrees
+    public static final double kDangerZoneLowerAngle = -60.0; // In degrees
+    public static final double kDangerZoneBraceAngle = -84.0; // In degrees
   }
 
   public final static class Climb {
@@ -120,8 +124,8 @@ public final class Constants {
   }
 
   public final static class Elevator {
-    public final static double kMinHeight = 0.0; // In mm
-    public final static double kMaxHeight = 1350.0; // In mm
+    public final static double kMinHeight = 545.0; // In mm
+    public final static double kMaxHeight = 1618.0; // In mm
 
     // Sets a max power if we are close to the lower limit switch
     public final static double kSlowDownLowerStagePower = -0.1;
@@ -132,19 +136,16 @@ public final class Constants {
 
     public final static double kRotationsToMm = 5 / (0.75 * 25.4 * Math.PI); // Gearing / Spool diameter in inches * mm/in * PI
     public final static double kStartingHeight = 440.0; // In mm
-    public final static double kResetHeight = 450.0; // In mm
+    public final static double kResetHeight = 722.0; // In mm
 
     public final static double kHeightTolerance = 5; // Height tolerance for elevator position
 
     // Sets max power for isElevatorAtTargetHeight function
     public final static double kAtTargetMaxVelocity = 150;
 
-    public static final double kDangerZoneBraceBottom = 774.47; // All of these values are temporary
-    public static final double kDangerZoneBraceTop = 1166.2;
-    public static final double kDangerZoneBottom = 341.53;
-    public static final double kDangerZoneArmBraceAngle = -60;
-    public static final double kDangerZoneArmCoralStopFront = -70;
-    public static final double kDangerZoneArmCoralStopBack = -85;
+    public static final double kDangerZoneBraceBottom = 1200;
+    public static final double kDangerZoneBraceTop = 1400.0;
+    public static final double kDangerZoneBottom = 780;
 
   }
 
@@ -208,12 +209,6 @@ public final class Constants {
     public static final int kOperatorControllerPort = 1;
   }
 
-  public final static class DangerZones {
-    public static final double kArmDangerZone1 = -86.0;
-    public static final double kArmDangerZoneRange1 = -69.9;
-    public static final double kArmDangerZoneRange2 = -87.8;
-
-  }
 
   ////////// Test pass/fail/warn parameters ///////////////////////////////////////////////////////
   public static final class Tests {
