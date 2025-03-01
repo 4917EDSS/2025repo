@@ -25,41 +25,43 @@ public class IntakeSub extends TestableSubsystem {
 
   /** Creates a new IntakeSub. */
   public IntakeSub() {
-    SparkMaxConfig configIntakeDeployMotor = new SparkMaxConfig();
-    configIntakeDeployMotor
-        .inverted(true) // Set to true to invert the forward motor direction
-        .smartCurrentLimit(5) // Current limit in amps
-        .idleMode(IdleMode.kBrake) // Set to kCoast to allow the motor to coast when power is 0.0
-            .encoder
-                .positionConversionFactor(Constants.Intake.kDeployEncoderPositionConversionFactor)
-                .velocityConversionFactor(Constants.Intake.kDeployEncoderVelocityConversionFactor); // Set to kCoast to allow the motor to coast when power is 0.0
-
-    SparkMaxConfig configIntakeRollersMotor = new SparkMaxConfig();
-    configIntakeRollersMotor
-        .inverted(true) // Set to true to invert the forward motor direction
-        .smartCurrentLimit(5) // Current limit in amps
-        .idleMode(IdleMode.kBrake) // Set to kCoast to allow the motor to coast when power is 0.0
-            .encoder
-                .positionConversionFactor(Constants.Intake.kRollersEncoderPositionConversionFactor)
-                .velocityConversionFactor(Constants.Intake.kRollersEncoderVelocityConversionFactor); // Set to kCoast to allow the motor to coast when power is 0.0
-
-    // Save the configuration to the motor
-    // Only persist parameters when configuring the motors on start up as this operation can be slow
-    m_intakeDeployMotor.configure(configIntakeDeployMotor, SparkBase.ResetMode.kResetSafeParameters,
-        SparkBase.PersistMode.kPersistParameters);
-    m_intakeRollersMotor.configure(configIntakeRollersMotor, SparkBase.ResetMode.kResetSafeParameters,
-        SparkBase.PersistMode.kPersistParameters);
-
-    // If we change the parameters (e.g. brake mode) during robot operation, 
-    // we should not save the changes to flash (i.e. want kNoPersistParameters)
-    //m_intakeMotor.configure(config, SparkBase.ResetMode.kNoResetSafeParameters, 
-    //  SparkBase.PersistMode.kNoPersistParameters);
-    init();
+    /*
+     * SparkMaxConfig configIntakeDeployMotor = new SparkMaxConfig();
+     * configIntakeDeployMotor
+     * .inverted(true) // Set to true to invert the forward motor direction
+     * .smartCurrentLimit(5) // Current limit in amps
+     * .idleMode(IdleMode.kBrake) // Set to kCoast to allow the motor to coast when power is 0.0
+     * .encoder
+     * .positionConversionFactor(Constants.Intake.kDeployEncoderPositionConversionFactor)
+     * .velocityConversionFactor(Constants.Intake.kDeployEncoderVelocityConversionFactor); // Set to kCoast to allow the
+     * motor to coast when power is 0.0
+     * 
+     * SparkMaxConfig configIntakeRollersMotor = new SparkMaxConfig();
+     * configIntakeRollersMotor
+     * .inverted(true) // Set to true to invert the forward motor direction
+     * .smartCurrentLimit(5) // Current limit in amps
+     * .idleMode(IdleMode.kBrake) // Set to kCoast to allow the motor to coast when power is 0.0
+     * .encoder
+     * .positionConversionFactor(Constants.Intake.kRollersEncoderPositionConversionFactor)
+     * .velocityConversionFactor(Constants.Intake.kRollersEncoderVelocityConversionFactor); // Set to kCoast to allow
+     * the motor to coast when power is 0.0
+     * 
+     * // Save the configuration to the motor
+     * // Only persist parameters when configuring the motors on start up as this operation can be slow
+     * m_intakeDeployMotor.configure(configIntakeDeployMotor, SparkBase.ResetMode.kResetSafeParameters,
+     * SparkBase.PersistMode.kPersistParameters);
+     * m_intakeRollersMotor.configure(configIntakeRollersMotor, SparkBase.ResetMode.kResetSafeParameters,
+     * SparkBase.PersistMode.kPersistParameters);
+     * 
+     * // If we change the parameters (e.g. brake mode) during robot operation,
+     * // we should not save the changes to flash (i.e. want kNoPersistParameters)
+     * //m_intakeMotor.configure(config, SparkBase.ResetMode.kNoResetSafeParameters,
+     * // SparkBase.PersistMode.kNoPersistParameters);
+     * init();
+     */
   }
 
   public void init() {
-    m_logger.info("Initializing IntakeSub Subsystem");
-    resetPosition();
 
   }
 
@@ -73,73 +75,73 @@ public class IntakeSub extends TestableSubsystem {
    * 
    * @param power power value -1.0 to 1.0
    */
-  public void setDeployPower(double power) {
-    m_intakeDeployMotor.set(power);
-  }
+  //public void setDeployPower(double power) {
+  //  m_intakeDeployMotor.set(power);
+  //}
 
   /**
    * Manually set the power of the intake rollers motor(s).
    * 
    * @param power power value -1.0 to 1.0
    */
-  public void setRollersPower(double power) {
-    m_intakeRollersMotor.set(power);
-  }
+  //public void setRollersPower(double power) {
+  //  m_intakeRollersMotor.set(power);
+  //}
 
   /**
    * Sets the current angle as the zero angle
    */
-  public void resetPosition() {
-    m_intakeDeployMotor.getEncoder().setPosition(0);
-  }
+  //public void resetPosition() {
+  //  m_intakeDeployMotor.getEncoder().setPosition(0);
+  //}
 
   /**
    * Returns the current angular position of the intake mechanism
    * 
    * @return position in degrees
    */
-  public double getPosition() {
-    return m_intakeDeployMotor.getEncoder().getPosition();
-  }
+  //public double getPosition() {
+  //  return m_intakeDeployMotor.getEncoder().getPosition();
+  //}
 
   /**
    * Returns the current angular velocity of the intake mechanism
    * 
    * @return velocity in degrees per second
    */
-  public double getVelocity() {
-    return m_intakeDeployMotor.getEncoder().getVelocity();
-  }
+  //public double getVelocity() {
+  //  return m_intakeDeployMotor.getEncoder().getVelocity();
+  //}
 
   /**
    * Returns if the intake mechanism is at its lower (all the way inside) limit or not
    * 
    * @return true when it's at the limit, false otherwise
    */
-  public boolean isAtUpperLimit() {
-    return m_deployUpperLimit.get(); // If switch is normally closed, return !m_armUpperLimit.get()
-    // to return a true when switch is false and false when it's true
-  }
+  //public boolean isAtUpperLimit() {
+  //  return m_deployUpperLimit.get(); // If switch is normally closed, return !m_armUpperLimit.get()
+  // to return a true when switch is false and false when it's true
+  //}
 
   /**
    * Returns if the intake mechanism is at its upper (all the way outside) limit or not
    * 
    * @return true when it's at the limit, false otherwise
    */
-  public boolean isAtLowerLimit() {
-    return m_deployLowerLimit.get(); // If switch is normally closed, return !m_armLowerLimit.get()
-    // to return a true when switch is false and false when it's true
-  }
+  //public boolean isAtLowerLimit() {
+  //  return m_deployLowerLimit.get(); // If switch is normally closed, return !m_armLowerLimit.get()
+  // to return a true when switch is false and false when it's true
+  //}
 
   /**
    * Returns how much current the motor is currently drawing
    * 
    * @return current in amps or -1.0 if motor can't measure current
    */
-  public double getElectricalCurrent() {
-    // TODO:  Figure out how to handle returning current for other motors
-    return m_intakeDeployMotor.getOutputCurrent();
-  }
+  //public double getElectricalCurrent() {
+  // TODO:  Figure out how to handle returning current for other motors
+  //  return m_intakeDeployMotor.getOutputCurrent();
+  //}
 
 
   //////////////////// Methods used for automated testing ////////////////////
@@ -171,17 +173,7 @@ public class IntakeSub extends TestableSubsystem {
    */
   @Override
   public void testResetMotorPosition(int motorId) {
-    switch(motorId) {
-      case 1:
-        //m_intakeDeployMotor.setPosition(0.0, 0.5); // Set it to 0 and wait up to half a second for it to take effect TODO: fix error (can't get value)
-        break;
-      case 2:
-        //m_intakeRollersMotor.setPosition(0.0, 0.5); // Set it to 0 and wait up to half a second for it to take effect TODO: fix error (can't get value)
-        break;
-      default:
-        // Do nothing
-        break;
-    }
+
   }
 
   /**
@@ -193,17 +185,7 @@ public class IntakeSub extends TestableSubsystem {
    */
   @Override
   public void testSetMotorPower(int motorId, double power) {
-    switch(motorId) {
-      case 1:
-        m_intakeDeployMotor.set(power);
-        break;
-      case 2:
-        m_intakeRollersMotor.set(power);
-        break;
-      default:
-        // Do nothing
-        break;
-    }
+
   }
 
   /**
@@ -215,22 +197,7 @@ public class IntakeSub extends TestableSubsystem {
    */
   @Override
   public double testGetMotorPosition(int motorId) {
-    double position = 0.0;
-
-    switch(motorId) {
-      case 1:
-        position = m_intakeDeployMotor.getAbsoluteEncoder().getPosition(); // This position is affected by the conversion factor
-        break;
-      case 2:
-        position = m_intakeRollersMotor.getAbsoluteEncoder().getPosition(); // This position is affected by the conversion factor
-        break;
-      default:
-        // Return an invalid value
-        position = -99999999.0;
-        break;
-    }
-
-    return position;
+    return 0;
   }
 
   /**
@@ -241,21 +208,6 @@ public class IntakeSub extends TestableSubsystem {
    */
   @Override
   public double testGetMotorAmps(int motorId) {
-    double current = 0.0;
-
-    switch(motorId) {
-      case 1:
-        //current = m_intakeDeployMotor.getStatorCurrent().getValueAsDouble(); TODO: fix error (can't get value)
-        break;
-      case 2:
-        //current = m_intakeRollersMotor.getStatorCurrent().getValueAsDouble(); TODO: fix error (can't get value)
-        break;
-      default:
-        // Return an invalid value
-        current = -1.0;
-        break;
-    }
-
-    return current;
+    return 0;
   }
 }

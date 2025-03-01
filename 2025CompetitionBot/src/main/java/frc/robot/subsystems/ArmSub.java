@@ -6,7 +6,6 @@ package frc.robot.subsystems;
 
 import java.util.function.Supplier;
 import java.util.logging.Logger;
-
 import com.revrobotics.spark.SparkAbsoluteEncoder;
 import com.revrobotics.spark.SparkBase;
 import com.revrobotics.spark.SparkLimitSwitch;
@@ -15,7 +14,6 @@ import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.config.AbsoluteEncoderConfig;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.SparkMaxConfig;
-
 import edu.wpi.first.math.controller.ArmFeedforward;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -214,18 +212,19 @@ public class ArmSub extends TestableSubsystem {
   }
 
   private boolean isBlocked() {
+
     double armAngle = getAngle();
     double elevatorHeight = elevatorPosition.get();
-    if(elevatorHeight <= Constants.Elevator.kDangerZoneBraceBottom) {
-      if(armAngle <= Constants.DangerZones.kArmDangerZoneRange1
-          && armAngle >= Constants.DangerZones.kArmDangerZoneRange2) {
-        return true;
-      }
-    } else if(Constants.Elevator.kDangerZoneBraceBottom <= elevatorHeight
-        && elevatorHeight <= Constants.Elevator.kDangerZoneBraceTop) { // values in mm, PLEASE CHANGE THEM NOW
-      if(armAngle <= Constants.DangerZones.kArmDangerZone1) {
-        return true;
-      }
+
+
+    if((elevatorHeight <= Constants.Elevator.kDangerZoneBottom) && (armAngle > Constants.Arm.kDangerZoneBottomVertical)
+        && (armAngle < Constants.Arm.kDangerZoneLowerAngle)) {
+      return true;
+    }
+    if((elevatorHeight > Constants.Elevator.kDangerZoneBraceBottom)
+        && (elevatorHeight < Constants.Elevator.kDangerZoneBraceTop) && (m_targetAngle < armAngle)
+        && (armAngle < Constants.Arm.kDangerZoneBraceAngle)) {
+      return true;
     }
     return false;
   }

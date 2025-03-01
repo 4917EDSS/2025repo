@@ -6,8 +6,6 @@ package frc.robot.subsystems;
 
 import java.util.Map;
 import java.util.logging.Logger;
-
-import com.ctre.phoenix6.mechanisms.swerve.LegacySwerveRequest.SwerveDriveBrake;
 import com.ctre.phoenix6.swerve.SwerveDrivetrain.SwerveDriveState;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.geometry.Pose2d;
