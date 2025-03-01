@@ -156,13 +156,13 @@ public class RobotContainer {
         new SetElevatorToHeightCmd(100, m_elevatorSub)); // put whatever number you want in here. probably mm
 
     NamedCommands.registerCommand("L2 placement",
-        new L2PlacementGrp(m_armSub, m_elevatorSub));
+        new L2PlacementGrp(m_armSub, m_elevatorSub, m_coralPlacementGrp, MaxAngularRate));
 
     NamedCommands.registerCommand("L3 placement",
-        new L3PlacementGrp(m_armSub, m_elevatorSub));
+        new L3PlacementGrp(m_armSub, m_elevatorSub, m_coralPlacementGrp, MaxAngularRate));
 
     NamedCommands.registerCommand("L4 placement",
-        new L4PlacementGrp(m_armSub, m_elevatorSub));
+        new L4PlacementGrp(m_armSub, m_elevatorSub, m_coralPlacementGrp, MaxAngularRate));
 
     NamedCommands.registerCommand("BackUpAfterScoringCmd",
         new BackUpAfterScoringCmd(m_drivetrainSub, m_constraints));
