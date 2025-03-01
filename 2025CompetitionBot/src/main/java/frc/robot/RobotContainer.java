@@ -30,7 +30,7 @@ import frc.robot.commands.AlgaeRemovalL2L3Grp;
 import frc.robot.commands.AlgaeRemovalL3L4Grp;
 import frc.robot.commands.ArmMoveWithJoystickCmd;
 import frc.robot.commands.BackUpAfterScoringCmd;
-import frc.robot.commands.CoralPlacementGrp;
+import frc.robot.commands.DriveToNearestScoreLocationCmd;
 import frc.robot.commands.DoNothingGrp;
 import frc.robot.commands.ElevatorMoveWithJoystickCmd;
 import frc.robot.commands.HomeButton;
