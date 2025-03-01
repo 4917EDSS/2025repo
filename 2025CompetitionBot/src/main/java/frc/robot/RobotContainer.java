@@ -49,6 +49,7 @@ import frc.robot.commands.L3PlacementGrp;
 import frc.robot.commands.L4PlacementGrp;
 import frc.robot.commands.PlaceReefGrp;
 import frc.robot.commands.SetArmToPositionCmd;
+import frc.robot.commands.SetElevatorToHeightCmd;
 import frc.robot.commands.tests.RunTestsGrp;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.ArmSub;
@@ -60,6 +61,7 @@ import frc.robot.subsystems.IntakeSub;
 import frc.robot.subsystems.VisionSub;
 import frc.robot.utils.SwerveTelemetry;
 import frc.robot.utils.TestManager;
+import frc.robot.commands.CoralPlacementGrp;
 
 
 /**
@@ -75,7 +77,7 @@ public class RobotContainer {
   private double MaxAngularRate = RotationsPerSecond.of(2.08 / 2.0).in(RadiansPerSecond); // 3/4 of a rotation per second max angular velocity, 2.08 is the speed that made it tip over, very funny video
   // Setting up bindings for necessary control of the swerve drive platform
   private final SwerveRequest.FieldCentric drive = new SwerveRequest.FieldCentric()
-      .withDeadband(MaxSpeed * 0.1).withRotationalDeadband(MaxAngularRate * 0.1) // Add a 10% deadband
+      .withDeadband(MaxSpeed * 0.01).withRotationalDeadband(MaxAngularRate * 0.01) // Add a 1% deadband
       .withDriveRequestType(DriveRequestType.Velocity);
   private final SwerveRequest.SwerveDriveBrake brake = new SwerveRequest.SwerveDriveBrake();
   private final SwerveRequest.PointWheelsAt point = new SwerveRequest.PointWheelsAt();
@@ -94,6 +96,8 @@ public class RobotContainer {
   private final CanSub m_canSub = new CanSub(4);
   //private final LedSub m_ledSub = new LedSub(m_arduinoSub);  // TODO:  Implement with new Arduino
   private final VisionSub m_visionSub;
+  private final CoralPlacementGrp m_coralPlacementGrp = new CoralPlacementGrp(m_elevatorSub, m_armSub);
+
 
   // Controllers
   private final CommandPS4Controller m_driverController =
@@ -114,17 +118,9 @@ public class RobotContainer {
   public RobotContainer() {
     m_armSub.setElevatorPositionSupplier(() -> m_elevatorSub.getPositionMm());
     m_elevatorSub.setArmAngleSupplier(() -> m_armSub.getAngle());
-    // Only initialize vision if a camera is connected (prevents crash)
-    // NetworkTableEvent.Kind[] topicsArray = NetworkTableEvent.Kind.values();
-    // if(!Arrays.asList(topicsArray).contains("limelight-left")
-    //   && !Arrays.asList(topicsArray).contains("limelight-right")) {
-    m_isLimelight = false;
-    m_visionSub = null;
-    //   System.out.println("No limelights found");
-    // } else {
-    //m_visionSub = new VisionSub(m_drivetrainSub);
-    //System.out.println("Limelight Found");
-    //}
+
+    m_visionSub = new VisionSub(m_drivetrainSub);
+
 
     m_testManager.setTestCommand(new RunTestsGrp(m_climbSub, m_armSub, m_elevatorSub, m_intakeSub, m_testManager));
 
@@ -149,11 +145,27 @@ public class RobotContainer {
     // Configure the trigger bindings
     configureBindings();
     autoChooserSetup();
+    registerNamedCommands();
   }
 
   private void registerNamedCommands() {
-    NamedCommands.registerCommand("SetArmToPositionCmd",
+    NamedCommands.registerCommand("SetArmToPositionCmd 63",
         new SetArmToPositionCmd(63, m_armSub)); // put whatever number you want in here, I assume its in degrees
+
+    NamedCommands.registerCommand("SetElevatorToHeightCmd 100",
+        new SetElevatorToHeightCmd(100, m_elevatorSub)); // put whatever number you want in here. probably mm
+
+    NamedCommands.registerCommand("L2 placement",
+        new L2PlacementGrp(m_armSub, m_elevatorSub, m_coralPlacementGrp, MaxAngularRate));
+
+    NamedCommands.registerCommand("L3 placement",
+        new L3PlacementGrp(m_armSub, m_elevatorSub, m_coralPlacementGrp, MaxAngularRate));
+
+    NamedCommands.registerCommand("L4 placement",
+        new L4PlacementGrp(m_armSub, m_elevatorSub, m_coralPlacementGrp, MaxAngularRate));
+
+    NamedCommands.registerCommand("BackUpAfterScoringCmd",
+        new BackUpAfterScoringCmd(m_drivetrainSub, m_constraints));
   }
 
   /**
@@ -169,16 +181,21 @@ public class RobotContainer {
         m_constraints,
         0.0 // Goal end velocity in meters/sec
     ));
+    //m_driverController.square()
+    //    .onTrue(new L2PlacementGrp(m_armSub, m_elevatorSub, m_coralPlacementGrp, MaxAngularRate)); //TODO Make Coral Recieval Command
+
 
     //Triangle - L4 Coral Placement
-    m_driverController.triangle().onTrue(new L4PlacementGrp(m_armSub, m_elevatorSub));
+    m_driverController.triangle()
+        .onTrue(new L4PlacementGrp(m_armSub, m_elevatorSub, m_coralPlacementGrp, MaxAngularRate));
 
     // Cross - L2 Coral Placement
     //m_driverController.cross().whileTrue(m_drivetrainSub.applyRequest(() -> brake));
-    m_driverController.cross().onTrue(new L2PlacementGrp(m_armSub, m_elevatorSub));
+    m_driverController.cross().onTrue(new CoralPlacementGrp(m_elevatorSub, m_armSub));
 
     // Circle - L3 Coral Placement
-    m_driverController.circle().onTrue(new L3PlacementGrp(m_armSub, m_elevatorSub));
+    m_driverController.circle()
+        .onTrue(new L3PlacementGrp(m_armSub, m_elevatorSub, m_coralPlacementGrp, MaxAngularRate));
     // m_driverController.circle().whileTrue(m_drivetrainSub
     //     .applyRequest(() -> point
     //         .withModuleDirection(new Rotation2d(-m_driverController.getLeftY(), -m_driverController.getLeftX()))));
@@ -200,6 +217,8 @@ public class RobotContainer {
     // L2
     // m_driverController.L2().onTrue(new InstantCommand(() -> m_armSub.setTargetAngle(0), m_armSub));
     //m_driverController.L2().onTrue(new SetArmToPositionCmd(30, m_armSub));
+    m_driverController.L2().onTrue(new InstantCommand(() -> slowDown())).onFalse(new InstantCommand(() -> speedUp()));
+
 
     // R2S
     //m_driverController.R2().onTrue(new SetArmToPositionCmd(0, m_armSub));
@@ -243,13 +262,15 @@ public class RobotContainer {
     // Operator Controller Bindings /////////////////////////////////////////////////////////////////////////////////////////////
 
     // Square
-    m_operatorController.square().onTrue(new L3PlacementGrp(m_armSub, m_elevatorSub));
+    m_operatorController.square()
+        .onTrue(new L3PlacementGrp(m_armSub, m_elevatorSub, m_coralPlacementGrp, MaxAngularRate));
 
     // Cross
     m_operatorController.cross().onTrue(new InstantCommand(() -> m_elevatorSub.setTargetHeight(900), m_elevatorSub));
 
     // Circle
-    m_operatorController.circle().whileTrue(new L4PlacementGrp(m_armSub, m_elevatorSub));
+    m_operatorController.circle()
+        .whileTrue(new L4PlacementGrp(m_armSub, m_elevatorSub, m_coralPlacementGrp, MaxAngularRate));
 
     // Triangle
     m_operatorController.triangle().whileTrue(new StartEndCommand(() -> m_intakeSub.setRollersPower(1.0),
@@ -273,7 +294,8 @@ public class RobotContainer {
     m_operatorController.share().onTrue(new HomeButton(m_armSub, m_elevatorSub));
 
     // Options
-    m_operatorController.options().onTrue(new L2PlacementGrp(m_armSub, m_elevatorSub));
+    m_operatorController.options()
+        .onTrue(new L2PlacementGrp(m_armSub, m_elevatorSub, m_coralPlacementGrp, MaxAngularRate));
 
     // PS
     m_operatorController.PS().onTrue(new InstantCommand(() -> {
@@ -290,6 +312,15 @@ public class RobotContainer {
     m_operatorController.R3().onTrue(new KillAllCmd(m_armSub, m_climbSub, m_drivetrainSub, m_elevatorSub, m_intakeSub));
   }
 
+  private void slowDown() {
+    MaxSpeed = MaxSpeed * 0.1;
+    MaxAngularRate = MaxAngularRate * 0.1;
+  }
+
+  private void speedUp() {
+    MaxSpeed = MaxSpeed * 10;
+    MaxAngularRate = MaxAngularRate * 10;
+  }
 
   /**
    * Use this to pass the autonomous command to the main {@link Robot} class.
