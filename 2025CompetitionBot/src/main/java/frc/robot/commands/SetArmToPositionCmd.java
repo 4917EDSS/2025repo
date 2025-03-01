@@ -42,12 +42,13 @@ public class SetArmToPositionCmd extends Command {
   @Override
   public void end(boolean interrupted) {}
 
-  // Returns true when the command should end.
+  // Returns true when the command should end (arm is at correct position)
   @Override
   public boolean isFinished() {
-    if(Math.abs(m_armSub.getAngle() - m_targetAngle) < Constants.Arm.kTargetAngleDeadband) {
+    if(m_armSub.isAtTargetAngle() == true) {
       return true;
+    } else {
+      return false;
     }
-    return false;
   }
 }
