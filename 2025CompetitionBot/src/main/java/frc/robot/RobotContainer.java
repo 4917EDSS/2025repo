@@ -38,6 +38,7 @@ import frc.robot.commands.AlgaeRemovalL2L3Grp;
 import frc.robot.commands.AlgaeRemovalL3L4Grp;
 import frc.robot.commands.ArmMoveWithJoystickCmd;
 import frc.robot.commands.AutoDriveCmd;
+import frc.robot.commands.BackUpAfterScoringCmd;
 import frc.robot.commands.DoNothingGrp;
 import frc.robot.commands.DriveToNearestScoreLocationCmd;
 import frc.robot.commands.ElevatorMoveWithJoystickCmd;
@@ -48,6 +49,7 @@ import frc.robot.commands.L3PlacementGrp;
 import frc.robot.commands.L4PlacementGrp;
 import frc.robot.commands.PlaceReefGrp;
 import frc.robot.commands.SetArmToPositionCmd;
+import frc.robot.commands.SetElevatorToHeightCmd;
 import frc.robot.commands.tests.RunTestsGrp;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.ArmSub;
@@ -148,11 +150,27 @@ public class RobotContainer {
     // Configure the trigger bindings
     configureBindings();
     autoChooserSetup();
+    registerNamedCommands();
   }
 
   private void registerNamedCommands() {
-    NamedCommands.registerCommand("SetArmToPositionCmd",
+    NamedCommands.registerCommand("SetArmToPositionCmd 63",
         new SetArmToPositionCmd(63, m_armSub)); // put whatever number you want in here, I assume its in degrees
+
+    NamedCommands.registerCommand("SetElevatorToHeightCmd 100",
+        new SetElevatorToHeightCmd(100, m_elevatorSub)); // put whatever number you want in here. probably mm
+
+    NamedCommands.registerCommand("L2 placement",
+        new L2PlacementGrp(m_armSub, m_elevatorSub));
+
+    NamedCommands.registerCommand("L3 placement",
+        new L3PlacementGrp(m_armSub, m_elevatorSub));
+
+    NamedCommands.registerCommand("L4 placement",
+        new L4PlacementGrp(m_armSub, m_elevatorSub));
+
+    NamedCommands.registerCommand("BackUpAfterScoringCmd",
+        new BackUpAfterScoringCmd(m_drivetrainSub, m_constraints));
   }
 
   /**
