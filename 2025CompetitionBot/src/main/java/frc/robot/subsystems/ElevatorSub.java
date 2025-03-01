@@ -20,19 +20,17 @@ import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants;
 import frc.robot.utils.SubControl;
+import frc.robot.utils.SubControl.*;
 import frc.robot.utils.SubControl.State;
 import frc.robot.utils.TestableSubsystem;
+
 
 public class ElevatorSub extends TestableSubsystem {
   /* STATE VARIABLES */
   private SubControl m_currentControl = new SubControl(); // Current states of mechanism
-  private SubControl m_newControl = new SubControl(); // New state to copy to current state when newStateParameters is true
-  private boolean m_newControlParameters = false; // Set to true when ready to switch to new state
-  private double m_lastPower = -999;
   private double m_blockedPosition;
   private IntakeSub m_intakeSub;
   private LedSub m_ledSub;
-
 
   private static Logger m_logger = Logger.getLogger(ElevatorSub.class.getName());
   private final TalonFX m_elevatorMotor = new TalonFX(Constants.CanIds.kElevatorMotor);
@@ -40,8 +38,8 @@ public class ElevatorSub extends TestableSubsystem {
   private final DigitalInput m_elevatorUpperLimit = new DigitalInput(Constants.DioIds.kElevatorUpperLimit);
   private final DigitalInput m_encoderResetSwitch = new DigitalInput(Constants.DioIds.kElevatorEncoderResetSwitch);
 
-  private final ElevatorFeedforward m_feedforward = new ElevatorFeedforward(0.0, 0.035, 0.0);
-  private PIDController m_elevatorPID = new PIDController(0.02, 0.0, 0.0);
+  private final ElevatorFeedforward m_feedforward = new ElevatorFeedforward(0.0, 0.06, 0.0);
+  private PIDController m_elevatorPID = new PIDController(0.01, 0.0, 0.0);
 
   private double m_targetHeight = 0.0;
   private boolean m_enableAutomation = false;
@@ -50,7 +48,6 @@ public class ElevatorSub extends TestableSubsystem {
   private double m_preTestHeight = 0;
   private double m_preTestHeight2 = 0;
   private Supplier<Double> m_armAngle;
-
 
   /** Creates a new ElevatorSub. */
   public ElevatorSub() {
@@ -97,6 +94,7 @@ public class ElevatorSub extends TestableSubsystem {
   @Override
   public void periodic() {
 
+    updateStateMachine();
 
     if(m_enableAutomation) {
       runHeightControl(true);
@@ -247,8 +245,14 @@ public class ElevatorSub extends TestableSubsystem {
    * @param updatePower set to false to update the Feedforward and PID controllers without changing the motor power
    */
   private void runHeightControl(boolean updatePower) {
+    double activeTarget = m_targetHeight;
+
+    if(m_currentControl.state == State.INTERRUPTED) {
+      activeTarget = m_blockedPosition;
+    }
+
     double ffPower = m_feedforward.calculate(getVelocity());
-    double pidPower = (m_elevatorPID.calculate(getPositionMm(), m_targetHeight));
+    double pidPower = (m_elevatorPID.calculate(getPositionMm(), activeTarget));
 
     if(updatePower) {
       setPower(ffPower + pidPower);
@@ -270,76 +274,55 @@ public class ElevatorSub extends TestableSubsystem {
 
     double currentHeight = getPositionMm();
     double armAngle = m_armAngle.get();
-    if((m_targetHeight > currentHeight)) {
-      // moving upwards
-      if((currentHeight > Constants.Elevator.kDangerZoneBraceBottom)
-          && (currentHeight < Constants.Elevator.kDangerZoneBraceTop)
-          && (armAngle < Constants.Elevator.kDangerZoneArmBraceAngle)) {
-        return true;
+
+    //Going up or going down, check for brace dangerzones.
+    if((currentHeight > Constants.Elevator.kDangerZoneBraceBottom)
+        && (currentHeight < Constants.Elevator.kDangerZoneBraceTop)
+        && (armAngle < Constants.Elevator.kDangerZoneArmBraceAngle)) {
+      return true;
+    }
+
+    if((m_targetHeight < currentHeight)) {
+      // moving downwards
+      if(currentHeight < Constants.Elevator.kDangerZoneBottom) {
+
+        if((armAngle < Constants.Elevator.kDangerZoneArmCoralStopFront)
+            && (armAngle > Constants.Elevator.kDangerZoneArmCoralStopBack)) {
+
+          return true;
+        }
       }
     }
-    return false;
 
+    return false;
   }
 
-  // private void updateStateMachine() {
-  //   double newPower = 0.0;
-  //   double currentPosition = getPositionMm();
+  private void updateStateMachine() {
 
-  //   // Check if there are new control parameters to set
-  //   if(m_newControlParameters) {
-  //     m_currentControl.state = m_newControl.state;
-  //     m_currentControl.mode = m_newControl.mode;
-  //     m_currentControl.targetPower = m_newControl.targetPower;
-  //     m_currentControl.targetPosition = m_newControl.targetPosition;
-  //     m_newControlParameters = false;
-  //   }
+    // Determine what power the mechanism should use based on the current state
+    switch(m_currentControl.state) {
 
-  //   // Determine what power the mechanism should use based on the current state
-  //   switch(m_currentControl.state) {
-  //     case IDLE:
-  //       // If the state machine is idle, don't supply any power to the mechanism
-  //       newPower = 0.0;
-  //       break;
+      case MOVING:
+        // If the mechanism is moving, check if it has arrived at it's target.
+        if(isBlocked()) {
+          m_blockedPosition = (getPositionMm());
+          m_currentControl.state = State.INTERRUPTED;
+        }
+        break;
 
-  //     case MOVING:
-  //       // If the mechanism is moving, check if it has arrived at it's target.
-  //       if(isBlocked(currentPosition, m_currentControl.targetPosition)) {
-  //         m_blockedPosition = currentPosition;
-  //         m_currentControl.state = State.INTERRUPTED;
-  //       } else if(isAtTargetHeight()) {
-  //         m_currentControl.state = State.HOLDING;
-  //       } else {
-  //         newPower = calcMovePower(currentPosition, m_currentControl.targetPosition, m_currentControl.targetPower);
-  //       }
-  //       break;
+      case INTERRUPTED:
+        // If the mechanism is no longer blocked, transition to MOVING
+        if(!isBlocked()) {
+          m_currentControl.state = State.MOVING;
+          // Otherwise, hold this position
+        }
+        break;
 
-  //     case HOLDING:
-  //       // If the mechanism is at it's target location, apply power to hold it there if necessary
-  //       newPower = calcMovePower(currentPosition, m_currentControl.targetPosition, m_currentControl.targetPower);
-  //       break;
-
-  //     case INTERRUPTED:
-  //       // If the mechanism is no longer blocked, transition to MOVING
-  //       if(!isBlocked(currentPosition, m_currentControl.targetPosition)) {
-  //         m_currentControl.state = State.MOVING;
-  //         // Otherwise, hold this position
-  //       } else {
-  //         newPower = calcMovePower(currentPosition, m_blockedPosition, m_currentControl.targetPower);
-  //       }
-  //       break;
-
-  //     default:
-  //       m_currentControl.state = State.HOLDING;
-  //       break;
-  //   }
-
-  //   if(newPower != m_lastPower) {
-  //     setPower(newPower);
-  //     m_lastPower = newPower;
-  //   }
-
-  // }
+      default:
+        m_currentControl.state = State.INTERRUPTED;
+        break;
+    }
+  }
 
   /**
    * Returns if the elevator has reached it's target height or not

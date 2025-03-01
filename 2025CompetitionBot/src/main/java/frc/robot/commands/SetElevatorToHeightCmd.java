@@ -5,6 +5,7 @@
 package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.Command;
+import frc.robot.Constants;
 import frc.robot.subsystems.ElevatorSub;
 
 /*
@@ -14,6 +15,7 @@ import frc.robot.subsystems.ElevatorSub;
 public class SetElevatorToHeightCmd extends Command {
   private double m_targetHeight;
   private ElevatorSub m_elevatorSub;
+
 
   /** Creates a new SetElevatorToHeightCmd. */
   public SetElevatorToHeightCmd(double targetHeight, ElevatorSub elevatorSub) {
@@ -25,8 +27,6 @@ public class SetElevatorToHeightCmd extends Command {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    m_elevatorSub.enableAutomation();
-    m_elevatorSub.setTargetHeight(m_targetHeight);
     // TODO - ask for the elevator to go to m_targetHeight
   }
 
@@ -41,12 +41,12 @@ public class SetElevatorToHeightCmd extends Command {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-
-    // Return True if we are at elevator height position
-    if(m_elevatorSub.isAtTargetHeight() == true) {
+    if(m_targetHeight - Constants.Elevator.kHeightTolerance < m_elevatorSub.getPositionMm()
+        && m_elevatorSub.getPositionMm() < m_targetHeight + Constants.Elevator.kHeightTolerance) {
       return true;
-    } else {
-      return false;
     }
+    // TODO - check if we are done via isAtTarget - you will need to add this method to ElevatorSub.java
+    // Copy basically what we do in ArmSub.IsAtTargetAngle().
+    return false;
   }
 }
