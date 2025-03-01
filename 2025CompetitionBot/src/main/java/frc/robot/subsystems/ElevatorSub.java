@@ -105,6 +105,7 @@ public class ElevatorSub extends TestableSubsystem {
     SmartDashboard.putBoolean("El UpLimit", isAtUpperLimit()); // True if we are at the upper limit
     SmartDashboard.putBoolean("El Set Enc", m_isElevatorEncoderSet); // True once the encoder is set
     SmartDashboard.putBoolean("El RstEnc", encoderResetSwitchHit()); // True if we hit the encoder reset switch
+    SmartDashboard.putBoolean("El isBlocked", isBlocked()); // True if we we are blocked
 
     // If we haven't set the relative encoder's position yet, check if we are at the switch that tells us to do so                                                                                                                                                                                                                                                                                                                                                                                                                          
     if(!m_isElevatorEncoderSet) {

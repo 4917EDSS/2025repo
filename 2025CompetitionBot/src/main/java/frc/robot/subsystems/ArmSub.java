@@ -79,6 +79,7 @@ public class ArmSub extends TestableSubsystem {
     // Arm power Smartdashboard is in setPower method
     SmartDashboard.putNumber("Arm Raw Enc", getPosition()); // Raw encoder position
     SmartDashboard.putNumber("Arm Ang", getAngle()); // Arm angle
+    SmartDashboard.putBoolean("Arm isBlocked", isBlocked()); // Arm blocked
 
     if(m_automationEnabled) {
       runAngleControl(true);
