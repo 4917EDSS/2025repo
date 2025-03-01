@@ -16,11 +16,8 @@ public class SubControl {
    * position
    */
   public enum State {
-    IDLE, MOVING, HOLDING, INTERRUPTED
+    MOVING, INTERRUPTED
   }
 
-  public Mode mode = Mode.DISABLED;
-  public State state = State.IDLE;
-  public double targetPosition = 0.0;
-  public double targetPower = 0.0;
+  public State state = State.INTERRUPTED;
 }

@@ -143,6 +143,9 @@ public final class Constants {
     public static final double kDangerZoneBraceTop = 1166.2;
     public static final double kDangerZoneBottom = 341.53;
     public static final double kDangerZoneArmBraceAngle = -60;
+    public static final double kDangerZoneArmCoralStopFront = -70;
+    public static final double kDangerZoneArmCoralStopBack = -85;
+
   }
 
   public static class Intake {
