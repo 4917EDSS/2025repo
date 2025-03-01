@@ -128,11 +128,6 @@ public class DrivetrainSub extends TunerSwerveDrivetrain implements Subsystem {
       startSimThread();
     }
 
-    /* Using the constants for the respective robot */
-    if(Constants.RobotSpecific.serialNumber.equals(Constants.RobotSpecific.PracticeSerialNumber)) {
-
-    }
-
     RobotConfig config;
     try {
       config = RobotConfig.fromGUISettings();

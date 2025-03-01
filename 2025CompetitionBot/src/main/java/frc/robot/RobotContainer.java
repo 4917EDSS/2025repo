@@ -38,6 +38,7 @@ import frc.robot.commands.AlgaeRemovalL2L3Grp;
 import frc.robot.commands.AlgaeRemovalL3L4Grp;
 import frc.robot.commands.ArmMoveWithJoystickCmd;
 import frc.robot.commands.AutoDriveCmd;
+import frc.robot.commands.BackUpAfterScoringCmd;
 import frc.robot.commands.DoNothingGrp;
 import frc.robot.commands.DriveToNearestScoreLocationCmd;
 import frc.robot.commands.ElevatorMoveWithJoystickCmd;
@@ -162,12 +163,12 @@ public class RobotContainer {
     // Drive controller bindings ////////////////////////////////////////////////////////////////////////////////////////////////
 
     // Square
-    m_driverController.square().onTrue(new L3PlacementGrp(m_armSub, m_elevatorSub)); //TODO Make Coral Recieval Command
-    // m_driverController.square().whileTrue(AutoBuilder.pathfindToPose(
-    //     new Pose2d(2, 6.5, new Rotation2d(0)),
-    //     m_constraints,
-    //     0.0 // Goal end velocity in meters/sec
-    // ));
+    // m_driverController.square().onTrue(new L3PlacementGrp(m_armSub, m_elevatorSub)); //TODO Make Coral Recieval Command
+    m_driverController.square().whileTrue(AutoBuilder.pathfindToPose(
+        new Pose2d(2, 6.5, new Rotation2d(0)),
+        m_constraints,
+        0.0 // Goal end velocity in meters/sec
+    ));
 
     //Triangle - L4 Coral Placement
     m_driverController.triangle().onTrue(new L4PlacementGrp(m_armSub, m_elevatorSub));
@@ -205,6 +206,7 @@ public class RobotContainer {
     // m_driverController.R2().onTrue(new InstantCommand(() -> m_armSub.setTargetAngle(45), m_armSub));
 
     // Share
+    m_driverController.share().onTrue(new BackUpAfterScoringCmd(m_drivetrainSub, m_constraints));
 
     // Options
 
