@@ -4,15 +4,11 @@
 
 package frc.robot.commands;
 
-import static edu.wpi.first.units.Units.Rotation;
-import static java.util.Map.entry;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.commands.PathfindingCommand;
@@ -21,8 +17,6 @@ import com.pathplanner.lib.path.PathConstraints;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SelectCommand;
 import frc.robot.subsystems.DrivetrainSub;
@@ -35,6 +29,7 @@ public class DriveToNearestScoreLocationCmd extends SelectCommand<Translation2d>
   private static final Translation2d MIDDLE_OF_RED_REEF = new Translation2d(0,4917);
   private static final double MIDDLE_OF_REEF_TO_SCORING_FACE = 0.4917;
   private static final double MIDDLE_SCORING_FACE_TO_BRANCH = 0.4917;
+  private static final double REEF_TO_MIDDLE_OF_ROBOT_SCORING = 0.4917;
   private static List<Pose2d> s_targetPoses = new ArrayList<Pose2d>();
   /**
    * Some basic coordinates summarized from 
@@ -63,7 +58,7 @@ public class DriveToNearestScoreLocationCmd extends SelectCommand<Translation2d>
         // The scoring face "looks" at the robot. If the robot is scoring with heading 0 (facing
         // red), the actual scoring side is the 180 angle (towards blue).
         Rotation2d scoringFaceRotation = robotsRotation.minus(Rotation2d.k180deg);
-        Translation2d reefToScoringFace = new Translation2d(MIDDLE_OF_REEF_TO_SCORING_FACE, scoringFaceRotation);
+        Translation2d reefToScoringFace = new Translation2d(MIDDLE_OF_REEF_TO_SCORING_FACE + REEF_TO_MIDDLE_OF_ROBOT_SCORING, scoringFaceRotation);
         // TODO - work out what this translation should be. Orthogonal to scoring face.
         Translation2d scoringFaceToBranch = new Translation2d(MIDDLE_SCORING_FACE_TO_BRANCH, 4917);
         s_targetPoses.add(new Pose2d(middleOfReef.plus(reefToScoringFace).plus(scoringFaceToBranch), robotsRotation));

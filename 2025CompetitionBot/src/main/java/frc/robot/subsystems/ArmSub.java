@@ -5,6 +5,7 @@
 package frc.robot.subsystems;
 
 import java.util.logging.Logger;
+
 import com.revrobotics.spark.SparkAbsoluteEncoder;
 import com.revrobotics.spark.SparkBase;
 import com.revrobotics.spark.SparkLimitSwitch;
@@ -13,6 +14,7 @@ import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.config.AbsoluteEncoderConfig;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.SparkMaxConfig;
+
 import edu.wpi.first.math.controller.ArmFeedforward;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -68,9 +70,9 @@ public class ArmSub extends TestableSubsystem {
     SmartDashboard.putNumber("Arm Ang", getAngle()); // Arm angle
 
     if(m_automationEnabled) {
-      runAngleControl(false);
-    } else {
       runAngleControl(true);
+    } else {
+      runAngleControl(false);
     }
   }
 
@@ -89,7 +91,7 @@ public class ArmSub extends TestableSubsystem {
    * 
    * @return position in rotations
    */
-  public double getPosition() {
+  private double getPosition() {
     return m_absoluteEncoder.getPosition(); // returns rotations
   }
 
@@ -127,7 +129,7 @@ public class ArmSub extends TestableSubsystem {
     }
     m_targetAngle = targetAngle;
     enableAutomation();
-    runAngleControl(false);
+    runAngleControl(true);
   }
 
   /**
@@ -165,11 +167,11 @@ public class ArmSub extends TestableSubsystem {
   /**
    * Calculates and sets the current power to apply to the arm to get to or stay at its target
    */
-  private void runAngleControl(boolean justCalculate) {
+  private void runAngleControl(boolean updatePower) {
     double pidPower = m_armPid.calculate(getAngle(), m_targetAngle);
     double fedPower = m_armFeedforward.calculate(Math.toRadians(getAngle()), pidPower); // Feed forward expects 0 degrees as horizontal
 
-    if(!justCalculate) {
+    if(updatePower) {
       double tempPower = (pidPower + fedPower);
 
 
@@ -181,7 +183,7 @@ public class ArmSub extends TestableSubsystem {
     }
   }
 
-  public boolean IsAtTargetAngle() {
+  public boolean isAtTargetAngle() {
     // If we are within tolerance and our velocity is low, we're at our target
     // TODO:  Add velocity check
     if((Math.abs(m_targetAngle - getAngle()) < Constants.Arm.kAngleTolerance)
@@ -190,6 +192,22 @@ public class ArmSub extends TestableSubsystem {
     } else {
       return false;
     }
+  }
+
+  private boolean isBlocked(double elevatorHeight) {
+    double armAngle = getAngle();
+    if(elevatorHeight <= Constants.Elevator.kDangerZoneBraceBottom) {
+      if(armAngle <= Constants.DangerZones.kArmDangerZoneRange1
+          && armAngle >= Constants.DangerZones.kArmDangerZoneRange2) {
+          return true;
+      }
+    } else if(Constants.Elevator.kDangerZoneBraceBottom <= elevatorHeight
+        && elevatorHeight <= Constants.Elevator.kDangerZoneBraceTop) { // values in mm, PLEASE CHANGE THEM NOW
+      if(armAngle <= Constants.DangerZones.kArmDangerZone1) {
+        return true;
+      }
+    }
+    return false;
   }
 
 

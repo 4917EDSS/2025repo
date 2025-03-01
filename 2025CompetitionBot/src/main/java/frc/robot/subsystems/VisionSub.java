@@ -137,10 +137,6 @@ public class VisionSub extends SubsystemBase {
     updateOdemetry(swerveDriveState, RIGHT);
   }
 
-  public Pose2d getRobotPose() {
-    return mt2.pose;
-  }
-
   private void updateOdemetry(SwerveDriveState swerveDriveState, String camera) {
     LimelightHelpers.SetRobotOrientation(camera, swerveDriveState.Pose.getRotation().getDegrees(), 0, 0, 0, 0, 0);
     mt2 = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(camera);
