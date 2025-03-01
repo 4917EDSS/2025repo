@@ -138,7 +138,7 @@ public class ElevatorSub extends TestableSubsystem {
       powerValue = 0.0;
       System.out.println("Lower limit hit");
     } else if(isAtUpperLimit() && power > 0.0) {
-      powerValue = 0.0;
+      setTargetHeight(getPositionMm() - 5);
       System.out.println("Upper limit hit");
     } else if((getPositionMm() < Constants.Elevator.kSlowDownLowerStageHeight)
         && (power < Constants.Elevator.kSlowDownLowerStagePower)) {
@@ -223,7 +223,6 @@ public class ElevatorSub extends TestableSubsystem {
    * @return true when it's at the limit, false otherwise
    */
   public boolean isAtUpperLimit() {
-    setTargetHeight(getPositionMm() - 5);
     return !m_elevatorUpperLimit.get();
   }
 
