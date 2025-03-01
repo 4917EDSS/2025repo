@@ -113,17 +113,9 @@ public class RobotContainer {
   public RobotContainer() {
     m_armSub.setElevatorPositionSupplier(() -> m_elevatorSub.getPositionMm());
     m_elevatorSub.setArmAngleSupplier(() -> m_armSub.getAngle());
-    // Only initialize vision if a camera is connected (prevents crash)
-    // NetworkTableEvent.Kind[] topicsArray = NetworkTableEvent.Kind.values();
-    // if(!Arrays.asList(topicsArray).contains("limelight-left")
-    //   && !Arrays.asList(topicsArray).contains("limelight-right")) {
-    m_isLimelight = false;
-    m_visionSub = null;
-    //   System.out.println("No limelights found");
-    // } else {
-    //m_visionSub = new VisionSub(m_drivetrainSub);
-    //System.out.println("Limelight Found");
-    //}
+
+    m_visionSub = new VisionSub(m_drivetrainSub);
+
 
     m_testManager.setTestCommand(new RunTestsGrp(m_climbSub, m_armSub, m_elevatorSub, m_intakeSub, m_testManager));
 
