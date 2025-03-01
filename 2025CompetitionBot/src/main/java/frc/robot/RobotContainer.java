@@ -59,6 +59,7 @@ import frc.robot.subsystems.IntakeSub;
 import frc.robot.subsystems.VisionSub;
 import frc.robot.utils.SwerveTelemetry;
 import frc.robot.utils.TestManager;
+import frc.robot.commands.CoralPlacementGrp;
 
 
 /**
@@ -93,6 +94,8 @@ public class RobotContainer {
   private final CanSub m_canSub = new CanSub(4);
   //private final LedSub m_ledSub = new LedSub(m_arduinoSub);  // TODO:  Implement with new Arduino
   private final VisionSub m_visionSub;
+  private final CoralPlacementGrp m_coralPlacementGrp = new CoralPlacementGrp(m_elevatorSub, m_armSub);
+
 
   // Controllers
   private final CommandPS4Controller m_driverController =
@@ -162,7 +165,8 @@ public class RobotContainer {
     // Drive controller bindings ////////////////////////////////////////////////////////////////////////////////////////////////
 
     // Square
-    m_driverController.square().onTrue(new L3PlacementGrp(m_armSub, m_elevatorSub)); //TODO Make Coral Recieval Command
+    m_driverController.square()
+        .onTrue(new L2PlacementGrp(m_armSub, m_elevatorSub, m_coralPlacementGrp, MaxAngularRate)); //TODO Make Coral Recieval Command
     // m_driverController.square().whileTrue(AutoBuilder.pathfindToPose(
     //     new Pose2d(2, 6.5, new Rotation2d(0)),
     //     m_constraints,
@@ -170,14 +174,16 @@ public class RobotContainer {
     // ));
 
     //Triangle - L4 Coral Placement
-    m_driverController.triangle().onTrue(new L4PlacementGrp(m_armSub, m_elevatorSub));
+    m_driverController.triangle()
+        .onTrue(new L4PlacementGrp(m_armSub, m_elevatorSub, m_coralPlacementGrp, MaxAngularRate));
 
     // Cross - L2 Coral Placement
     //m_driverController.cross().whileTrue(m_drivetrainSub.applyRequest(() -> brake));
-    m_driverController.cross().onTrue(new L2PlacementGrp(m_armSub, m_elevatorSub));
+    m_driverController.cross().onTrue(new CoralPlacementGrp(m_elevatorSub, m_armSub));
 
     // Circle - L3 Coral Placement
-    m_driverController.circle().onTrue(new L3PlacementGrp(m_armSub, m_elevatorSub));
+    m_driverController.circle()
+        .onTrue(new L3PlacementGrp(m_armSub, m_elevatorSub, m_coralPlacementGrp, MaxAngularRate));
     // m_driverController.circle().whileTrue(m_drivetrainSub
     //     .applyRequest(() -> point
     //         .withModuleDirection(new Rotation2d(-m_driverController.getLeftY(), -m_driverController.getLeftX()))));
@@ -241,13 +247,15 @@ public class RobotContainer {
     // Operator Controller Bindings /////////////////////////////////////////////////////////////////////////////////////////////
 
     // Square
-    m_operatorController.square().onTrue(new L3PlacementGrp(m_armSub, m_elevatorSub));
+    m_operatorController.square()
+        .onTrue(new L3PlacementGrp(m_armSub, m_elevatorSub, m_coralPlacementGrp, MaxAngularRate));
 
     // Cross
     m_operatorController.cross().onTrue(new InstantCommand(() -> m_elevatorSub.setTargetHeight(900), m_elevatorSub));
 
     // Circle
-    m_operatorController.circle().whileTrue(new L4PlacementGrp(m_armSub, m_elevatorSub));
+    m_operatorController.circle()
+        .whileTrue(new L4PlacementGrp(m_armSub, m_elevatorSub, m_coralPlacementGrp, MaxAngularRate));
 
     // Triangle
     m_operatorController.triangle().whileTrue(new StartEndCommand(() -> m_intakeSub.setRollersPower(1.0),
@@ -271,7 +279,8 @@ public class RobotContainer {
     m_operatorController.share().onTrue(new HomeButton(m_armSub, m_elevatorSub));
 
     // Options
-    m_operatorController.options().onTrue(new L2PlacementGrp(m_armSub, m_elevatorSub));
+    m_operatorController.options()
+        .onTrue(new L2PlacementGrp(m_armSub, m_elevatorSub, m_coralPlacementGrp, MaxAngularRate));
 
     // PS
     m_operatorController.PS().onTrue(new InstantCommand(() -> {

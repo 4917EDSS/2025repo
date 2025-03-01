@@ -11,23 +11,27 @@ import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.subsystems.ArmSub;
 import frc.robot.subsystems.ElevatorSub;
 import frc.robot.Constants;
+import frc.robot.commands.CoralPlacementGrp;
 
 // NOTE: Consider using this command inline, rather than writing a subclass. For more
 // information, see:
 // https://docs.wpilib.org/en/stable/docs/software/commandbased/convenience-features.html
 public class L4PlacementGrp extends SequentialCommandGroup {
   /** Creates a new L4PlacementGrp. */
-  public L4PlacementGrp(ArmSub armSub, ElevatorSub elevatorSub) {
+  public L4PlacementGrp(ArmSub armSub, ElevatorSub elevatorSub, CoralPlacementGrp coralPlacementGrp,
+      double scoringBranch) {
+    double m_scoringBranch = scoringBranch;
     // Add your commands in the addCommands() call, e.g.
     // addCommands(new FooCommand(), new BarCommand());
+
     addCommands(
         new SetElevatorToHeightCmd(Constants.Elevator.kMaxHeight, elevatorSub), //its set to max height and itll stop once the coral gets to the height where it can hit part of the elevator so then the arm will move out and it will resume going up
-        new SetArmToPositionCmd(45, armSub),
-        new WaitCommand(3), // this is just time for the driver to align, "I will work on something to make it better" - Sam
-        new SetElevatorToHeightCmd(750, elevatorSub),
-        new WaitCommand(1), // just time for the driver to drive back
-        new SetArmToPositionCmd(-90, armSub),
-        new SetElevatorToHeightCmd(Constants.Elevator.kMinHeight, elevatorSub)
+        new SetArmToPositionCmd(32, armSub)
+    // new WaitCommand(3), // this is just time for the driver to align, "I will work on something to make it better" - Sam
+    // new SetElevatorToHeightCmd(750, elevatorSub),
+    // new WaitCommand(1), // just time for the driver to drive back
+    // new SetArmToPositionCmd(-90, armSub),
+    // new SetElevatorToHeightCmd(Constants.Elevator.kMinHeight, elevatorSub)
     //new WaitCommand(2)
     //new WaitCommand(5),
     // new InstantCommand(() -> elevatorSub.setTargetHeight(1070)), // as tall as possible so that the coral can reach l4
@@ -40,6 +44,7 @@ public class L4PlacementGrp extends SequentialCommandGroup {
     // new WaitCommand(2),
     // new InstantCommand(() -> armSub.setTargetAngle(-90)) // set the arm back to the starting angle
     );
+    scoringBranch = 4;
   }
 
 }

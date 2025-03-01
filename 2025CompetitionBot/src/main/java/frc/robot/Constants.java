@@ -122,6 +122,7 @@ public final class Constants {
   public final static class Elevator {
     public final static double kMinHeight = 0.0; // In mm
     public final static double kMaxHeight = 1140.0; // In mm
+    public final static double kCoralGrabableHeight = 550.0; // height that coral can still slide in under the arm for the coral to be grabbable
 
     // Sets a max power if we are close to the lower limit switch
     public final static double kSlowDownLowerStagePower = -0.1;
@@ -146,7 +147,6 @@ public final class Constants {
 
 
   }
-
 
 
   public static class Intake {

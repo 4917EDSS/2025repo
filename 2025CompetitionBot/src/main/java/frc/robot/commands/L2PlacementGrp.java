@@ -15,7 +15,9 @@ import frc.robot.subsystems.ElevatorSub;
 // https://docs.wpilib.org/en/stable/docs/software/commandbased/convenience-features.html
 public class L2PlacementGrp extends SequentialCommandGroup {
   /** Creates a new L2PlacementGrp. */
-  public L2PlacementGrp(ArmSub armSub, ElevatorSub elevatorSub) {
+  public L2PlacementGrp(ArmSub armSub, ElevatorSub elevatorSub, CoralPlacementGrp coralPlacementGrp,
+      double scoringBranch) {
+    double m_scoringBranch = scoringBranch;
     // Add your commands in the addCommands() call, e.g.
     // addCommands(new FooCommand(), new BarCommand());
     addCommands(
@@ -32,6 +34,7 @@ public class L2PlacementGrp extends SequentialCommandGroup {
     // new WaitCommand(2),
     // new InstantCommand(() -> elevatorSub.setTargetHeight(5))); // Move elevator down to place coral
     );
+    scoringBranch = 2;
   }
 }
 
