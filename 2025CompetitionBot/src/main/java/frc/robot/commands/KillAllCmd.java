@@ -15,9 +15,14 @@ import frc.robot.subsystems.IntakeSub;
 
 public class KillAllCmd extends Command {
   private static Logger m_logger = Logger.getLogger(KillAllCmd.class.getName());
+  ElevatorSub m_elevatorSub;
+  ArmSub m_armSub;
 
   public KillAllCmd(ArmSub armSub, ClimbSub climbSub, DrivetrainSub drivetrainSub, ElevatorSub elevatorSub,
       IntakeSub intakeSub) {
+    m_elevatorSub = elevatorSub;
+    m_armSub = armSub;
+
     addRequirements(armSub, climbSub, drivetrainSub, elevatorSub, intakeSub);
   }
 
@@ -25,6 +30,9 @@ public class KillAllCmd extends Command {
   @Override
   public void initialize() {
     m_logger.fine("KillAllCmd - Init");
+    //Hold arm and elevator at current positions
+    m_elevatorSub.setTargetHeight(m_elevatorSub.getPositionMm());
+    m_armSub.setTargetAngle(m_armSub.getAngle());
   }
 
   // Called every time the scheduler runs while the command is scheduled.
