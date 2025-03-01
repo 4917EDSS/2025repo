@@ -19,10 +19,12 @@ public class L2PlacementGrp extends SequentialCommandGroup {
     // Add your commands in the addCommands() call, e.g.
     // addCommands(new FooCommand(), new BarCommand());
     addCommands(
-        new InstantCommand(() -> elevatorSub.setTargetHeight(352)), // Set height to clear frame when moving arm
-        new WaitCommand(2),
-        new InstantCommand(() -> armSub.setTargetAngle(32)), // Move arm angle above L2
-        new WaitCommand(2)
+        new SetElevatorToHeightCmd(352, elevatorSub),
+        new SetArmToPositionCmd(32, armSub)
+    // new InstantCommand(() -> elevatorSub.setTargetHeight(352)), // Set height to clear frame when moving arm
+    // new WaitCommand(2),
+    // new InstantCommand(() -> armSub.setTargetAngle(32)), // Move arm angle above L2
+    // new WaitCommand(2)
     // new WaitCommand(2),
     // new InstantCommand(() -> elevatorSub.setTargetHeight(54)),
     // new WaitCommand(5),

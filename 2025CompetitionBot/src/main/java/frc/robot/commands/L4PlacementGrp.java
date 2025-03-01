@@ -20,10 +20,8 @@ public class L4PlacementGrp extends SequentialCommandGroup {
     // Add your commands in the addCommands() call, e.g.
     // addCommands(new FooCommand(), new BarCommand());
     addCommands(
-        new InstantCommand(() -> elevatorSub.setTargetHeight(1331)), // just high enough for arm with coral to be able to go to 165
-        // new PrintCommand("Its wokring"),
-        // new WaitCommand(2)
-        new InstantCommand(() -> armSub.setTargetAngle(32)) // 165 is just high enough to get the coral to a height that it can get to the branch
+        new SetElevatorToHeightCmd(1331, elevatorSub),
+        new SetArmToPositionCmd(32, armSub)
     //new WaitCommand(2)
     //new WaitCommand(5),
     // new InstantCommand(() -> elevatorSub.setTargetHeight(1070)), // as tall as possible so that the coral can reach l4

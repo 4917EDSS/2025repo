@@ -41,7 +41,7 @@ public class ElevatorSub extends TestableSubsystem {
   private final DigitalInput m_encoderResetSwitch = new DigitalInput(Constants.DioIds.kElevatorEncoderResetSwitch);
 
   private final ElevatorFeedforward m_feedforward = new ElevatorFeedforward(0.0, 0.035, 0.0);
-  private PIDController m_elevatorPID = new PIDController(0.7, 0.0, 0.0);
+  private PIDController m_elevatorPID = new PIDController(0.02, 0.0, 0.0);
 
   private double m_targetHeight = 0.0;
   private boolean m_enableAutomation = false;

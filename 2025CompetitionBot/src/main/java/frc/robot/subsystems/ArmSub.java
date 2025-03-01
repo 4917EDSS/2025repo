@@ -30,13 +30,12 @@ public class ArmSub extends TestableSubsystem {
   private final SparkLimitSwitch m_forwardLimitSwitch = m_armMotor.getForwardLimitSwitch();
   private final SparkLimitSwitch m_revLimitSwitch = m_armMotor.getReverseLimitSwitch();
 
-  private final ArmFeedforward m_armFeedforward = new ArmFeedforward(0.00, 0.01, 0.0);
-  private final PIDController m_armPid = new PIDController(0.1, 0, 0); // TODO: Tune
+  private final ArmFeedforward m_armFeedforward = new ArmFeedforward(0.02, 0.0, 0.0);
+  private final PIDController m_armPid = new PIDController(0.01, 0, 0); // TODO: Tune
 
   private double m_targetAngle = 0;
   private boolean m_automationEnabled = false;
   private Supplier<Double> elevatorPosition;
-
 
 
   /** Creates a new ArmSub. */
@@ -207,7 +206,7 @@ public class ArmSub extends TestableSubsystem {
     if(elevatorHeight <= Constants.Elevator.kDangerZoneBraceBottom) {
       if(armAngle <= Constants.DangerZones.kArmDangerZoneRange1
           && armAngle >= Constants.DangerZones.kArmDangerZoneRange2) {
-          return true;
+        return true;
       }
     } else if(Constants.Elevator.kDangerZoneBraceBottom <= elevatorHeight
         && elevatorHeight <= Constants.Elevator.kDangerZoneBraceTop) { // values in mm, PLEASE CHANGE THEM NOW
