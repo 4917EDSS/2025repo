@@ -223,6 +223,7 @@ public class ElevatorSub extends TestableSubsystem {
    * @return true when it's at the limit, false otherwise
    */
   public boolean isAtUpperLimit() {
+    setTargetHeight(getPositionMm() - 5);
     return !m_elevatorUpperLimit.get();
   }
 
