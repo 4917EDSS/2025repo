@@ -21,26 +21,30 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SelectCommand;
 import frc.robot.subsystems.DrivetrainSub;
 
-/* You should consider using the more terse Command factories API instead https://docs.wpilib.org/en/stable/docs/software/commandbased/organizing-command-based.html#defining-commands */
+/*
+ * You should consider using the more terse Command factories API instead
+ * https://docs.wpilib.org/en/stable/docs/software/commandbased/organizing-command-based.html#defining-commands
+ */
 public class DriveToNearestScoreLocationCmd extends SelectCommand<Translation2d> {
   // All in meters.
   // TODO get these exact
-  private static final Translation2d MIDDLE_OF_BLUE_REEF = new Translation2d(4917,0);
-  private static final Translation2d MIDDLE_OF_RED_REEF = new Translation2d(0,4917);
-  private static final double MIDDLE_OF_REEF_TO_SCORING_FACE = 0.4917;
-  private static final double MIDDLE_SCORING_FACE_TO_BRANCH = 0.4917;
-  private static final double REEF_TO_MIDDLE_OF_ROBOT_SCORING = 0.4917;
+  private static final Translation2d MIDDLE_OF_BLUE_REEF = new Translation2d(4917, 0);
+  private static final Translation2d MIDDLE_OF_RED_REEF = new Translation2d(0, 4917);
+  private static final double MIDDLE_OF_REEF_TO_SCORING_FACE = 0.831;
+  private static final double MIDDLE_SCORING_FACE_TO_BRANCH = 0.164;
+  private static final double REEF_TO_MIDDLE_OF_ROBOT_SCORING = 0.381;
   private static List<Pose2d> s_targetPoses = new ArrayList<Pose2d>();
+
   /**
-   * Some basic coordinates summarized from 
+   * Some basic coordinates summarized from
    * https://docs.wpilib.org/en/stable/docs/software/basic-programming/coordinate-system.html
    * 
    * +y
    * ---------------------------
-   * | blue              red   |      90
-   * |                         |  180    0
-   * |                         |     270
-   * |0,0                      |     
+   * | blue red | 90
+   * | | 180 0
+   * | | 270
+   * |0,0 |
    * --------------------------- +x
    * 
    * With a top down view where the blue side is the left side, 0,0 is the bottom left corner.
@@ -52,26 +56,28 @@ public class DriveToNearestScoreLocationCmd extends SelectCommand<Translation2d>
    * 270 is "down"
    */
   private static void generateTargetPoses() {
-    for (Translation2d middleOfReef : Arrays.asList(MIDDLE_OF_BLUE_REEF, MIDDLE_OF_RED_REEF)) {
-      for (double degrees = 0; degrees < 360; degrees += 60) {
+    for(Translation2d middleOfReef : Arrays.asList(MIDDLE_OF_BLUE_REEF, MIDDLE_OF_RED_REEF)) {
+      for(double degrees = 0; degrees < 360; degrees += 60) {
         Rotation2d robotsRotation = Rotation2d.fromDegrees(degrees);
         // The scoring face "looks" at the robot. If the robot is scoring with heading 0 (facing
         // red), the actual scoring side is the 180 angle (towards blue).
         Rotation2d scoringFaceRotation = robotsRotation.minus(Rotation2d.k180deg);
-        Translation2d reefToScoringFace = new Translation2d(MIDDLE_OF_REEF_TO_SCORING_FACE + REEF_TO_MIDDLE_OF_ROBOT_SCORING, scoringFaceRotation);
+        Translation2d reefToScoringFace =
+            new Translation2d(MIDDLE_OF_REEF_TO_SCORING_FACE + REEF_TO_MIDDLE_OF_ROBOT_SCORING, scoringFaceRotation);
         // TODO - work out what this translation should be. Orthogonal to scoring face.
         Translation2d scoringFaceToBranch = new Translation2d(MIDDLE_SCORING_FACE_TO_BRANCH, 4917);
         s_targetPoses.add(new Pose2d(middleOfReef.plus(reefToScoringFace).plus(scoringFaceToBranch), robotsRotation));
         s_targetPoses.add(new Pose2d(middleOfReef.plus(reefToScoringFace).minus(scoringFaceToBranch), robotsRotation));
       }
     }
-    assert s_targetPoses.size() == 2*6*2; // 2 reefs, 6 faces, 2 branches/face
+    assert s_targetPoses.size() == 2 * 6 * 2; // 2 reefs, 6 faces, 2 branches/face
   }
 
   private static Map<Translation2d, Command> s_locationToCommandMap = new HashMap<Translation2d, Command>();
+
   public static void warmUpMap(PathConstraints constraints) {
     generateTargetPoses();
-    for (Pose2d targetPose : s_targetPoses) {
+    for(Pose2d targetPose : s_targetPoses) {
       s_locationToCommandMap.put(targetPose.getTranslation(), AutoBuilder.pathfindToPose(targetPose, constraints));
     }
     PathfindingCommand.warmupCommand().schedule();

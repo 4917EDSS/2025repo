@@ -42,7 +42,6 @@ public class SetElevatorToHeightCmd extends Command {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-<<<<<<< HEAD
     if(m_targetHeight - Constants.Elevator.kHeightTolerance < m_elevatorSub.getPositionMm()
         && m_elevatorSub.getPositionMm() < m_targetHeight + Constants.Elevator.kHeightTolerance) {
       return true;
@@ -50,14 +49,5 @@ public class SetElevatorToHeightCmd extends Command {
     // TODO - check if we are done via isAtTarget - you will need to add this method to ElevatorSub.java
     // Copy basically what we do in ArmSub.IsAtTargetAngle().
     return false;
-=======
-
-    // Return True if we are at elevator height position
-    if(m_elevatorSub.isAtTargetHeight() == true) {
-      return true;
-    } else {
-      return false;
-    }
->>>>>>> 3422a86186bd5819c3679e0d991f17496550f527
   }
 }
