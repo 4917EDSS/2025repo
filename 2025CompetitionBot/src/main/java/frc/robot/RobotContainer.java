@@ -111,6 +111,8 @@ public class RobotContainer {
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
+    m_armSub.setElevatorPositionSupplier(() -> m_elevatorSub.getPositionMm());
+    m_elevatorSub.setArmAngleSupplier(() -> m_armSub.getAngle());
     // Only initialize vision if a camera is connected (prevents crash)
     // NetworkTableEvent.Kind[] topicsArray = NetworkTableEvent.Kind.values();
     // if(!Arrays.asList(topicsArray).contains("limelight-left")

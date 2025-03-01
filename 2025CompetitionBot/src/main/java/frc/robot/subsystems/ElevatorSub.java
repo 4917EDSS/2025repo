@@ -4,6 +4,7 @@
 
 package frc.robot.subsystems;
 
+import java.util.function.Supplier;
 import java.util.logging.Logger;
 import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
 import com.ctre.phoenix6.configs.MotorOutputConfigs;
@@ -48,6 +49,7 @@ public class ElevatorSub extends TestableSubsystem {
   private int m_hitEncoderSwitchCounter = 0;
   private double m_preTestHeight = 0;
   private double m_preTestHeight2 = 0;
+  private Supplier<Double> m_armAngle;
 
 
   /** Creates a new ElevatorSub. */
@@ -80,6 +82,10 @@ public class ElevatorSub extends TestableSubsystem {
     m_elevatorMotor2.getConfigurator().apply(config);
 
     init();
+  }
+
+  public void setArmAngleSupplier(Supplier<Double> armAngle) {
+    m_armAngle = armAngle;
   }
 
   public void init() {
@@ -249,7 +255,7 @@ public class ElevatorSub extends TestableSubsystem {
     }
   }
 
-  private boolean isBlocked(double currentPosition, double targetPosition, double armAngle) {
+  private boolean isBlocked() {
     /*
      * should stop the elevator if:
      * - the elevator position is lower than the bottom danger zone and the
@@ -262,10 +268,12 @@ public class ElevatorSub extends TestableSubsystem {
      * holding a coral and is facing close to downwards, AND the elevator is moving upwards
      */
 
-    if((targetPosition > currentPosition)) {
+    double currentHeight = getPositionMm();
+    double armAngle = m_armAngle.get();
+    if((m_targetHeight > currentHeight)) {
       // moving upwards
-      if((currentPosition > Constants.Elevator.kDangerZoneBraceBottom)
-          && (currentPosition < Constants.Elevator.kDangerZoneBraceTop)
+      if((currentHeight > Constants.Elevator.kDangerZoneBraceBottom)
+          && (currentHeight < Constants.Elevator.kDangerZoneBraceTop)
           && (armAngle < Constants.Elevator.kDangerZoneArmBraceAngle)) {
         return true;
       }

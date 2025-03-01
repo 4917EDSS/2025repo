@@ -4,6 +4,7 @@
 
 package frc.robot.subsystems;
 
+import java.util.function.Supplier;
 import java.util.logging.Logger;
 
 import com.revrobotics.spark.SparkAbsoluteEncoder;
@@ -34,6 +35,8 @@ public class ArmSub extends TestableSubsystem {
 
   private double m_targetAngle = 0;
   private boolean m_automationEnabled = false;
+  private Supplier<Double> elevatorPosition;
+
 
 
   /** Creates a new ArmSub. */
@@ -54,6 +57,10 @@ public class ArmSub extends TestableSubsystem {
     // Only persist parameters when configuring the motor on start up as this operation can be slow
     m_armMotor.configure(motorConfig, SparkBase.ResetMode.kResetSafeParameters,
         SparkBase.PersistMode.kPersistParameters);
+  }
+
+  public void setElevatorPositionSupplier(Supplier<Double> elevatorGetPosition) {
+    elevatorPosition = elevatorGetPosition;
   }
 
   public void init() {
@@ -194,8 +201,9 @@ public class ArmSub extends TestableSubsystem {
     }
   }
 
-  private boolean isBlocked(double elevatorHeight) {
+  private boolean isBlocked() {
     double armAngle = getAngle();
+    double elevatorHeight = elevatorPosition.get();
     if(elevatorHeight <= Constants.Elevator.kDangerZoneBraceBottom) {
       if(armAngle <= Constants.DangerZones.kArmDangerZoneRange1
           && armAngle >= Constants.DangerZones.kArmDangerZoneRange2) {
