@@ -7,13 +7,6 @@ package frc.robot;
 import static edu.wpi.first.units.Units.MetersPerSecond;
 import static edu.wpi.first.units.Units.RadiansPerSecond;
 import static edu.wpi.first.units.Units.RotationsPerSecond;
-// Copyright (c) FIRST and other WPILib contributors.
-// Open Source Software; you can modify and/or share it under the terms of
-// the WPILib BSD license file in the root directory of this project.
-// Copyright (c) FIRST and other WPILib contributors.
-// Open Source Software; you can modify and/or share it under the terms of
-// the WPILib BSD license file in the root directory of this project.
-import java.util.Arrays;
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 import com.pathplanner.lib.auto.AutoBuilder;
@@ -24,7 +17,6 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.net.WebServer;
-import edu.wpi.first.networktables.NetworkTableEvent;
 import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -37,17 +29,15 @@ import frc.robot.Constants.OperatorConstants;
 import frc.robot.commands.AlgaeRemovalL2L3Grp;
 import frc.robot.commands.AlgaeRemovalL3L4Grp;
 import frc.robot.commands.ArmMoveWithJoystickCmd;
-import frc.robot.commands.AutoDriveCmd;
 import frc.robot.commands.BackUpAfterScoringCmd;
+import frc.robot.commands.CoralPlacementGrp;
 import frc.robot.commands.DoNothingGrp;
-import frc.robot.commands.DriveToNearestScoreLocationCmd;
 import frc.robot.commands.ElevatorMoveWithJoystickCmd;
 import frc.robot.commands.HomeButton;
 import frc.robot.commands.KillAllCmd;
 import frc.robot.commands.L2PlacementGrp;
 import frc.robot.commands.L3PlacementGrp;
 import frc.robot.commands.L4PlacementGrp;
-import frc.robot.commands.PlaceReefGrp;
 import frc.robot.commands.SetArmToPositionCmd;
 import frc.robot.commands.SetElevatorToHeightCmd;
 import frc.robot.commands.tests.RunTestsGrp;
@@ -61,7 +51,6 @@ import frc.robot.subsystems.IntakeSub;
 import frc.robot.subsystems.VisionSub;
 import frc.robot.utils.SwerveTelemetry;
 import frc.robot.utils.TestManager;
-import frc.robot.commands.CoralPlacementGrp;
 
 
 /**
@@ -262,18 +251,17 @@ public class RobotContainer {
     // Operator Controller Bindings /////////////////////////////////////////////////////////////////////////////////////////////
 
     // Square
-    m_operatorController.square()
-        .onTrue(new L3PlacementGrp(m_armSub, m_elevatorSub, m_coralPlacementGrp, MaxAngularRate));
+    m_operatorController.square().onTrue(new InstantCommand(() -> m_armSub.setTargetAngle(25), m_armSub));
 
     // Cross
-    m_operatorController.cross().onTrue(new InstantCommand(() -> m_elevatorSub.setTargetHeight(900), m_elevatorSub));
+    m_operatorController.cross().onTrue(new InstantCommand(() -> m_elevatorSub.setTargetHeight(1500), m_elevatorSub));
 
     // Circle
-    m_operatorController.circle()
-        .whileTrue(new L4PlacementGrp(m_armSub, m_elevatorSub, m_coralPlacementGrp, MaxAngularRate));
+    m_operatorController.circle().onTrue(new InstantCommand(() -> m_armSub.setTargetAngle(-88), m_armSub));
 
     // Triangle
-    //m_operatorController.triangle().whileTrue();
+
+    m_operatorController.triangle().onTrue(new InstantCommand(() -> m_elevatorSub.setTargetHeight(600), m_elevatorSub));
 
     // L1
     m_operatorController.L1()
