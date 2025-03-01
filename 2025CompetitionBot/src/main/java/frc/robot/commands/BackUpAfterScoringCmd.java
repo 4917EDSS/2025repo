@@ -41,6 +41,7 @@ public class BackUpAfterScoringCmd extends DeferredCommand {
   @Override
   public void end(boolean interrupted) {
     System.out.println("Back Up Command interrputed:" + interrupted);
+    super.end(interrupted);
   }
 
   /** Creates a new BackUpAfterScoringCmd. */
