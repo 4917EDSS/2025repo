@@ -16,6 +16,7 @@ public class SetElevatorToHeightCmd extends Command {
   private double m_targetHeight;
   private ElevatorSub m_elevatorSub;
 
+
   /** Creates a new SetElevatorToHeightCmd. */
   public SetElevatorToHeightCmd(double targetHeight, ElevatorSub elevatorSub) {
     m_elevatorSub = elevatorSub;
@@ -26,8 +27,6 @@ public class SetElevatorToHeightCmd extends Command {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    m_elevatorSub.enableAutomation();
-    m_elevatorSub.setTargetHeight(m_targetHeight);
     // TODO - ask for the elevator to go to m_targetHeight
   }
 

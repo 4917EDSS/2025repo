@@ -28,8 +28,8 @@ import frc.robot.subsystems.DrivetrainSub;
 public class DriveToNearestScoreLocationCmd extends SelectCommand<Translation2d> {
   // All in meters.
   // TODO get these exact
-  private static final Translation2d MIDDLE_OF_BLUE_REEF = new Translation2d(4917, 0);
-  private static final Translation2d MIDDLE_OF_RED_REEF = new Translation2d(0, 4917);
+  private static final Translation2d MIDDLE_OF_BLUE_REEF = new Translation2d(4.4886, 4.0315);
+  private static final Translation2d MIDDLE_OF_RED_REEF = new Translation2d(13.0594, 4.0315);
   private static final double MIDDLE_OF_REEF_TO_SCORING_FACE = 0.831;
   private static final double MIDDLE_SCORING_FACE_TO_BRANCH = 0.164;
   private static final double REEF_TO_MIDDLE_OF_ROBOT_SCORING = 0.381;

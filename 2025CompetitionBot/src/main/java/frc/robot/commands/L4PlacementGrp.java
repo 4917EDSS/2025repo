@@ -10,7 +10,6 @@ import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.subsystems.ArmSub;
 import frc.robot.subsystems.ElevatorSub;
-import frc.robot.Constants;
 
 // NOTE: Consider using this command inline, rather than writing a subclass. For more
 // information, see:

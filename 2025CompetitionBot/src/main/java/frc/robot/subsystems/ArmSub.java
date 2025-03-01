@@ -20,6 +20,8 @@ import edu.wpi.first.math.controller.ArmFeedforward;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants;
+import frc.robot.utils.SubControl;
+import frc.robot.utils.SubControl.State;
 import frc.robot.utils.TestableSubsystem;
 
 public class ArmSub extends TestableSubsystem {
@@ -30,13 +32,15 @@ public class ArmSub extends TestableSubsystem {
   private final SparkLimitSwitch m_forwardLimitSwitch = m_armMotor.getForwardLimitSwitch();
   private final SparkLimitSwitch m_revLimitSwitch = m_armMotor.getReverseLimitSwitch();
 
-  private final ArmFeedforward m_armFeedforward = new ArmFeedforward(0.018, 0.0, 0.0);
+  private final ArmFeedforward m_armFeedforward = new ArmFeedforward(0.018, 0.01, 0.0);
   private final PIDController m_armPid = new PIDController(0.005, 0, 0); // TODO: Tune
 
   private double m_targetAngle = 0;
   private boolean m_automationEnabled = false;
   private Supplier<Double> elevatorPosition;
 
+  private SubControl m_currentControl = new SubControl(); // Current states of mechanism
+  private double m_blockedAngle;
 
   /** Creates a new ArmSub. */
   public ArmSub() {
@@ -69,6 +73,9 @@ public class ArmSub extends TestableSubsystem {
 
   @Override
   public void periodic() {
+
+    updateStateMachine();
+
     // This method will be called once per scheduler run
     // Smartdashboard widgets
     // Arm power Smartdashboard is in setPower method
@@ -174,7 +181,13 @@ public class ArmSub extends TestableSubsystem {
    * Calculates and sets the current power to apply to the arm to get to or stay at its target
    */
   private void runAngleControl(boolean updatePower) {
-    double pidPower = m_armPid.calculate(getAngle(), m_targetAngle);
+    double activeAngle = m_targetAngle;
+
+    if(m_currentControl.state == State.INTERRUPTED) {
+      activeAngle = m_blockedAngle;
+    }
+
+    double pidPower = m_armPid.calculate(getAngle(), activeAngle);
     double fedPower = m_armFeedforward.calculate(Math.toRadians(getAngle()), pidPower); // Feed forward expects 0 degrees as horizontal
 
     if(updatePower) {
@@ -217,6 +230,32 @@ public class ArmSub extends TestableSubsystem {
     return false;
   }
 
+  private void updateStateMachine() {
+
+    // Determine what power the mechanism should use based on the current state
+    switch(m_currentControl.state) {
+
+      case MOVING:
+        // If the mechanism is moving, check if it has arrived at it's target.
+        if(isBlocked()) {
+          m_blockedAngle = (getAngle());
+          m_currentControl.state = State.INTERRUPTED;
+        }
+        break;
+
+      case INTERRUPTED:
+        // If the mechanism is no longer blocked, transition to MOVING
+        if(!isBlocked()) {
+          m_currentControl.state = State.MOVING;
+          // Otherwise, hold this position
+        }
+        break;
+
+      default:
+        m_currentControl.state = State.INTERRUPTED;
+        break;
+    }
+  }
 
   //////////////////// Methods used for automated testing ////////////////////
   /**
