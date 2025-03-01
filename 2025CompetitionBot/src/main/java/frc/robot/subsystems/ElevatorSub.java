@@ -20,7 +20,6 @@ import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants;
 import frc.robot.utils.SubControl;
-import frc.robot.utils.SubControl.*;
 import frc.robot.utils.SubControl.State;
 import frc.robot.utils.TestableSubsystem;
 
@@ -29,8 +28,6 @@ public class ElevatorSub extends TestableSubsystem {
   /* STATE VARIABLES */
   private SubControl m_currentControl = new SubControl(); // Current states of mechanism
   private double m_blockedPosition;
-  private IntakeSub m_intakeSub;
-  private LedSub m_ledSub;
 
   private static Logger m_logger = Logger.getLogger(ElevatorSub.class.getName());
   private final TalonFX m_elevatorMotor = new TalonFX(Constants.CanIds.kElevatorMotor);
@@ -120,7 +117,7 @@ public class ElevatorSub extends TestableSubsystem {
 
       // If we hit the reset switch twice in a row, reset encoder
       if(m_hitEncoderSwitchCounter >= 2) {
-        m_elevatorMotor2.setPosition(Constants.Elevator.kResetHeight);
+        setPositionMm(Constants.Elevator.kResetHeight);
         m_isElevatorEncoderSet = true;
       }
     }
@@ -141,7 +138,7 @@ public class ElevatorSub extends TestableSubsystem {
       powerValue = 0.0;
       System.out.println("Lower limit hit");
     } else if(isAtUpperLimit() && power > 0.0) {
-      powerValue = 0.0;
+      setTargetHeight(getPositionMm() - 5);
       System.out.println("Upper limit hit");
     } else if((getPositionMm() < Constants.Elevator.kSlowDownLowerStageHeight)
         && (power < Constants.Elevator.kSlowDownLowerStagePower)) {
@@ -278,19 +275,15 @@ public class ElevatorSub extends TestableSubsystem {
     //Going up or going down, check for brace dangerzones.
     if((currentHeight > Constants.Elevator.kDangerZoneBraceBottom)
         && (currentHeight < Constants.Elevator.kDangerZoneBraceTop)
-        && (armAngle < Constants.Elevator.kDangerZoneArmBraceAngle)) {
+        && (armAngle < Constants.Arm.kDangerZoneBraceAngle)) {
       return true;
     }
 
     if((m_targetHeight < currentHeight)) {
       // moving downwards
-      if(currentHeight < Constants.Elevator.kDangerZoneBottom) {
-
-        if((armAngle < Constants.Elevator.kDangerZoneArmCoralStopFront)
-            && (armAngle > Constants.Elevator.kDangerZoneArmCoralStopBack)) {
-
-          return true;
-        }
+      if((currentHeight < Constants.Elevator.kDangerZoneBottom) && (armAngle > Constants.Arm.kDangerZoneBottomVertical)
+          && (armAngle < Constants.Arm.kDangerZoneLowerAngle)) {
+        return true;
       }
     }
 

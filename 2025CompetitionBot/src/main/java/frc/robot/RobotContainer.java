@@ -7,14 +7,8 @@ package frc.robot;
 import static edu.wpi.first.units.Units.MetersPerSecond;
 import static edu.wpi.first.units.Units.RadiansPerSecond;
 import static edu.wpi.first.units.Units.RotationsPerSecond;
-// Copyright (c) FIRST and other WPILib contributors.
-// Open Source Software; you can modify and/or share it under the terms of
-// the WPILib BSD license file in the root directory of this project.
-// Copyright (c) FIRST and other WPILib contributors.
-// Open Source Software; you can modify and/or share it under the terms of
-// the WPILib BSD license file in the root directory of this project.
-import java.util.Arrays;
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
+import com.ctre.phoenix6.SignalLogger;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
@@ -24,7 +18,6 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.net.WebServer;
-import edu.wpi.first.networktables.NetworkTableEvent;
 import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -37,17 +30,15 @@ import frc.robot.Constants.OperatorConstants;
 import frc.robot.commands.AlgaeRemovalL2L3Grp;
 import frc.robot.commands.AlgaeRemovalL3L4Grp;
 import frc.robot.commands.ArmMoveWithJoystickCmd;
-import frc.robot.commands.AutoDriveCmd;
 import frc.robot.commands.BackUpAfterScoringCmd;
-import frc.robot.commands.DoNothingGrp;
 import frc.robot.commands.DriveToNearestScoreLocationCmd;
+import frc.robot.commands.DoNothingGrp;
 import frc.robot.commands.ElevatorMoveWithJoystickCmd;
 import frc.robot.commands.HomeButton;
 import frc.robot.commands.KillAllCmd;
 import frc.robot.commands.L2PlacementGrp;
 import frc.robot.commands.L3PlacementGrp;
 import frc.robot.commands.L4PlacementGrp;
-import frc.robot.commands.PlaceReefGrp;
 import frc.robot.commands.SetArmToPositionCmd;
 import frc.robot.commands.SetElevatorToHeightCmd;
 import frc.robot.commands.tests.RunTestsGrp;
@@ -61,7 +52,6 @@ import frc.robot.subsystems.IntakeSub;
 import frc.robot.subsystems.VisionSub;
 import frc.robot.utils.SwerveTelemetry;
 import frc.robot.utils.TestManager;
-import frc.robot.commands.CoralPlacementGrp;
 
 
 /**
@@ -96,7 +86,6 @@ public class RobotContainer {
   private final CanSub m_canSub = new CanSub(4);
   //private final LedSub m_ledSub = new LedSub(m_arduinoSub);  // TODO:  Implement with new Arduino
   private final VisionSub m_visionSub;
-  private final CoralPlacementGrp m_coralPlacementGrp = new CoralPlacementGrp(m_elevatorSub, m_armSub);
 
 
   // Controllers
@@ -116,6 +105,8 @@ public class RobotContainer {
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
+    // turn off logging
+    SignalLogger.stop();
     m_armSub.setElevatorPositionSupplier(() -> m_elevatorSub.getPositionMm());
     m_elevatorSub.setArmAngleSupplier(() -> m_armSub.getAngle());
 
@@ -141,7 +132,7 @@ public class RobotContainer {
     WebServer.start(5800, Filesystem.getDeployDirectory().getPath());
 
     // Warmup MUST happen before we configure buttons or autos.
-    //DriveToNearestScoreLocationCmd.warmUpMap(m_constraints);
+    DriveToNearestScoreLocationCmd.warmUpMap(m_constraints);
     // Configure the trigger bindings
     configureBindings();
     autoChooserSetup();
@@ -156,13 +147,13 @@ public class RobotContainer {
         new SetElevatorToHeightCmd(100, m_elevatorSub)); // put whatever number you want in here. probably mm
 
     NamedCommands.registerCommand("L2 placement",
-        new L2PlacementGrp(m_armSub, m_elevatorSub, m_coralPlacementGrp, MaxAngularRate));
+        new L2PlacementGrp(m_armSub, m_elevatorSub));
 
     NamedCommands.registerCommand("L3 placement",
-        new L3PlacementGrp(m_armSub, m_elevatorSub, m_coralPlacementGrp, MaxAngularRate));
+        new L3PlacementGrp(m_armSub, m_elevatorSub));
 
     NamedCommands.registerCommand("L4 placement",
-        new L4PlacementGrp(m_armSub, m_elevatorSub, m_coralPlacementGrp, MaxAngularRate));
+        new L4PlacementGrp(m_armSub, m_elevatorSub));
 
     NamedCommands.registerCommand("BackUpAfterScoringCmd",
         new BackUpAfterScoringCmd(m_drivetrainSub, m_constraints));
@@ -175,25 +166,27 @@ public class RobotContainer {
     // Drive controller bindings ////////////////////////////////////////////////////////////////////////////////////////////////
 
     // Square
-    m_driverController.square()
-        .onTrue(new L2PlacementGrp(m_armSub, m_elevatorSub, m_coralPlacementGrp, MaxAngularRate)); //TODO Make Coral Recieval Command
-    // m_driverController.square().whileTrue(AutoBuilder.pathfindToPose(
-    //     new Pose2d(2, 6.5, new Rotation2d(0)),
-    //     m_constraints,
-    //     0.0 // Goal end velocity in meters/sec
-    // ));
+    // m_driverController.square().onTrue(new L3PlacementGrp(m_armSub, m_elevatorSub)); //TODO Make Coral Recieval Command
+    m_driverController.square().whileTrue(AutoBuilder.pathfindToPose(
+        new Pose2d(2, 6.5, new Rotation2d(0)),
+        m_constraints,
+        0.0 // Goal end velocity in meters/sec
+    ));
+    //m_driverController.square()
+    //    .onTrue(new L2PlacementGrp(m_armSub, m_elevatorSub, m_coralPlacementGrp, MaxAngularRate)); //TODO Make Coral Recieval Command
+
 
     //Triangle - L4 Coral Placement
     m_driverController.triangle()
-        .onTrue(new L4PlacementGrp(m_armSub, m_elevatorSub, m_coralPlacementGrp, MaxAngularRate));
+        .onTrue(new L4PlacementGrp(m_armSub, m_elevatorSub));
 
     // Cross - L2 Coral Placement
     //m_driverController.cross().whileTrue(m_drivetrainSub.applyRequest(() -> brake));
-    m_driverController.cross().onTrue(new CoralPlacementGrp(m_elevatorSub, m_armSub));
+    m_driverController.cross().onTrue(new L2PlacementGrp(m_armSub, m_elevatorSub));
 
     // Circle - L3 Coral Placement
     m_driverController.circle()
-        .onTrue(new L3PlacementGrp(m_armSub, m_elevatorSub, m_coralPlacementGrp, MaxAngularRate));
+        .onTrue(new L3PlacementGrp(m_armSub, m_elevatorSub));
     // m_driverController.circle().whileTrue(m_drivetrainSub
     //     .applyRequest(() -> point
     //         .withModuleDirection(new Rotation2d(-m_driverController.getLeftY(), -m_driverController.getLeftX()))));
@@ -223,6 +216,7 @@ public class RobotContainer {
     // m_driverController.R2().onTrue(new InstantCommand(() -> m_armSub.setTargetAngle(45), m_armSub));
 
     // Share
+    m_driverController.share().onTrue(new BackUpAfterScoringCmd(m_drivetrainSub, m_constraints));
 
     // Options
 
@@ -259,19 +253,17 @@ public class RobotContainer {
     // Operator Controller Bindings /////////////////////////////////////////////////////////////////////////////////////////////
 
     // Square
-    m_operatorController.square()
-        .onTrue(new L3PlacementGrp(m_armSub, m_elevatorSub, m_coralPlacementGrp, MaxAngularRate));
+    m_operatorController.square().onTrue(new InstantCommand(() -> m_armSub.setTargetAngle(25), m_armSub));
 
     // Cross
-    m_operatorController.cross().onTrue(new InstantCommand(() -> m_elevatorSub.setTargetHeight(900), m_elevatorSub));
+    m_operatorController.cross().onTrue(new InstantCommand(() -> m_elevatorSub.setTargetHeight(1500), m_elevatorSub));
 
     // Circle
-    m_operatorController.circle()
-        .whileTrue(new L4PlacementGrp(m_armSub, m_elevatorSub, m_coralPlacementGrp, MaxAngularRate));
+    m_operatorController.circle().onTrue(new InstantCommand(() -> m_armSub.setTargetAngle(-88), m_armSub));
 
     // Triangle
-    m_operatorController.triangle().whileTrue(new StartEndCommand(() -> m_intakeSub.setRollersPower(1.0),
-        () -> m_intakeSub.setRollersPower(0.0), m_intakeSub));
+
+    m_operatorController.triangle().onTrue(new InstantCommand(() -> m_elevatorSub.setTargetHeight(600), m_elevatorSub));
 
     // L1
     m_operatorController.L1()
@@ -292,7 +284,7 @@ public class RobotContainer {
 
     // Options
     m_operatorController.options()
-        .onTrue(new L2PlacementGrp(m_armSub, m_elevatorSub, m_coralPlacementGrp, MaxAngularRate));
+        .onTrue(new L2PlacementGrp(m_armSub, m_elevatorSub));
 
     // PS
     m_operatorController.PS().onTrue(new InstantCommand(() -> {
