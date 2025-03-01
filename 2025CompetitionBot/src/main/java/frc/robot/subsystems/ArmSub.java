@@ -79,6 +79,7 @@ public class ArmSub extends TestableSubsystem {
     // Arm power Smartdashboard is in setPower method
     SmartDashboard.putNumber("Arm Raw Enc", getPosition()); // Raw encoder position
     SmartDashboard.putNumber("Arm Ang", getAngle()); // Arm angle
+    SmartDashboard.putBoolean("Arm isBlocked", isBlocked()); // Arm blocked
 
     if(m_automationEnabled) {
       runAngleControl(true);
@@ -235,6 +236,7 @@ public class ArmSub extends TestableSubsystem {
     switch(m_currentControl.state) {
 
       case MOVING:
+        SmartDashboard.putBoolean("Arm blocked", false);
         // If the mechanism is moving, check if it has arrived at it's target.
         if(isBlocked()) {
           m_blockedAngle = (getAngle());
@@ -243,6 +245,7 @@ public class ArmSub extends TestableSubsystem {
         break;
 
       case INTERRUPTED:
+        SmartDashboard.putBoolean("Arm blocked", true);
         // If the mechanism is no longer blocked, transition to MOVING
         if(!isBlocked()) {
           m_currentControl.state = State.MOVING;

@@ -105,6 +105,7 @@ public class ElevatorSub extends TestableSubsystem {
     SmartDashboard.putBoolean("El UpLimit", isAtUpperLimit()); // True if we are at the upper limit
     SmartDashboard.putBoolean("El Set Enc", m_isElevatorEncoderSet); // True once the encoder is set
     SmartDashboard.putBoolean("El RstEnc", encoderResetSwitchHit()); // True if we hit the encoder reset switch
+    SmartDashboard.putBoolean("El isBlocked", isBlocked()); // True if we we are blocked
 
     // If we haven't set the relative encoder's position yet, check if we are at the switch that tells us to do so                                                                                                                                                                                                                                                                                                                                                                                                                          
     if(!m_isElevatorEncoderSet) {
@@ -138,7 +139,7 @@ public class ElevatorSub extends TestableSubsystem {
       powerValue = 0.0;
       System.out.println("Lower limit hit");
     } else if(isAtUpperLimit() && power > 0.0) {
-      powerValue = 0.0;
+      setTargetHeight(getPositionMm() - 5);
       System.out.println("Upper limit hit");
     } else if((getPositionMm() < Constants.Elevator.kSlowDownLowerStageHeight)
         && (power < Constants.Elevator.kSlowDownLowerStagePower)) {
@@ -296,6 +297,7 @@ public class ElevatorSub extends TestableSubsystem {
     switch(m_currentControl.state) {
 
       case MOVING:
+        SmartDashboard.putBoolean("El blocked", false);
         // If the mechanism is moving, check if it has arrived at it's target.
         if(isBlocked()) {
           m_blockedPosition = (getPositionMm());
@@ -304,6 +306,7 @@ public class ElevatorSub extends TestableSubsystem {
         break;
 
       case INTERRUPTED:
+        SmartDashboard.putBoolean("El blocked", true);
         // If the mechanism is no longer blocked, transition to MOVING
         if(!isBlocked()) {
           m_currentControl.state = State.MOVING;

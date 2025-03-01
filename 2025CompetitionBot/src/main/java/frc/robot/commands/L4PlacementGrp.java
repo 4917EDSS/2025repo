@@ -4,13 +4,12 @@
 
 package frc.robot.commands;
 
-import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.PrintCommand;
+import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
+import frc.robot.Constants;
 import frc.robot.subsystems.ArmSub;
 import frc.robot.subsystems.ElevatorSub;
-import frc.robot.Constants;
 
 // NOTE: Consider using this command inline, rather than writing a subclass. For more
 // information, see:
@@ -22,25 +21,13 @@ public class L4PlacementGrp extends SequentialCommandGroup {
     // addCommands(new FooCommand(), new BarCommand());
 
     addCommands(
-        new SetElevatorToHeightCmd(Constants.Elevator.kMaxHeight, elevatorSub), //its set to max height and itll stop once the coral gets to the height where it can hit part of the elevator so then the arm will move out and it will resume going up
-        new SetArmToPositionCmd(32, armSub)
-    // new WaitCommand(3), // this is just time for the driver to align, "I will work on something to make it better" - Sam
-    // new SetElevatorToHeightCmd(750, elevatorSub),
-    // new WaitCommand(1), // just time for the driver to drive back
-    // new SetArmToPositionCmd(-90, armSub),
-    // new SetElevatorToHeightCmd(Constants.Elevator.kMinHeight, elevatorSub)
-    //new WaitCommand(2)
-    //new WaitCommand(5),
-    // new InstantCommand(() -> elevatorSub.setTargetHeight(1070)), // as tall as possible so that the coral can reach l4
-    // new WaitCommand(5), // wait a second for the driver or a vision command to align the robot with a branch
-    // new InstantCommand(() -> armSub.setTargetAngle(45)), // down enough to put the coral on the branch
-    // new WaitCommand(5),
-    // new InstantCommand(() -> elevatorSub.setTargetHeight(650)), // Lower elevator to remove coral
-    // new WaitCommand(5), // Wait time for the driver to move back so that the arm does not hit any other branches
-    // new InstantCommand(() -> elevatorSub.setTargetHeight(440)), //use the resting elevator height, this is an estimation
-    // new WaitCommand(2),
-    // new InstantCommand(() -> armSub.setTargetAngle(-90)) // set the arm back to the starting angle
-    );
+        new ParallelCommandGroup(
+            new SetElevatorToHeightCmd(Constants.Elevator.kMaxHeight, elevatorSub), //its set to max height and itll stop once the coral gets to the height where it can hit part of the elevator so then the arm will move out and it will resume going up
+            new SetArmToPositionCmd(Constants.Arm.kMaxArmAngle, armSub)),
+        new WaitCommand(2.0),
+        new ParallelCommandGroup(
+            new SetArmToPositionCmd(0.0, armSub),
+            new SetElevatorToHeightCmd(Constants.Elevator.kMaxHeight - 300, elevatorSub)));
   }
 
 }
