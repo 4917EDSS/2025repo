@@ -10,7 +10,6 @@ import frc.robot.subsystems.ArmSub;
 import frc.robot.subsystems.ClimbSub;
 import frc.robot.subsystems.DrivetrainSub;
 import frc.robot.subsystems.ElevatorSub;
-import edu.wpi.first.wpilibj2.command.CommandScheduler;
 
 
 public class KillAllCmd extends Command {

@@ -64,7 +64,6 @@ public class RobotContainer {
   // Swerve constants and objects (from CTRE Phoenix Tuner X)
   private double MaxSpeed = TunerConstants.kSpeedAt12Volts.in(MetersPerSecond); // kSpeedAt12Volts desired top speed
   private double MaxAngularRate = RotationsPerSecond.of(2.08 / 2.0).in(RadiansPerSecond); // 3/4 of a rotation per second max angular velocity, 2.08 is the speed that made it tip over, very funny video
-  // Setting up bindings for necessary control of the swerve drive platform
   private final SwerveRequest.FieldCentric drive = new SwerveRequest.FieldCentric()
       .withDeadband(MaxSpeed * 0.01).withRotationalDeadband(MaxAngularRate * 0.01) // Add a 1% deadband
       .withDriveRequestType(DriveRequestType.Velocity);
@@ -76,15 +75,12 @@ public class RobotContainer {
   private final TestManager m_testManager = new TestManager();
 
   // Robot subsystems
-  //private final ArduinoSub m_arduinoSub = new ArduinoSub();   // TODO:  Implement new CAN Arduino
   private final ArmSub m_armSub = new ArmSub();
+  private final CanSub m_canSub = new CanSub(Constants.CanIds.kElevatorCustomCanBoard);
   private final ClimbSub m_climbSub = new ClimbSub();
-  public final DrivetrainSub m_drivetrainSub = TunerConstants.createDrivetrain();
+  private final DrivetrainSub m_drivetrainSub = TunerConstants.createDrivetrain();
   private final ElevatorSub m_elevatorSub = new ElevatorSub();
-  private final CanSub m_canSub = new CanSub(4);
-  //private final LedSub m_ledSub = new LedSub(m_arduinoSub);  // TODO:  Implement with new Arduino
   private final VisionSub m_visionSub;
-
 
   // Controllers
   private final CommandPS4Controller m_driverController =
@@ -94,12 +90,11 @@ public class RobotContainer {
 
   // RobotContainer member variables
   public static boolean disableShuffleboardPrint = false;
-
-  SendableChooser<Command> m_Chooser = new SendableChooser<>();
-
+  private SendableChooser<Command> m_Chooser = new SendableChooser<>();
   private final PathConstraints m_constraints = new PathConstraints(
       6.21, 3.0,
       Units.degreesToRadians(360), Units.degreesToRadians(720));
+
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
@@ -108,8 +103,7 @@ public class RobotContainer {
     m_armSub.setElevatorPositionSupplier(() -> m_elevatorSub.getPositionMm());
     m_elevatorSub.setArmAngleSupplier(() -> m_armSub.getAngle());
 
-    m_visionSub = new VisionSub(m_drivetrainSub);
-
+    m_visionSub = new VisionSub(m_drivetrainSub); // TODO:  Check if camera is present before initializing this or move it back up with the other subsystem inits
 
     m_testManager.setTestCommand(new RunTestsGrp(m_climbSub, m_armSub, m_elevatorSub, m_testManager));
 
@@ -127,11 +121,12 @@ public class RobotContainer {
     // Register Swerve telemetry
     //m_drivetrainSub.registerTelemetry(swerveLogger::telemeterize);
 
+    // Start a webserver that Elastic dashboard can use to pull the saved dashboard from the computer
     WebServer.start(5800, Filesystem.getDeployDirectory().getPath());
 
     // Warmup MUST happen before we configure buttons or autos.
     DriveToNearestScoreLocationCmd.warmUpMap(m_constraints);
-    // Configure the trigger bindings
+
     configureBindings();
     autoChooserSetup();
     registerNamedCommands();
@@ -209,9 +204,19 @@ public class RobotContainer {
     m_driverController.L2().onTrue(new InstantCommand(() -> slowDown())).onFalse(new InstantCommand(() -> speedUp()));
 
 
-    // R2S
+    // R2
     //m_driverController.R2().onTrue(new SetArmToPositionCmd(0, m_armSub));
     // m_driverController.R2().onTrue(new InstantCommand(() -> m_armSub.setTargetAngle(45), m_armSub));
+
+    // POV Up
+    //m_driverController.povUp().onTrue() // TODO add command move the climb arm to the climb position
+
+    // POV Right
+
+    // POV Down
+    //m_driverController.povDown().onTrue() // TODO Move Climb arm in to climb
+
+    // POV Left
 
     // Share
     m_driverController.share().onTrue(new BackUpAfterScoringCmd(m_drivetrainSub, m_constraints));
@@ -222,14 +227,9 @@ public class RobotContainer {
     // Reset the field-centric heading
     m_driverController.PS().onTrue(m_drivetrainSub.runOnce(() -> m_drivetrainSub.seedFieldCentric()));
 
-    //L3
+    // L3
 
-    //R3
-
-    //Pov up - Move climb up to a set position
-    //m_driverController.povUp().onTrue() // TODO add command to raise and lower climb.
-    //Pov down - Move Climb down to a set position
-    //m_driverController.povDown().onTrue() 
+    // R3
 
     // Touchpad
     m_driverController.touchpad()
@@ -277,6 +277,16 @@ public class RobotContainer {
     // R2
     m_operatorController.R2().whileTrue(new AlgaeRemovalL2L3Grp(m_armSub, m_elevatorSub));
 
+    // POV Up
+    //m_operatorController.povUp().whileTrue() // TODO add command move the climb arm to towards the climb position while held
+
+    // POV Right
+
+    // POV Down
+    //m_operatorController.povDown().whileTrue() // TODO Move Climb arm inwards to climb while held
+
+    // POV Left
+
     // Share
     m_operatorController.share().onTrue(new HomeButton(m_armSub, m_elevatorSub));
 
@@ -299,11 +309,17 @@ public class RobotContainer {
     m_operatorController.R3().onTrue(new KillAllCmd(m_armSub, m_climbSub, m_drivetrainSub, m_elevatorSub));
   }
 
+  /**
+   * Lower the max drive speed for precision driving
+   */
   private void slowDown() {
     MaxSpeed = MaxSpeed * 0.1;
     MaxAngularRate = MaxAngularRate * 0.1;
   }
 
+  /**
+   * Restore the max drive speed for precision driving
+   */
   private void speedUp() {
     MaxSpeed = MaxSpeed * 10;
     MaxAngularRate = MaxAngularRate * 10;
@@ -314,11 +330,13 @@ public class RobotContainer {
    *
    * @return the command to run in autonomous
    */
-
   public Command getAutonomousCommand() {
     return m_Chooser.getSelected();
   }
 
+  /**
+   * Create a list of auto period action choices
+   */
   void autoChooserSetup() {
     m_Chooser.addOption("Leave Auto", new PathPlannerAuto("Leave Auto"));
     m_Chooser.addOption("DoNothingAuto", new DoNothingGrp());

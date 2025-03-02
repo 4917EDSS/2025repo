@@ -24,21 +24,20 @@ import frc.robot.utils.TestableSubsystem;
 
 public class ArmSub extends TestableSubsystem {
   private static Logger m_logger = Logger.getLogger(ArmSub.class.getName());
+
   private final SparkMax m_armMotor = new SparkMax(Constants.CanIds.kArmMotor, MotorType.kBrushless);
   private final SparkAbsoluteEncoder m_absoluteEncoder = m_armMotor.getAbsoluteEncoder();
-
   private final SparkLimitSwitch m_forwardLimitSwitch = m_armMotor.getForwardLimitSwitch();
   private final SparkLimitSwitch m_revLimitSwitch = m_armMotor.getReverseLimitSwitch();
 
   private final ArmFeedforward m_armFeedforward = new ArmFeedforward(0.018, 0.01, 0.0);
-  private final PIDController m_armPid = new PIDController(0.005, 0, 0); // TODO: Tune
+  private final PIDController m_armPid = new PIDController(0.005, 0, 0);
 
-  private double m_targetAngle = 0;
-  private boolean m_automationEnabled = false;
   private Supplier<Double> elevatorPosition;
-
-  private SubControl m_currentControl = new SubControl(); // Current states of mechanism
+  private double m_targetAngle = 0;
   private double m_blockedAngle;
+  private boolean m_automationEnabled = false;
+  private SubControl m_currentControl = new SubControl(); // Current states of mechanism
 
   /** Creates a new ArmSub. */
   public ArmSub() {
@@ -60,32 +59,30 @@ public class ArmSub extends TestableSubsystem {
         SparkBase.PersistMode.kPersistParameters);
   }
 
-  public void setElevatorPositionSupplier(Supplier<Double> elevatorGetPosition) {
-    elevatorPosition = elevatorGetPosition;
-  }
-
+  /**
+   * Put the subsystem in a known state
+   */
   public void init() {
     m_logger.info("Initializing ArmSub Subsystem");
 
   }
 
+  /**
+   * Give this subsystem access to the elevator's current height
+   */
+  public void setElevatorPositionSupplier(Supplier<Double> elevatorGetPosition) {
+    elevatorPosition = elevatorGetPosition;
+  }
+
   @Override
   public void periodic() {
-
     updateStateMachine();
+    runAngleControl(m_automationEnabled);
 
-    // This method will be called once per scheduler run
-    // Smartdashboard widgets
-    // Arm power Smartdashboard is in setPower method
     SmartDashboard.putNumber("Arm Raw Enc", getPosition()); // Raw encoder position
     SmartDashboard.putNumber("Arm Ang", getAngle()); // Arm angle
     SmartDashboard.putBoolean("Arm isBlocked", isBlocked()); // Arm blocked
-
-    if(m_automationEnabled) {
-      runAngleControl(true);
-    } else {
-      runAngleControl(false);
-    }
+    // Current power value is sent in setPower()
   }
 
   /**
@@ -95,7 +92,7 @@ public class ArmSub extends TestableSubsystem {
    */
   public void setPower(double power) {
     m_armMotor.set(power);
-    SmartDashboard.putNumber("Arm Power", power); // Arm power
+    SmartDashboard.putNumber("Arm Power", power);
   }
 
   /**
@@ -114,7 +111,6 @@ public class ArmSub extends TestableSubsystem {
    * @return position in degrees
    */
   public double getAngle() {
-    // TODO:  Do we need to account for the 0 to 360 rollover?
     return (m_absoluteEncoder.getPosition() * 360) - 303.12; // returns angle
   }
 
@@ -145,6 +141,20 @@ public class ArmSub extends TestableSubsystem {
   }
 
   /**
+   * Enables automation
+   */
+  public void enableAutomation() {
+    m_automationEnabled = true;
+  }
+
+  /**
+   * Disables automation
+   */
+  public void disableAutomation() {
+    m_automationEnabled = false;
+  }
+
+  /**
    * Returns if the arm is at its lower limit or not
    * 
    * @return true when it's at the limit, false otherwise
@@ -163,73 +173,8 @@ public class ArmSub extends TestableSubsystem {
   }
 
   /**
-   * Enables automation
+   * Handle the case where the elevator needs to stop due to a potential collision
    */
-  public void enableAutomation() {
-    m_automationEnabled = true;
-  }
-
-  /**
-   * Disables automation
-   */
-  public void disableAutomation() {
-    m_automationEnabled = false;
-  }
-
-  /**
-   * Calculates and sets the current power to apply to the arm to get to or stay at its target
-   */
-  private void runAngleControl(boolean updatePower) {
-    double activeAngle = m_targetAngle;
-
-    if(m_currentControl.state == State.INTERRUPTED) {
-      activeAngle = m_blockedAngle;
-    }
-
-    double pidPower = m_armPid.calculate(getAngle(), activeAngle);
-    double fedPower = m_armFeedforward.calculate(Math.toRadians(getAngle()), pidPower); // Feed forward expects 0 degrees as horizontal
-
-    if(updatePower) {
-      double tempPower = (pidPower + fedPower);
-
-
-      if(Math.abs(tempPower) > Constants.Arm.kMaxPower) {
-        double sign = (tempPower >= 0.0) ? 1.0 : -1.0;
-        tempPower = Constants.Arm.kMaxPower * sign;
-      }
-      setPower(tempPower);
-    }
-  }
-
-  public boolean isAtTargetAngle() {
-    // If we are within tolerance and our velocity is low, we're at our target
-    // TODO:  Add velocity check
-    if((Math.abs(m_targetAngle - getAngle()) < Constants.Arm.kAngleTolerance)
-        && (Math.abs(getVelocity()) < Constants.Arm.kAtTargetMaxVelocity)) {
-      return true;
-    } else {
-      return false;
-    }
-  }
-
-  private boolean isBlocked() {
-
-    double armAngle = getAngle();
-    double elevatorHeight = elevatorPosition.get();
-
-
-    if((elevatorHeight <= Constants.Elevator.kDangerZoneBottom) && (armAngle > Constants.Arm.kDangerZoneBottomVertical)
-        && (armAngle < Constants.Arm.kDangerZoneLowerAngle)) {
-      return true;
-    }
-    if((elevatorHeight > Constants.Elevator.kDangerZoneBraceBottom)
-        && (elevatorHeight < Constants.Elevator.kDangerZoneBraceTop) && (m_targetAngle < armAngle)
-        && (armAngle < Constants.Arm.kDangerZoneBraceAngle)) {
-      return true;
-    }
-    return false;
-  }
-
   private void updateStateMachine() {
 
     // Determine what power the mechanism should use based on the current state
@@ -258,6 +203,65 @@ public class ArmSub extends TestableSubsystem {
         break;
     }
   }
+
+  /**
+   * Run the logic to check if the elevator movement is interrupted by a potential collision
+   */
+  private boolean isBlocked() {
+
+    double armAngle = getAngle();
+    double elevatorHeight = elevatorPosition.get();
+
+
+    if((elevatorHeight <= Constants.Elevator.kDangerZoneBottom) && (armAngle > Constants.Arm.kDangerZoneBottomVertical)
+        && (armAngle < Constants.Arm.kDangerZoneLowerAngle)) {
+      return true;
+    }
+    if((elevatorHeight > Constants.Elevator.kDangerZoneBraceBottom)
+        && (elevatorHeight < Constants.Elevator.kDangerZoneBraceTop) && (m_targetAngle < armAngle)
+        && (armAngle < Constants.Arm.kDangerZoneBraceAngle)) {
+      return true;
+    }
+    return false;
+  }
+
+  /**
+   * Calculates and sets the current power to apply to the arm to get to or stay at its target
+   * 
+   * @param updatePower set to false to update the Feedforward and PID controllers without changing the motor power
+   */
+  private void runAngleControl(boolean updatePower) {
+    double activeAngle = m_targetAngle;
+
+    if(m_currentControl.state == State.INTERRUPTED) {
+      activeAngle = m_blockedAngle;
+    }
+
+    double pidPower = m_armPid.calculate(getAngle(), activeAngle);
+    double fedPower = m_armFeedforward.calculate(Math.toRadians(getAngle()), pidPower); // Feed forward expects 0 degrees as horizontal
+
+    if(updatePower) {
+      double tempPower = (pidPower + fedPower);
+
+
+      if(Math.abs(tempPower) > Constants.Arm.kMaxPower) {
+        double sign = (tempPower >= 0.0) ? 1.0 : -1.0;
+        tempPower = Constants.Arm.kMaxPower * sign;
+      }
+      setPower(tempPower);
+    }
+  }
+
+  public boolean isAtTargetAngle() {
+    // If we are within tolerance and our velocity is low, we're at our target
+    if((Math.abs(m_targetAngle - getAngle()) < Constants.Arm.kAngleTolerance)
+        && (Math.abs(getVelocity()) < Constants.Arm.kAtTargetMaxVelocity)) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
 
   //////////////////// Methods used for automated testing ////////////////////
   /**

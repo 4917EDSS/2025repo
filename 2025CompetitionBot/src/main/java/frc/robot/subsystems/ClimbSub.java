@@ -17,20 +17,14 @@ import frc.robot.Constants;
 import frc.robot.utils.TestableSubsystem;
 
 public class ClimbSub extends TestableSubsystem {
-
-
   private static Logger m_logger = Logger.getLogger(ClimbSub.class.getName());
-  // Create the climb motor
-  private final TalonFX m_climbMotor = new TalonFX(Constants.CanIds.kClimbMotor);
 
+  private final TalonFX m_climbMotor = new TalonFX(Constants.CanIds.kClimbMotor);
   private final DigitalInput m_climbInLimit = new DigitalInput(Constants.DioIds.kClimbInLimitSwitch);
   private final DigitalInput m_climbOutLimit = new DigitalInput(Constants.DioIds.kClimbOutLimitSwitch);
 
-
   /** Creates a new ClimbSub. */
   public ClimbSub() {
-
-
     TalonFXConfigurator talonFxConfiguarator = m_climbMotor.getConfigurator();
 
     // This is how you set a current limit inside the motor (vs on the input power supply)
@@ -59,7 +53,6 @@ public class ClimbSub extends TestableSubsystem {
     m_logger.info("Initializing ClimbSub Subsystem");
     setPower(0.0);
     resetPosition();
-
   }
 
   @Override
@@ -75,7 +68,6 @@ public class ClimbSub extends TestableSubsystem {
     return m_climbOutLimit.get();
   }
 
-
   /**
    * Manually set the power of the climb motor(s).
    * 
@@ -83,7 +75,7 @@ public class ClimbSub extends TestableSubsystem {
    */
   public void setPower(double power) {
     m_climbMotor.set(power);
-    SmartDashboard.putNumber("Cl Power", power); // Climb power
+    SmartDashboard.putNumber("Cl Power", power);
   }
 
   /**

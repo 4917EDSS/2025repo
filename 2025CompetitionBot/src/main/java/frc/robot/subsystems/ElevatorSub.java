@@ -25,30 +25,27 @@ import frc.robot.utils.TestableSubsystem;
 
 
 public class ElevatorSub extends TestableSubsystem {
-  /* STATE VARIABLES */
-  private SubControl m_currentControl = new SubControl(); // Current states of mechanism
-  private double m_blockedPosition;
-
   private static Logger m_logger = Logger.getLogger(ElevatorSub.class.getName());
+
   private final TalonFX m_elevatorMotor = new TalonFX(Constants.CanIds.kElevatorMotor);
   private final TalonFX m_elevatorMotor2 = new TalonFX(Constants.CanIds.kElevatorMotor2);
   private final DigitalInput m_elevatorUpperLimit = new DigitalInput(Constants.DioIds.kElevatorUpperLimit);
   private final DigitalInput m_encoderResetSwitch = new DigitalInput(Constants.DioIds.kElevatorEncoderResetSwitch);
 
   private final ElevatorFeedforward m_feedforward = new ElevatorFeedforward(0.0, 0.06, 0.0);
-  private PIDController m_elevatorPID = new PIDController(0.01, 0.0, 0.0);
+  private final PIDController m_elevatorPID = new PIDController(0.01, 0.0, 0.0);
 
+  private Supplier<Double> m_armAngle;
   private double m_targetHeight = 0.0;
+  private double m_blockedPosition;
   private boolean m_enableAutomation = false;
   private boolean m_isElevatorEncoderSet = false;
   private int m_hitEncoderSwitchCounter = 0;
   private double m_preTestHeight = 0;
-  private double m_preTestHeight2 = 0;
-  private Supplier<Double> m_armAngle;
+  private SubControl m_currentControl = new SubControl(); // Current states of mechanism
 
   /** Creates a new ElevatorSub. */
   public ElevatorSub() {
-
     TalonFXConfigurator talonFxConfiguarator = m_elevatorMotor.getConfigurator();
     TalonFXConfigurator talonFxConfiguarator2 = m_elevatorMotor2.getConfigurator();
 
@@ -59,11 +56,12 @@ public class ElevatorSub extends TestableSubsystem {
     talonFxConfiguarator.apply(limitConfigs);
     talonFxConfiguarator2.apply(limitConfigs);
 
-    // This is how you can set a deadband, invert the motor rotoation and set brake/coast
+    // This is how you can set a deadband, invert the motor rotation and set brake/coast
     MotorOutputConfigs outputConfigs = new MotorOutputConfigs();
     outputConfigs.Inverted = InvertedValue.CounterClockwise_Positive;
     outputConfigs.NeutralMode = NeutralModeValue.Brake;
     talonFxConfiguarator.apply(outputConfigs);
+
     outputConfigs.Inverted = InvertedValue.Clockwise_Positive;
     talonFxConfiguarator2.apply(outputConfigs);
 
@@ -78,34 +76,28 @@ public class ElevatorSub extends TestableSubsystem {
     init();
   }
 
-  public void setArmAngleSupplier(Supplier<Double> armAngle) {
-    m_armAngle = armAngle;
-  }
-
+  /**
+   * Put the subsystem in a known state
+   */
   public void init() {
     m_logger.info("Initializing ElevatorSub Subsystem");
+
+    m_isElevatorEncoderSet = false;
     m_elevatorMotor.setPosition(Constants.Elevator.kStartingHeight);
     setPositionMm(Constants.Elevator.kStartingHeight);
   }
 
+  /**
+   * Give this subsystem access to the arm's current angle
+   */
+  public void setArmAngleSupplier(Supplier<Double> armAngle) {
+    m_armAngle = armAngle;
+  }
+
   @Override
   public void periodic() {
-
     updateStateMachine();
-
-    if(m_enableAutomation) {
-      runHeightControl(true);
-    } else {
-      runHeightControl(false);
-    }
-
-    // Power widget is in setPower method
-    SmartDashboard.putNumber("El Enc", getPositionMm()); // Elevator position
-    SmartDashboard.putBoolean("El Auto", m_enableAutomation); // True if automation is running
-    SmartDashboard.putBoolean("El UpLimit", isAtUpperLimit()); // True if we are at the upper limit
-    SmartDashboard.putBoolean("El Set Enc", m_isElevatorEncoderSet); // True once the encoder is set
-    SmartDashboard.putBoolean("El RstEnc", encoderResetSwitchHit()); // True if we hit the encoder reset switch
-    SmartDashboard.putBoolean("El isBlocked", isBlocked()); // True if we we are blocked
+    runHeightControl(m_enableAutomation);
 
     // If we haven't set the relative encoder's position yet, check if we are at the switch that tells us to do so                                                                                                                                                                                                                                                                                                                                                                                                                          
     if(!m_isElevatorEncoderSet) {
@@ -122,6 +114,14 @@ public class ElevatorSub extends TestableSubsystem {
         m_isElevatorEncoderSet = true;
       }
     }
+
+    SmartDashboard.putNumber("El Enc", getPositionMm()); // Elevator position
+    SmartDashboard.putBoolean("El UpLimit", isAtUpperLimit()); // True if we are at the upper limit
+    SmartDashboard.putBoolean("El RstEnc", encoderResetSwitchHit()); // True if we hit the encoder reset switch
+    SmartDashboard.putBoolean("El Auto", m_enableAutomation); // True if automation is running
+    SmartDashboard.putBoolean("El Set Enc", m_isElevatorEncoderSet); // True once the encoder is set
+    SmartDashboard.putBoolean("El isBlocked", isBlocked()); // True if we we are blocked
+    // Current power value is sent in setPower()
   }
 
   /**
@@ -131,16 +131,15 @@ public class ElevatorSub extends TestableSubsystem {
    */
   public void setPower(double power) {
     // If lower limit switch is hit and the motor is going down, stop.
+    // If upper limit switch is hit and the motor is going up, hold that height
     // If we are too close to the lower limit, set max power to a low value
     // If we are too close to the upper limit, set max power to a low value
     // Otherwise, set power normally
     double powerValue = power;
     if(isAtLowerLimit() && power < 0.0) {
       powerValue = 0.0;
-      System.out.println("Lower limit hit");
     } else if(isAtUpperLimit() && power > 0.0) {
       setTargetHeight(getPositionMm() - 5);
-      System.out.println("Upper limit hit");
     } else if((getPositionMm() < Constants.Elevator.kSlowDownLowerStageHeight)
         && (power < Constants.Elevator.kSlowDownLowerStagePower)) {
       powerValue = Constants.Elevator.kSlowDownLowerStagePower;
@@ -150,11 +149,11 @@ public class ElevatorSub extends TestableSubsystem {
     }
 
     m_elevatorMotor.set(powerValue);
-    SmartDashboard.putNumber("El Power", powerValue); // Elevator power
+    SmartDashboard.putNumber("El Power", powerValue);
   }
 
   /**
-   * Sets the current height
+   * Sets the encoder to the specified height
    */
   public void setPositionMm(double height) {
     m_elevatorMotor.setPosition(height);
@@ -181,11 +180,11 @@ public class ElevatorSub extends TestableSubsystem {
   /**
    * Sets the target height that the elevator should move to
    * 
-   * @param targetAngle target angle in degrees
+   * @param targetHeight target height in mm
    */
   public void setTargetHeight(double targetHeight) {
     if(targetHeight >= Constants.Elevator.kMaxHeight) {
-      //Constants.Elevator.kMaxHeight;
+      targetHeight = Constants.Elevator.kMaxHeight;
     } else if(targetHeight <= Constants.Elevator.kMinHeight) {
       targetHeight = Constants.Elevator.kMinHeight;
     }
@@ -236,27 +235,40 @@ public class ElevatorSub extends TestableSubsystem {
     return !m_encoderResetSwitch.get();
   }
 
-
   /**
-   * Calculates and sets the current power to apply to the elevator to get to or stay at its target
-   * 
-   * @param updatePower set to false to update the Feedforward and PID controllers without changing the motor power
+   * Handle the case where the elevator needs to stop due to a potential collision
    */
-  private void runHeightControl(boolean updatePower) {
-    double activeTarget = m_targetHeight;
+  private void updateStateMachine() {
 
-    if(m_currentControl.state == State.INTERRUPTED) {
-      activeTarget = m_blockedPosition;
-    }
+    // Determine what power the mechanism should use based on the current state
+    switch(m_currentControl.state) {
+      case MOVING:
+        SmartDashboard.putBoolean("El blocked", false);
+        // If the mechanism is moving, check if it has arrived at it's target.
+        if(isBlocked()) {
+          m_blockedPosition = getPositionMm();
+          m_currentControl.state = State.INTERRUPTED;
+        }
+        break;
 
-    double ffPower = m_feedforward.calculate(getVelocity());
-    double pidPower = (m_elevatorPID.calculate(getPositionMm(), activeTarget));
+      case INTERRUPTED:
+        SmartDashboard.putBoolean("El blocked", true);
+        // If the mechanism is no longer blocked, transition to MOVING
+        if(!isBlocked()) {
+          m_currentControl.state = State.MOVING;
+          // Otherwise, hold this position
+        }
+        break;
 
-    if(updatePower) {
-      setPower(ffPower + pidPower);
+      default:
+        m_currentControl.state = State.INTERRUPTED;
+        break;
     }
   }
 
+  /**
+   * Run the logic to check if the elevator movement is interrupted by a potential collision
+   */
   private boolean isBlocked() {
     /*
      * should stop the elevator if:
@@ -291,32 +303,23 @@ public class ElevatorSub extends TestableSubsystem {
     return false;
   }
 
-  private void updateStateMachine() {
+  /**
+   * Calculates and sets the current power to apply to the elevator to get to or stay at its target
+   * 
+   * @param updatePower set to false to update the Feedforward and PID controllers without changing the motor power
+   */
+  private void runHeightControl(boolean updatePower) {
+    double activeTarget = m_targetHeight;
 
-    // Determine what power the mechanism should use based on the current state
-    switch(m_currentControl.state) {
+    if(m_currentControl.state == State.INTERRUPTED) {
+      activeTarget = m_blockedPosition;
+    }
 
-      case MOVING:
-        SmartDashboard.putBoolean("El blocked", false);
-        // If the mechanism is moving, check if it has arrived at it's target.
-        if(isBlocked()) {
-          m_blockedPosition = (getPositionMm());
-          m_currentControl.state = State.INTERRUPTED;
-        }
-        break;
+    double ffPower = m_feedforward.calculate(getVelocity());
+    double pidPower = (m_elevatorPID.calculate(getPositionMm(), activeTarget));
 
-      case INTERRUPTED:
-        SmartDashboard.putBoolean("El blocked", true);
-        // If the mechanism is no longer blocked, transition to MOVING
-        if(!isBlocked()) {
-          m_currentControl.state = State.MOVING;
-          // Otherwise, hold this position
-        }
-        break;
-
-      default:
-        m_currentControl.state = State.INTERRUPTED;
-        break;
+    if(updatePower) {
+      setPower(ffPower + pidPower);
     }
   }
 
@@ -346,8 +349,17 @@ public class ElevatorSub extends TestableSubsystem {
   @Override
   public void testEnableMotorTestMode(int motorId) {
     // Save the current encoder values because the tests will reset them
-    m_preTestHeight = m_elevatorMotor.getPosition().getValueAsDouble();
-    m_preTestHeight2 = m_elevatorMotor.getPosition().getValueAsDouble();
+    switch(motorId) {
+      case 1:
+        m_preTestHeight = m_elevatorMotor.getPosition().getValueAsDouble();
+        break;
+      case 2:
+        m_preTestHeight = m_elevatorMotor.getPosition().getValueAsDouble();
+        break;
+      default:
+        // Do nothing
+        break;
+    }
 
     // Disable any mechanism automation (PID, etc.).  Check periodic()
     disableAutomation();
@@ -361,10 +373,21 @@ public class ElevatorSub extends TestableSubsystem {
   @Override
   public void testDisableMotorTestMode(int motorId) {
     // Set the encoders to their pre-test values plus the change in position from the test
-    m_elevatorMotor.setPosition(m_preTestHeight + m_elevatorMotor.getPosition().getValueAsDouble(), 0.5);
-    m_elevatorMotor2.setPosition(m_preTestHeight2 + m_elevatorMotor2.getPosition().getValueAsDouble(), 0.5);
+    switch(motorId) {
+      case 1:
+        m_elevatorMotor.setPosition(m_preTestHeight + m_elevatorMotor.getPosition().getValueAsDouble(), 0.5);
+        setTargetHeight(getPositionMm());
+        m_isElevatorEncoderSet = false;
+        break;
+      case 2:
+        m_elevatorMotor2.setPosition(m_preTestHeight + m_elevatorMotor2.getPosition().getValueAsDouble(), 0.5);
+        break;
+      default:
+        // Do nothing
+        break;
+    }
 
-    // Re-ensable any mechanism automation
+    // Re-enable any mechanism automation
     enableAutomation();
   }
 
@@ -402,7 +425,8 @@ public class ElevatorSub extends TestableSubsystem {
         m_elevatorMotor.set(power);
         break;
       case 2:
-        m_elevatorMotor2.set(power);
+        // Motor 2 is configured as a motor 1 follower so set power on motor 1 for this test
+        m_elevatorMotor.set(power);
         break;
       default:
         // Do nothing

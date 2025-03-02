@@ -15,7 +15,6 @@ import frc.robot.Constants.PwmIds;
 
 public class LedSub extends SubsystemBase {
   private static Logger m_logger = Logger.getLogger(LedSub.class.getName());
-  private final ArduinoSub m_arduinoSub;
 
   // Constants
   private final static int kLedStripLength = 33;
@@ -115,8 +114,7 @@ public class LedSub extends SubsystemBase {
   AddressableLEDBuffer m_ledBuffer = new AddressableLEDBuffer(kLedStripLength);
 
   /** Creates a new LedSub. */
-  public LedSub(ArduinoSub arduinoSub) {
-    m_arduinoSub = arduinoSub;
+  public LedSub() {
     m_ledStrip.setLength(m_ledBuffer.getLength());
     m_ledStrip.setData(m_ledBuffer);
     m_ledStrip.start();
@@ -182,7 +180,7 @@ public class LedSub extends SubsystemBase {
         g = ledColour.green / 2;
         b = ledColour.blue / 2;
       }
-      m_arduinoSub.updateLED(r, g, b);
+      //m_arduinoSub.updateLED(r, g, b); // TODO:  Send message to custom CAN board
     }
 
     // TODO: If zone is ALL, also set the Arduino board LEDs to this colour (but don't let the R + G + B value exceed 510)
