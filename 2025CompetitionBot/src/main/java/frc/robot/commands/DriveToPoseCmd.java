@@ -7,6 +7,7 @@ package frc.robot.commands;
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.DrivetrainSub;
@@ -14,16 +15,13 @@ import frc.robot.subsystems.DrivetrainSub;
 /* You should consider using the more terse Command factories API instead https://docs.wpilib.org/en/stable/docs/software/commandbased/organizing-command-based.html#defining-commands */
 public class DriveToPoseCmd extends Command {
   DrivetrainSub m_drivetrainSub;
-  Translation2d m_targetPos;
-  Translation2d m_currentPos;
-  Translation2d m_error;
-  Translation2d m_prevError;
-  Double m_drivePowerX;
-  Double m_drivePowerY;
-  Double m_rotPower;
+  Pose2d m_targetPose;
+  Pose2d m_currentPose;
+  Pose2d m_error;
+  Pose2d m_prevError;
 
   private final SwerveRequest.FieldCentric backDrive = new SwerveRequest.FieldCentric()
-      .withDriveRequestType(DriveRequestType.OpenLoopVoltage);
+      .withDriveRequestType(DriveRequestType.Velocity);
 
   Double m_driveP = 0.01; //TODO: Get proper value
   Double m_driveI = 0.0; //TODO: Get proper value
@@ -32,8 +30,8 @@ public class DriveToPoseCmd extends Command {
   Double m_rotI = 0.0; //TODO: Get proper value
   Double m_rotD = 0.01; //TODO: Get proper value
     /** Creates a new DriveToPoseCmd. */
-  public DriveToPoseCmd(Translation2d targetPos, DrivetrainSub drivetrainSub) {
-    m_targetPos = targetPos;
+  public DriveToPoseCmd(Pose2d targetPose, DrivetrainSub drivetrainSub) {
+    m_targetPose = targetPose;
     m_drivetrainSub = drivetrainSub;
     addRequirements(m_drivetrainSub);
     // Use addRequirements() here to declare subsystem.
@@ -42,36 +40,39 @@ public class DriveToPoseCmd extends Command {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    m_currentPos = m_drivetrainSub.getPose().getTranslation();
 
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
+    m_currentPose = m_drivetrainSub.getPose();
     m_prevError = m_error;
-    m_error = m_targetPos.minus(m_currentPos);
+    // relativeTo is just a fancy minus.
+    m_error = m_targetPose.relativeTo(m_currentPose);
     //P
-    m_drivePowerX += m_error.times(m_driveP).getX();
-    m_drivePowerY += m_error.times(m_driveP).getY();
-    m_rotPower += m_error.times(m_driveP).getAngle().getDegrees();
+    Translation2d outputDrivePower = m_error.getTranslation().times(m_driveP);
+    double outputRotPower = m_error.getRotation().getDegrees() * m_rotP;
 
-    //D (I did this out of my own curiocity, was wondering if it was correct)
-    m_drivePowerX += (m_prevError.minus(m_error).getX())/0.02;//0.02 is the amount of time between periodic calls, which is why it is used as the change in time
-    m_drivePowerX += (m_prevError.minus(m_error).getY())/0.02;
-    m_rotPower += (m_prevError.minus(m_error).getAngle().getDegrees())/0.02;
+    //D
+    outputDrivePower = outputDrivePower.plus(m_error.minus(m_prevError).getTranslation().times(m_driveD/0.02));//0.02 is the amount of time between periodic calls, which is why it is used as the change in time
+    outputRotPower += (m_error.minus(m_prevError).getRotation().getDegrees())*m_rotD/0.02;
 
-    m_drivetrainSub.applyRequest(() -> backDrive.withVelocityX(m_drivePowerX).withVelocityY(m_drivePowerY).withRotationalRate(m_rotPower));
+    // I believe setControl is just a less confusing version of applyRequest.
+    m_drivetrainSub.setControl(backDrive.withVelocityX(outputDrivePower.getX()).withVelocityY(outputDrivePower.getY()).withRotationalRate(outputRotPower));
   }
 
   // Called once the command ends or is interrupted.
   @Override
-  public void end(boolean interrupted) {}
+  public void end(boolean interrupted) {
+    // TODO - tell m_drivetrainSub to stop
+  }
 
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    if(Math.abs(m_currentPos.getDistance(m_targetPos))<0.02){
+    // TODO - also add conditions for rotation being close (lets say 2 degrees) and that we are moving slowly
+    if(m_error.getTranslation().getNorm()<0.02){
       return true;
     }
     return false;
