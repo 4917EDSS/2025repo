@@ -6,7 +6,6 @@ package frc.robot.commands.tests;
 
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
-import frc.robot.subsystems.IntakeSub;
 import frc.robot.subsystems.ClimbSub;
 import frc.robot.Constants;
 import frc.robot.subsystems.ArmSub;
@@ -19,8 +18,7 @@ import frc.robot.utils.TestManager;
 public class RunTestsGrp extends SequentialCommandGroup {
 
   /** Creates a new RunTestsGrp. */
-  public RunTestsGrp(ClimbSub climbSub, ArmSub armSub, ElevatorSub elevatorSub, IntakeSub intakeSub,
-      TestManager testManager) {
+  public RunTestsGrp(ClimbSub climbSub, ArmSub armSub, ElevatorSub elevatorSub, TestManager testManager) {
     // Add your commands in the addCommands() call, e.g.
     // addCommands(new FooCommand(), new BarCommand());
     addCommands(
@@ -28,9 +26,6 @@ public class RunTestsGrp extends SequentialCommandGroup {
         // TestMotorCmd needs the test parameters, the subsystem we are testing and the testManager
         new TestMotorCmd(Constants.Tests.kElevatorMotor1, elevatorSub, testManager),
         new TestMotorCmd(Constants.Tests.kElevatorMotor2, elevatorSub, testManager),
-
-        // new TestMotorCmd(Constants.Tests.kIntakeMotor1, intakeSub, testManager),
-        // new TestMotorCmd(Constants.Tests.kIntakeMotor2, intakeSub, testManager),
 
         new TestMotorCmd(Constants.Tests.kArmMotor, armSub, testManager),
 

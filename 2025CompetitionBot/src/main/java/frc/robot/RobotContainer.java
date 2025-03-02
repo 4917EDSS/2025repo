@@ -48,7 +48,6 @@ import frc.robot.subsystems.CanSub;
 import frc.robot.subsystems.ClimbSub;
 import frc.robot.subsystems.DrivetrainSub;
 import frc.robot.subsystems.ElevatorSub;
-import frc.robot.subsystems.IntakeSub;
 import frc.robot.subsystems.VisionSub;
 import frc.robot.utils.SwerveTelemetry;
 import frc.robot.utils.TestManager;
@@ -82,7 +81,6 @@ public class RobotContainer {
   private final ClimbSub m_climbSub = new ClimbSub();
   public final DrivetrainSub m_drivetrainSub = TunerConstants.createDrivetrain();
   private final ElevatorSub m_elevatorSub = new ElevatorSub();
-  private final IntakeSub m_intakeSub = new IntakeSub();
   private final CanSub m_canSub = new CanSub(4);
   //private final LedSub m_ledSub = new LedSub(m_arduinoSub);  // TODO:  Implement with new Arduino
   private final VisionSub m_visionSub;
@@ -113,7 +111,7 @@ public class RobotContainer {
     m_visionSub = new VisionSub(m_drivetrainSub);
 
 
-    m_testManager.setTestCommand(new RunTestsGrp(m_climbSub, m_armSub, m_elevatorSub, m_intakeSub, m_testManager));
+    m_testManager.setTestCommand(new RunTestsGrp(m_climbSub, m_armSub, m_elevatorSub, m_testManager));
 
     // Default commands
     m_drivetrainSub.setDefaultCommand(
@@ -235,7 +233,7 @@ public class RobotContainer {
 
     // Touchpad
     m_driverController.touchpad()
-        .onTrue(new KillAllCmd(m_armSub, m_climbSub, m_drivetrainSub, m_elevatorSub, m_intakeSub));
+        .onTrue(new KillAllCmd(m_armSub, m_climbSub, m_drivetrainSub, m_elevatorSub));
 
     // Combination buttons for diagnostics
     // Run SysId routines when holding share/options and square/triangle.
@@ -295,10 +293,10 @@ public class RobotContainer {
     // Touchpad
 
     // L3
-    m_operatorController.L3().onTrue(new KillAllCmd(m_armSub, m_climbSub, m_drivetrainSub, m_elevatorSub, m_intakeSub));
+    m_operatorController.L3().onTrue(new KillAllCmd(m_armSub, m_climbSub, m_drivetrainSub, m_elevatorSub));
 
     // R3
-    m_operatorController.R3().onTrue(new KillAllCmd(m_armSub, m_climbSub, m_drivetrainSub, m_elevatorSub, m_intakeSub));
+    m_operatorController.R3().onTrue(new KillAllCmd(m_armSub, m_climbSub, m_drivetrainSub, m_elevatorSub));
   }
 
   private void slowDown() {
