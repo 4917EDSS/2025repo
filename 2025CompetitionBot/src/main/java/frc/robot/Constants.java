@@ -82,6 +82,10 @@ public final class Constants {
     public static final double kSlowDownLowerAngle = -60; // In degrees
     public static final double kSlowDownUpperAngle = 10; // In degrees
     public static final double kSlowDownSpeed = .02; // 1 = full power
+
+    public static final double kL2PreScoreAngle = 30; // TODO
+    public static final double kL3PreScoreAngle = 30; // TODO
+    public static final double kL4PreScoreAngle = 30;
   }
 
   public static final class Climb {
@@ -116,9 +120,9 @@ public final class Constants {
     public static final double kCoralGrabbableHeight = 550.0; // Height that coral can still slide in under the arm for the coral to be grabbable // TODO: Update
     public static final double kResetHeight = 722.0; // Height where elevator encounters the encoder reset switch 
     public static final double kCoralLoadedHeight = kDangerZoneBottom + 100; // This should be some height above the bottom danger zone so arm can swing up
-    public static final double kL2PreScoreHeight = 1000.0; // TODO: Update
+    public static final double kL2PreScoreHeight = 352.0; // TODO: Update
     public static final double kL2PostScoreHeight = 900.0; // TODO: Update
-    public static final double kL3PreScoreHeight = 1000.0; // TODO: Update
+    public static final double kL3PreScoreHeight = 764.0; // TODO: Update
     public static final double kL3PostScoreHeight = 900.0; // TODO: Update
     public static final double kL4PreScoreHeight = kMaxHeight - 5;
     public static final double kL4PostScoreHeight = kMaxHeight - 300;

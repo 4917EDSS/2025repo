@@ -36,8 +36,11 @@ import frc.robot.commands.DoNothingGrp;
 import frc.robot.commands.ElevatorMoveWithJoystickCmd;
 import frc.robot.commands.HomeButton;
 import frc.robot.commands.KillAllCmd;
+import frc.robot.commands.L2MovePrep;
 import frc.robot.commands.L2PlacementGrp;
+import frc.robot.commands.L3MovePrep;
 import frc.robot.commands.L3PlacementGrp;
+import frc.robot.commands.L4MovePrep;
 import frc.robot.commands.L4PlacementGrp;
 import frc.robot.commands.SetArmToPositionCmd;
 import frc.robot.commands.SetElevatorToHeightCmd;
@@ -254,14 +257,14 @@ public class RobotContainer {
     m_operatorController.square().onTrue(new InstantCommand(() -> m_armSub.setTargetAngle(25), m_armSub));
 
     // Cross
-    m_operatorController.cross().onTrue(new InstantCommand(() -> m_elevatorSub.setTargetHeight(1500), m_elevatorSub));
+    m_operatorController.cross().onTrue(new L2MovePrep(m_armSub, m_elevatorSub));
 
     // Circle
-    m_operatorController.circle().onTrue(new InstantCommand(() -> m_armSub.setTargetAngle(-88), m_armSub));
+    m_operatorController.circle().onTrue(new L3MovePrep(m_armSub, m_elevatorSub));
 
     // Triangle
 
-    m_operatorController.triangle().onTrue(new InstantCommand(() -> m_elevatorSub.setTargetHeight(600), m_elevatorSub));
+    m_operatorController.triangle().onTrue(new L4MovePrep(m_armSub, m_elevatorSub));
 
     // L1
     m_operatorController.L1()

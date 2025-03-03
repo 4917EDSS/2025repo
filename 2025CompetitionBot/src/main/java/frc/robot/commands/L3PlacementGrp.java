@@ -5,6 +5,7 @@
 package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import frc.robot.Constants;
 import frc.robot.subsystems.ArmSub;
 import frc.robot.subsystems.ElevatorSub;
 
@@ -20,7 +21,7 @@ public class L3PlacementGrp extends SequentialCommandGroup {
     addCommands(
         new SetElevatorToHeightCmd(600, elevatorSub),
         new SetArmToPositionCmd(32, armSub),
-        new SetElevatorToHeightCmd(764, elevatorSub)
+        new SetElevatorToHeightCmd(Constants.Elevator.kL3PreScoreHeight, elevatorSub)
     // new InstantCommand(() -> elevatorSub.setTargetHeight(764)), // Set height close to L3
     // new WaitCommand(2), // Wait 2 seconds
     // new InstantCommand(() -> armSub.setTargetAngle(31)), // Move arm angle above L3

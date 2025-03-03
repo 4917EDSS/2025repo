@@ -5,6 +5,7 @@
 package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import frc.robot.Constants;
 import frc.robot.subsystems.ArmSub;
 import frc.robot.subsystems.ElevatorSub;
 
@@ -19,7 +20,7 @@ public class L2PlacementGrp extends SequentialCommandGroup {
     addCommands(
         new SetElevatorToHeightCmd(600, elevatorSub),
         new SetArmToPositionCmd(32, armSub),
-        new SetElevatorToHeightCmd(352, elevatorSub)
+        new SetElevatorToHeightCmd(Constants.Elevator.kL2PreScoreHeight, elevatorSub)
     // new InstantCommand(() -> elevatorSub.setTargetHeight(352)), // Set height to clear frame when moving arm
     // new WaitCommand(2),
     // new InstantCommand(() -> armSub.setTargetAngle(32)), // Move arm angle above L2
