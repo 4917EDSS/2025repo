@@ -24,6 +24,7 @@ public class CanSub extends SubsystemBase {
   int m_ARBID;
   static int m_TOFDist;
   static int m_analog0;
+  static int m_coralSensor;
 
   /** Creates a new CanSub. */
   public CanSub(int CustomSensorID) {
@@ -44,6 +45,7 @@ public class CanSub extends SubsystemBase {
     UpdateCustomSensor();
     SmartDashboard.putNumber("TOF Distance", getTOFDist());
     SmartDashboard.putNumber("Analog 0", getAnaglog0());
+    SmartDashboard.putBoolean("Coral Sensor", getCoralSensor());
     //System.out.println(getTOFDist());
     //updateShuffleboard();
   }
@@ -104,17 +106,32 @@ public class CanSub extends SubsystemBase {
 
           if(m_data_buffer.length >= 2) {
 
-            int msb1 = m_data_buffer[2];
+            int msb1 = m_data_buffer[4];
             if(msb1 < 0) {
               msb1 = msb1 + 256;
             }
 
-            int lsb1 = m_data_buffer[3];
+            int lsb1 = m_data_buffer[5];
             if(lsb1 < 0) {
               lsb1 = lsb1 + 256;
             }
 
             m_analog0 = (msb1 << 8) + lsb1;
+          }
+
+          if(m_data_buffer.length >= 2) {
+
+            int msb2 = m_data_buffer[2];
+            if(msb2 < 0) {
+              msb2 = msb2 + 256;
+            }
+
+            int lsb2 = m_data_buffer[3];
+            if(lsb2 < 0) {
+              lsb2 = lsb2 + 256;
+            }
+
+            m_coralSensor = (msb2 << 8) + lsb2;
           }
 
           //m_TOFDist = ((int) m_data_buffer[0] << 8) + m_data_buffer[1];
@@ -150,6 +167,13 @@ public class CanSub extends SubsystemBase {
 
   public int getAnaglog0() {
     return m_analog0;
+  }
+
+  public boolean getCoralSensor() {
+    if(m_coralSensor < 100) {
+      return true;
+    } else
+      return false;
   }
 
   // public void updateShuffleboard() {
