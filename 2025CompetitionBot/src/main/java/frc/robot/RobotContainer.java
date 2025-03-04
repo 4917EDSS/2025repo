@@ -23,18 +23,20 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandPS4Controller;
-import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.Constants.OperatorConstants;
-import frc.robot.commands.AlgaeRemovalL2L3Grp;
-import frc.robot.commands.AlgaeRemovalL3L4Grp;
 import frc.robot.commands.ArmMoveWithJoystickCmd;
+import frc.robot.commands.AutoAlgaeRemovalL2L3Grp;
+import frc.robot.commands.AutoAlgaeRemovalL3L4Grp;
+import frc.robot.commands.AutoCoralScoreL2Grp;
+import frc.robot.commands.AutoCoralScoreL3Grp;
+import frc.robot.commands.AutoCoralScoreL4Grp;
 import frc.robot.commands.BackUpAfterScoringCmd;
 import frc.robot.commands.DoNothingGrp;
 import frc.robot.commands.DriveToNearestScoreLocationCmd;
 import frc.robot.commands.ElevatorMoveWithJoystickCmd;
 import frc.robot.commands.GrabCoralGrp;
-import frc.robot.commands.HomeButton;
 import frc.robot.commands.KillAllCmd;
 import frc.robot.commands.MoveElArmGrp;
 import frc.robot.commands.SetArmToPositionCmd;
@@ -148,65 +150,52 @@ public class RobotContainer {
     // Drive controller bindings ////////////////////////////////////////////////////////////////////////////////////////////////
 
     // Square
-    // m_driverController.square().onTrue(new L3PlacementGrp(m_armSub, m_elevatorSub)); //TODO Make Coral Recieval Command
-    m_driverController.square().whileTrue(AutoBuilder.pathfindToPose(
-        new Pose2d(2, 6.5, new Rotation2d(0)),
-        m_constraints,
-        0.0 // Goal end velocity in meters/sec
-    ));
-    //m_driverController.square()
-    //    .onTrue(new L2PlacementGrp(m_armSub, m_elevatorSub, m_coralPlacementGrp, MaxAngularRate)); //TODO Make Coral Recieval Command
+    m_driverController.square().onTrue(new GrabCoralGrp(m_armSub, m_canSub, m_elevatorSub));
 
+    // Cross
+    m_driverController.cross().onTrue(new AutoCoralScoreL2Grp()); // TODO: Implement this command group
 
-    //Triangle - L4 Coral Placement
+    // Circle
+    m_driverController.cross().onTrue(new AutoCoralScoreL3Grp()); // TODO: Implement this command group
 
+    // Triangle
+    m_driverController.cross().onTrue(new AutoCoralScoreL4Grp()); // TODO: Implement this command group
 
-    // Cross - L2 Coral Placement
+    // L1
+    m_driverController.L1().onTrue(new AutoAlgaeRemovalL2L3Grp(m_armSub, m_elevatorSub));
 
-    // Circle - L3 Coral Placement
-
-    //L1 - Remove L2-L3 Algae
-    m_driverController.L1().onTrue(new AlgaeRemovalL2L3Grp(m_armSub, m_elevatorSub));
-
-    //R1 - Remove L3-L4 Algae
-    m_driverController.R1().onTrue(new AlgaeRemovalL3L4Grp(m_armSub, m_elevatorSub));
-
-    // if(m_isLimelight) {
-    //   // L1
-    //   m_driverController.L1().onTrue(new AutoDriveCmd(m_visionSub, m_drivetrainSub));
-    //   // R1
-    //   m_driverController.R1().onTrue(new HomeButton(m_armSub, m_elevatorSub));
-    //   //new AutoDriveCmd(m_visionSub, m_drivetrainSub));
-    // }
+    // R1
+    m_driverController.R1().onTrue(new AutoAlgaeRemovalL3L4Grp(m_armSub, m_elevatorSub));
 
     // L2
-    // m_driverController.L2().onTrue(new InstantCommand(() -> m_armSub.setTargetAngle(0), m_armSub));
-    //m_driverController.L2().onTrue(new SetArmToPositionCmd(30, m_armSub));
     m_driverController.L2().onTrue(new InstantCommand(() -> slowDown())).onFalse(new InstantCommand(() -> speedUp()));
 
-
     // R2
-    //m_driverController.R2().onTrue(new SetArmToPositionCmd(0, m_armSub));
-    // m_driverController.R2().onTrue(new InstantCommand(() -> m_armSub.setTargetAngle(45), m_armSub));
 
     // POV Up
-    //m_driverController.povUp().onTrue() // TODO add command move the climb arm to the climb position
+    // TODO add command move the climb arm to the climb position
 
     // POV Right
+    // TODO:  Target scoring to pipe to the right of the vision target
 
     // POV Down
-    //m_driverController.povDown().onTrue() // TODO Move Climb arm in to climb
+    // TODO Move Climb arm in to climb
 
     // POV Left
+    // TODO:  Target scoring to pipe to the left of the vision target
 
     // Share
     m_driverController.share().onTrue(new BackUpAfterScoringCmd(m_drivetrainSub, m_constraints));
 
     // Options
+    m_driverController.options().whileTrue(AutoBuilder.pathfindToPose(
+        new Pose2d(2, 6.5, new Rotation2d(0)),
+        m_constraints,
+        0.0 // Goal end velocity in meters/sec
+    ));
 
     // PS
-    // Reset the field-centric heading
-    m_driverController.PS().onTrue(m_drivetrainSub.runOnce(() -> m_drivetrainSub.seedFieldCentric()));
+    m_driverController.PS().onTrue(m_drivetrainSub.runOnce(() -> m_drivetrainSub.seedFieldCentric())); // Reset the field-centric heading
 
     // L3
 
@@ -214,25 +203,25 @@ public class RobotContainer {
 
     // Touchpad
     m_driverController.touchpad()
-        .onTrue(new KillAllCmd(m_armSub, m_climbSub, m_drivetrainSub, m_elevatorSub));
+        .onTrue(new KillAllCmd(m_armSub, m_canSub, m_climbSub, m_drivetrainSub, m_elevatorSub));
 
     // Combination buttons for diagnostics
     // Run SysId routines when holding share/options and square/triangle.
     // Note that each routine should be run exactly once in a single log.
-    m_driverController.share().and(m_driverController.triangle())
-        .whileTrue(m_drivetrainSub.sysIdDynamic(Direction.kForward));
-    m_driverController.share().and(m_driverController.square())
-        .whileTrue(m_drivetrainSub.sysIdDynamic(Direction.kReverse));
-    m_driverController.options().and(m_driverController.triangle())
-        .whileTrue(m_drivetrainSub.sysIdQuasistatic(Direction.kForward));
-    m_driverController.options().and(m_driverController.square())
-        .whileTrue(m_drivetrainSub.sysIdQuasistatic(Direction.kReverse));
+    // m_driverController.share().and(m_driverController.triangle())
+    //     .whileTrue(m_drivetrainSub.sysIdDynamic(Direction.kForward));
+    // m_driverController.share().and(m_driverController.square())
+    //     .whileTrue(m_drivetrainSub.sysIdDynamic(Direction.kReverse));
+    // m_driverController.options().and(m_driverController.triangle())
+    //     .whileTrue(m_drivetrainSub.sysIdQuasistatic(Direction.kForward));
+    // m_driverController.options().and(m_driverController.square())
+    //     .whileTrue(m_drivetrainSub.sysIdQuasistatic(Direction.kReverse));
 
 
     // Operator Controller Bindings /////////////////////////////////////////////////////////////////////////////////////////////
 
     // Square
-    m_operatorController.square().onTrue(new InstantCommand(() -> m_armSub.setTargetAngle(25), m_armSub));
+    m_operatorController.square().onTrue(new GrabCoralGrp(m_armSub, m_canSub, m_elevatorSub));
 
     // Cross
     m_operatorController.cross().onTrue(new MoveElArmGrp(Constants.Elevator.kL2PreScoreHeight,
@@ -243,7 +232,6 @@ public class RobotContainer {
         Constants.Arm.kL3PreScoreAngle, m_armSub, m_elevatorSub));
 
     // Triangle
-
     m_operatorController.triangle().onTrue(new MoveElArmGrp(Constants.Elevator.kL4PreScoreHeight,
         Constants.Arm.kL4PreScoreAngle, m_armSub, m_elevatorSub));
 
@@ -258,40 +246,41 @@ public class RobotContainer {
             Constants.Arm.kL3L4AlgaeRemovalPrepAngle, m_armSub, m_elevatorSub));
 
     // L2
-    m_operatorController.L2().onTrue(new AlgaeRemovalL3L4Grp(m_armSub, m_elevatorSub));
+    // TODO: Remove algae based on which one we are prepped for
 
     // R2
-    m_operatorController.R2()
-        .onTrue(new GrabCoralGrp(m_armSub, m_canSub, m_elevatorSub));
+    // TODO: Score coral based on which one we are prepped for
 
     // POV Up
-    //m_operatorController.povUp().whileTrue() // TODO add command move the climb arm to towards the climb position while held
+    m_operatorController.povUp()
+        .whileTrue(new StartEndCommand(() -> m_climbSub.setPower(0.25), () -> m_climbSub.setPower(0.0), m_climbSub));
 
     // POV Right
 
     // POV Down
-    //m_operatorController.povDown().whileTrue() // TODO Move Climb arm inwards to climb while held
+    m_operatorController.povDown()
+        .whileTrue(new StartEndCommand(() -> m_climbSub.setPower(-0.25), () -> m_climbSub.setPower(0.0), m_climbSub));
 
     // POV Left
 
     // Share
-    m_operatorController.share().onTrue(new HomeButton(m_armSub, m_elevatorSub));
+    m_operatorController.share().onTrue(new InstantCommand(() -> m_armSub.setTargetAngle(-75), m_armSub));
 
     // Options
+    m_operatorController.options().onTrue(new InstantCommand(() -> m_armSub.setTargetAngle(25), m_armSub));
 
     // PS
-    m_operatorController.PS().onTrue(new InstantCommand(() -> {
-      m_elevatorSub.setPositionMm(0);
-      m_elevatorSub.setTargetHeight(0);
-    }, m_elevatorSub));
+    m_operatorController.PS().onTrue(new InstantCommand(() -> m_elevatorSub.allowEncoderReset(), m_elevatorSub));
 
     // Touchpad
+    m_operatorController.touchpad()
+        .onTrue(new KillAllCmd(m_armSub, m_canSub, m_climbSub, m_drivetrainSub, m_elevatorSub));
 
     // L3
-    m_operatorController.L3().onTrue(new KillAllCmd(m_armSub, m_climbSub, m_drivetrainSub, m_elevatorSub));
+    m_operatorController.L3().onTrue(new KillAllCmd(m_armSub, m_canSub, m_climbSub, m_drivetrainSub, m_elevatorSub));
 
     // R3
-    m_operatorController.R3().onTrue(new KillAllCmd(m_armSub, m_climbSub, m_drivetrainSub, m_elevatorSub));
+    m_operatorController.R3().onTrue(new KillAllCmd(m_armSub, m_canSub, m_climbSub, m_drivetrainSub, m_elevatorSub));
   }
 
   /**

@@ -19,7 +19,6 @@ import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants;
-import frc.robot.commands.SetElevatorToHeightCmd;
 import frc.robot.utils.SubControl;
 import frc.robot.utils.SubControl.State;
 import frc.robot.utils.TestableSubsystem;
@@ -167,6 +166,13 @@ public class ElevatorSub extends TestableSubsystem {
    */
   public double getPositionMm() {
     return m_elevatorMotor.getPosition().getValueAsDouble();
+  }
+
+  /**
+   * Allows the elevator encoder to be reset next time it move up past the reset switch
+   */
+  public void allowEncoderReset() {
+    m_isElevatorEncoderSet = false;
   }
 
   /**

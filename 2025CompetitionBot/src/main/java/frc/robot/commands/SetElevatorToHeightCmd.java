@@ -15,11 +15,11 @@ public class SetElevatorToHeightCmd extends Command {
   private double m_targetHeight;
   private ElevatorSub m_elevatorSub;
 
-
   /** Creates a new SetElevatorToHeightCmd. */
   public SetElevatorToHeightCmd(double targetHeight, ElevatorSub elevatorSub) {
     m_elevatorSub = elevatorSub;
     m_targetHeight = targetHeight;
+
     addRequirements(m_elevatorSub);
   }
 

@@ -16,19 +16,18 @@ public class SetElevatorToRelHeightCmd extends Command {
   private ElevatorSub m_elevatorSub;
 
   /** Creates a new SetElevatorToRelHeightCmd. */
-
   public SetElevatorToRelHeightCmd(double relativeHeight, ElevatorSub elevatorSub) {
     m_elevatorSub = elevatorSub;
     m_relativeHeight = relativeHeight;
+
     addRequirements(m_elevatorSub);
-    // Use addRequirements() here to declare subsystem dependencies.
   }
 
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
     m_elevatorSub.enableAutomation();
-    m_elevatorSub.setTargetHeight(m_elevatorSub.getPositionMm() - m_relativeHeight);
+    m_elevatorSub.setTargetHeight(m_elevatorSub.getPositionMm() + m_relativeHeight);
   }
 
   // Called every time the scheduler runs while the command is scheduled.

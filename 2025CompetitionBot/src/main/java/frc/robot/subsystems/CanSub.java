@@ -67,7 +67,7 @@ public class CanSub extends SubsystemBase {
     targetedMessageID.asIntBuffer().put(0, m_ARBID); //Put the arbID into the buffer
     ByteBuffer timeStamp = ByteBuffer.allocateDirect(4); //Allocate memory for time stamp
 
-    byte[] output_data = new byte[8];
+    //byte[] output_data = new byte[8];
 
     try {
       // Read data from the CAN bus.  If this fails, fall back to the error handler.

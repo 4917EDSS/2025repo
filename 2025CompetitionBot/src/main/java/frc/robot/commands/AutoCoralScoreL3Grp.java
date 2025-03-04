@@ -5,23 +5,22 @@
 package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
-import frc.robot.subsystems.ArmSub;
-import frc.robot.subsystems.ElevatorSub;
 
 // NOTE: Consider using this command inline, rather than writing a subclass. For more
 // information, see:
 // https://docs.wpilib.org/en/stable/docs/software/commandbased/convenience-features.html
-public class HomeButton extends SequentialCommandGroup {
-  /** Creates a new L4PlacementGrp. */
-  public HomeButton(ArmSub armSub, ElevatorSub elevatorSub) {
+public class AutoCoralScoreL3Grp extends SequentialCommandGroup {
+  /** Creates a new AutoCoralScoreL3Grp. */
+  public AutoCoralScoreL3Grp() {
     // Add your commands in the addCommands() call, e.g.
     // addCommands(new FooCommand(), new BarCommand());
     addCommands(
-        new SetElevatorToHeightCmd(440, elevatorSub),
-        new SetArmToPositionCmd(-80, armSub));
-    // new InstantCommand(() -> elevatorSub.setTargetHeight(440)),
-    // //new WaitCommand(1), // wait a second for the instant command
-    // new SetArmToPositionCmd(-80, armSub));
-    //new WaitCommand(1));
+    // TODO:  use bulding-block command, MoveElArmGrp and MoveRelElAbsArmGrp, for all elevator and arm movements
+    // Move elevator and arm to pre score location
+    // Drive to vision target
+    // Score
+    // Backup
+    // Setup to grab next coral
+    );
   }
 }

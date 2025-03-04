@@ -276,19 +276,29 @@ public class ArmSub extends TestableSubsystem {
       }
 
       // If arm is close to limit switches, limit power to avoid smashing into them
-      if((getAngle() > Constants.Arm.kSlowDownUpperAngle) && (tempPower > Constants.Arm.kSlowDownSpeed)
-          && (m_targetAngle > getAngle())) {
-        setPower(Constants.Arm.kSlowDownSpeed);
-      } else if((getAngle() < Constants.Arm.kSlowDownLowerAngle) && (tempPower > Constants.Arm.kSlowDownSpeed)
-          && (m_targetAngle < getAngle())) {
-        setPower(Constants.Arm.kSlowDownSpeed);
-      } else {
-        setPower(tempPower);
-      }
 
+      // TODO:  Check this logic before enabling, especially the negative power case at the lower angle.  
+      // Also, this may not be necessary since the encoder is absolute and this kind of guard is usually only necessary when
+      // there's a chance that the mechnism and encoder get out of sync.  Of course there's the case when you're in manual control.
+
+      // double currentAngle = getAngle();
+      // if((currentAngle > Constants.Arm.kSlowDownUpperAngle) && (tempPower > Constants.Arm.kSlowDownSpeed)
+      //     && (m_targetAngle > currentAngle)) {
+      //   setPower(Constants.Arm.kSlowDownSpeed);
+      // } else if((currentAngle < Constants.Arm.kSlowDownLowerAngle) && (tempPower > Constants.Arm.kSlowDownSpeed)
+      //     && (m_targetAngle < currentAngle)) {
+      //   setPower(Constants.Arm.kSlowDownSpeed);
+      // } else {
+      setPower(tempPower);
+      //}
     }
   }
 
+  /**
+   * Indicates whether or not we are at our target height
+   * 
+   * @return true when we are within tolerance of our target height
+   */
   public boolean isAtTargetAngle() {
     // If we are within tolerance and our velocity is low, we're at our target
     if((Math.abs(m_targetAngle - getAngle()) < Constants.Arm.kAngleTolerance)

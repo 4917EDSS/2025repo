@@ -7,23 +7,21 @@ package frc.robot.commands;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import frc.robot.subsystems.ArmSub;
 import frc.robot.subsystems.ElevatorSub;
-import frc.robot.Constants;
 
 
 // NOTE: Consider using this command inline, rather than writing a subclass. For more
 // information, see:
 // https://docs.wpilib.org/en/stable/docs/software/commandbased/convenience-features.html
-public class MoveRelElevator extends ParallelCommandGroup {
-
+public class MoveRelElAbsArm extends ParallelCommandGroup {
   private ElevatorSub m_elevatorSub;
   private ArmSub m_armSub;
 
   /** Creates a new MoveRelElArmGrp. */
-  public MoveRelElevator(double height, double angle, ArmSub armSub, ElevatorSub elevatorSub) {
+  public MoveRelElAbsArm(double heightChange, double absoluteAngle, ArmSub armSub, ElevatorSub elevatorSub) {
     // Add your commands in the addCommands() call, e.g.
     // addCommands(new FooCommand(), new BarCommand());
     addCommands(
-        new SetElevatorToRelHeightCmd(Constants.Elevator.kElevatorDropScore, m_elevatorSub),
-        new SetArmToPositionCmd(Constants.Elevator.kScoreDropAngle, m_armSub));
+        new SetElevatorToRelHeightCmd(heightChange, m_elevatorSub),
+        new SetArmToPositionCmd(absoluteAngle, m_armSub));
   }
 }

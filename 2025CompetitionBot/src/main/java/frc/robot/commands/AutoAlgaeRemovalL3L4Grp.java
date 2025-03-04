@@ -4,29 +4,25 @@
 
 package frc.robot.commands;
 
-import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
-import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.subsystems.ArmSub;
 import frc.robot.subsystems.ElevatorSub;
 
 // NOTE: Consider using this command inline, rather than writing a subclass. For more
 // information, see:
 // https://docs.wpilib.org/en/stable/docs/software/commandbased/convenience-features.html
-public class AlgaeRemovalL2L3Grp extends SequentialCommandGroup {
-  /** Creates a new AlgaeRemovalL2L3Grp. */
-  public AlgaeRemovalL2L3Grp(ArmSub armSub, ElevatorSub elevatorSub) {
+public class AutoAlgaeRemovalL3L4Grp extends SequentialCommandGroup {
+  /** Creates a new AlgaeRemovalL3L4Grp. */
+  public AutoAlgaeRemovalL3L4Grp(ArmSub armSub, ElevatorSub elevatorSub) {
     // Add your commands in the addCommands() call, e.g.
     // addCommands(new FooCommand(), new BarCommand());
     addCommands(
-        new InstantCommand(() -> armSub.setTargetAngle(83.2), armSub),
-        new WaitCommand(2), // Wait 2 seconds
-        new InstantCommand(() -> elevatorSub.setTargetHeight(340), elevatorSub), // Set elevator below 
-        new WaitCommand(2),
-        new InstantCommand(() -> armSub.setTargetAngle(100), armSub),
-        new WaitCommand(2)
-
-
+    // TODO:  use bulding-block command, MoveElArmGrp, for all elevator and arm movements
+    // Move elevator and arm to algae removal location
+    // Drive to vision target
+    // Remove algae
+    // Backup
+    // Setup to grab next coral
     );
   }
 }

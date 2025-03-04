@@ -12,14 +12,14 @@ import frc.robot.subsystems.ArmSub;
  * https://docs.wpilib.org/en/stable/docs/software/commandbased/organizing-command-based.html#defining-commands
  */
 public class SetArmToPositionCmd extends Command {
-  private final Double m_targetAngle;
+  private final double m_targetAngle;
   private final ArmSub m_armSub;
 
   /** Creates a new MoveArmWithJoystickCmd. */
   public SetArmToPositionCmd(double angle, ArmSub armSub) {
     m_targetAngle = angle;
     m_armSub = armSub;
-    // Use addRequirements() here to declare subsystem dependencies.
+
     addRequirements(armSub);
   }
 
@@ -32,9 +32,7 @@ public class SetArmToPositionCmd extends Command {
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
-  public void execute() {
-
-  }
+  public void execute() {}
 
   // Called once the command ends or is interrupted.
   @Override

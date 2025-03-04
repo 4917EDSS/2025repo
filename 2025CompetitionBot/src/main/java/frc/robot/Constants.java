@@ -36,9 +36,7 @@ public final class Constants {
     public static final int kElevatorMotor = 1;
     public static final int kElevatorMotor2 = 2;
     public static final int kArmMotor = 3;
-    public static final int kIntakeDeployMotor = 4;
-    public static final int kIntakeRollersMotor = 5;
-    public static final int kClimbMotor = 6;
+    public static final int kClimbMotor = 4;
 
     // We can have multiple custom 4917 Aruino boards connected via CAN.  List their IDs here.
     public static final int kElevatorCustomCanBoard = 4;
@@ -47,13 +45,8 @@ public final class Constants {
   public static class DioIds {
     public static final int kElevatorUpperLimit = 1;
     public static final int kElevatorEncoderResetSwitch = 2;
-    public static final int kElevatorStageTwoLimit = 3;
-
-    public static final int kClimbInLimitSwitch = 4;
-    public static final int kClimbOutLimitSwitch = 5;
-
-    //public static final int kIntakeLowerLimit = ;
-    //public static final int kIntakeUpperLimit = 7;
+    public static final int kClimbInLimitSwitch = 3;
+    public static final int kClimbOutLimitSwitch = 4;
   }
 
   public static final class PwmIds {
@@ -63,13 +56,14 @@ public final class Constants {
 
   ////////// Subsystem constants /////////////////////////////////////////////////////////////////////
   public static final class Arm {
-    public static final double kMinArmAngle = -90.0; // In degrees
-    public static final double kMaxArmAngle = 30.0; // In degrees
+    // All angles in degrees
+    public static final double kMinArmAngle = -90.0;
+    public static final double kMaxArmAngle = 30.0;
     public static final double kMaxPower = 0.5;
 
     public static final double kEncoderPositionConversionFactor = 0.01; // 1 / 100 * 360; // From rotations to degrees (Gear Ration / 360 deg)
     public static final double kEncoderVelocityConversionFactor = 1.00; // From rotations per minute? to degrees per second
-    public static final double kAbsoluteEncoderOffset = 0.0;//practice bot 0.65 // From range to 0 - 1
+    public static final double kAbsoluteEncoderOffset = 0.0; //practice bot 0.65 // From range to 0 - 1
 
     public static final double kTargetAngleDeadband = 2.0; // In degrees
     public static final double kAngleTolerance = 5; // In degrees
@@ -79,21 +73,25 @@ public final class Constants {
     public static final double kDangerZoneLowerAngle = -60.0; // In degrees
     public static final double kDangerZoneBraceAngle = -84.0; // In degrees
 
-    public static final double kSlowDownLowerAngle = -60; // In degrees
-    public static final double kSlowDownUpperAngle = 10; // In degrees
-    public static final double kSlowDownSpeed = .02; // 1 = full power
+    public static final double kSlowDownLowerAngle = kMinArmAngle + 2; // In degrees
+    public static final double kSlowDownUpperAngle = kMaxArmAngle - 2; // In degrees
+    public static final double kSlowDownSpeed = 0.15; // 1 = full power
 
-    public static final double kL2PreScoreAngle = 30; // TODO
-    public static final double kL3PreScoreAngle = 30; // TODO
-    public static final double kL4PreScoreAngle = 30;
-    public static final double kCoralGrabbableAngle = -89;
+    public static final double kL2PreScoreAngle = kMaxArmAngle;
+    public static final double kL2PostScoreAngle = 0.0;
+    public static final double kL3PreScoreAngle = kMaxArmAngle;
+    public static final double kL3PostScoreAngle = -21.0;
+    public static final double kL4PreScoreAngle = kMaxArmAngle;
+    public static final double kL4PostScoreAngle = 0.0;
+    public static final double kCoralGrabbableAngle = kMinArmAngle;
 
     public static final double kL3L4AlgaeRemovalPrepAngle = 25; // TODO
     public static final double kL2L3AlgaeRemovalPrepAngle = 20; // TODO
   }
 
   public static final class Climb {
-
+    public static final double kGrabCageAngle = 45; // TODO
+    public static final double kClimbedAngle = 0; // TODO
   }
 
   public static final class DriveTrain {
@@ -120,20 +118,20 @@ public final class Constants {
     public static final double kDangerZoneBraceBottom = 1200;
     public static final double kDangerZoneBraceTop = 1400.0;
 
-    public static final double kStartingHeight = 560.0; // Height where elevator starts with coral pre-loaded // TODO:  Update
-    public static final double kCoralGrabbableHeight = 750.0; // Height that coral can still slide in under the arm for the coral to be grabbable // TODO: Update
+    public static final double kStartingHeight = 560.0; // Height where elevator starts with coral pre-loaded
     public static final double kResetHeight = 722.0; // Height where elevator encounters the encoder reset switch 
     public static final double kCoralLoadedHeight = kDangerZoneBottom + 100; // This should be some height above the bottom danger zone so arm can swing up
-    public static final double kL2PreScoreHeight = 750.0; // 
-    public static final double kL2PostScoreHeight = 535.0; // 0 degrees for the arm
+    public static final double kCoralGrabbableHeight = 750.0; // Height that coral can still slide in under the arm for the coral to be grabbable
+    public static final double kL2PreScoreHeight = 750.0;
+    public static final double kL2PostScoreHeight = 535.0;
     public static final double kL3PreScoreHeight = 1110.0;
-    public static final double kL3PostScoreHeight = 1015.0; // -21 degrees for the arm
+    public static final double kL3PostScoreHeight = 1015.0;
     public static final double kL4PreScoreHeight = kMaxHeight;
-    public static final double kL4PostScoreHeight = 1610; // 0 degrees for the arm
+    public static final double kL4PostScoreHeight = 1610;
     public static final double kL3L4AlgaeRemovalPrepHeight = 760; // TODO
-    public static final double kL2L3AlgaeRemovalPrepHeight = 350; // TODOpublic static final double kElevatorDropScore = 250;
-    public static final double kScoreDropAngle = 30;
-    public static final double kElevatorDropScore = -30;
+    public static final double kL2L3AlgaeRemovalPrepHeight = 350; // TODO
+    // public static final double kScoreDropAngle = 30;
+    // public static final double kElevatorDropScore = -30;
   }
 
   public static class Intake {
