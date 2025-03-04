@@ -25,6 +25,7 @@ public class AutoDriveCmd extends Command {
   private final VisionSub m_visionSub;
   private final SwerveRequest.RobotCentric autoDrive = new SwerveRequest.RobotCentric()
       .withDriveRequestType(DriveRequestType.OpenLoopVoltage);
+  private final SwerveRequest.SwerveDriveBrake brake = new SwerveRequest.SwerveDriveBrake();
   Pose2d m_apriltagPos;
   double xDist;
   double yDist;
@@ -43,7 +44,7 @@ public class AutoDriveCmd extends Command {
   @Override
   public void initialize() {
     // Use open-loop control for drive motors
-
+    counter = 0;
   }
 
   // Called every time the scheduler runs while the command is scheduled.
@@ -79,8 +80,8 @@ public class AutoDriveCmd extends Command {
     double xPower = xDist / totalDist;
     double yPower = yDist / totalDist;
     m_drivetrainSub.setControl(
-        autoDrive.withVelocityX(-yPower * MaxSpeed / 4).withVelocityY(xPower * MaxSpeed / 4)
-            .withRotationalRate(-m_visionSub.getTx() / 45 * MaxAngularRate));//applyRequest(() -> autoDrive.withVelocityX(xDist).withVelocityY(yDist));
+        autoDrive.withVelocityX(-yPower * MaxSpeed / 10).withVelocityY(xPower * MaxSpeed / 10)
+            .withRotationalRate(-m_visionSub.getRobotRotation() / ((xDist * 50) + 50) * MaxAngularRate * 0.10));//applyRequest(() -> autoDrive.withVelocityX(xDist).withVelocityY(yDist));
 
     //}
 
@@ -103,8 +104,7 @@ public class AutoDriveCmd extends Command {
   public void end(boolean interrupted) {
     System.out.println("end");
     m_drivetrainSub.setControl(autoDrive.withVelocityX(0).withVelocityY(0).withRotationalRate(0));
-    m_drivetrainSub
-        .applyRequest(() -> autoDrive.withVelocityX(0).withVelocityY(0).withRotationalRate(0));
+    m_drivetrainSub.setControl(brake);
   }
 
   // Returns true when the command should end.
@@ -113,8 +113,9 @@ public class AutoDriveCmd extends Command {
     //System.out.println(yDist);
     //System.out.println(counter);
     //xDist < 0.05 && xDist > -0.05 && yDist < 0.45 && yDist > .3
-    if(Math.abs(yDist) < 0.5 && m_visionSub.getTv() != 0) {
+    if(Math.abs(yDist) < 0.3 && m_visionSub.getTv() != 0) {
       System.out.println("yDist" + yDist);
+
       return true;
     }
     if(counter >= 25) {
