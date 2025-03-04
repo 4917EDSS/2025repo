@@ -14,14 +14,11 @@ import frc.robot.subsystems.ElevatorSub;
 public class MoveElArmGrp extends ParallelCommandGroup {
   /** Creates a new MoveElArmGrp. */
 
-  private ElevatorSub m_elevatorSub;
-  private ArmSub m_armSub;
-
-  public MoveElArmGrp(double height, double angle) {
+  public MoveElArmGrp(double height, double angle, ArmSub armSub, ElevatorSub elevatorSub) {
     // Add your commands in the addCommands() call, e.g.
     // addCommands(new FooCommand(), new BarCommand());
     addCommands(
-        new SetElevatorToHeightCmd(height, m_elevatorSub),
-        new SetArmToPositionCmd(angle, m_armSub));
+        new SetElevatorToHeightCmd(height, elevatorSub),
+        new SetArmToPositionCmd(angle, armSub));
   }
 }

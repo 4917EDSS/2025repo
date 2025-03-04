@@ -82,6 +82,8 @@ public final class Constants {
     public static final double kSlowDownLowerAngle = -60; // In degrees
     public static final double kSlowDownUpperAngle = 10; // In degrees
     public static final double kSlowDownSpeed = .02; // 1 = full power
+
+    public static final double kCoralGrabbableAngle = -89;
   }
 
   public static final class Climb {
