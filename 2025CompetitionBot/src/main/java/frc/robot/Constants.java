@@ -102,8 +102,8 @@ public final class Constants {
 
   public static final class Elevator {
     // All heights are in millimeters
-    public static final double kMinHeight = 545.0;
-    public static final double kMaxHeight = 1618.0;
+    public static final double kMinHeight = 300.0;
+    public static final double kMaxHeight = 1660.0;
 
     public static final double kRotationsToMm = 5 / (0.75 * 25.4 * Math.PI); // Gearing / Spool diameter in inches * mm/in * PI
 
@@ -120,20 +120,20 @@ public final class Constants {
     public static final double kDangerZoneBraceBottom = 1200;
     public static final double kDangerZoneBraceTop = 1400.0;
 
-    public static final double kStartingHeight = 440.0; // Height where elevator starts with coral pre-loaded // TODO:  Update
-    public static final double kCoralGrabbableHeight = 550.0; // Height that coral can still slide in under the arm for the coral to be grabbable // TODO: Update
+    public static final double kStartingHeight = 560.0; // Height where elevator starts with coral pre-loaded // TODO:  Update
+    public static final double kCoralGrabbableHeight = 750.0; // Height that coral can still slide in under the arm for the coral to be grabbable // TODO: Update
     public static final double kResetHeight = 722.0; // Height where elevator encounters the encoder reset switch 
     public static final double kCoralLoadedHeight = kDangerZoneBottom + 100; // This should be some height above the bottom danger zone so arm can swing up
-    public static final double kL2PreScoreHeight = 352.0; // TODO: Update
-    public static final double kL2PostScoreHeight = 900.0; // TODO: Update
-    public static final double kL3PreScoreHeight = 764.0; // TODO: Update
-    public static final double kL3PostScoreHeight = 900.0; // TODO: Update
-    public static final double kL4PreScoreHeight = kMaxHeight - 5;
-    public static final double kL4PostScoreHeight = kMaxHeight - 300;
+    public static final double kL2PreScoreHeight = 750.0; // 
+    public static final double kL2PostScoreHeight = 535.0; // 0 degrees for the arm
+    public static final double kL3PreScoreHeight = 1110.0;
+    public static final double kL3PostScoreHeight = 1015.0; // -21 degrees for the arm
+    public static final double kL4PreScoreHeight = kMaxHeight;
+    public static final double kL4PostScoreHeight = 1610; // 0 degrees for the arm
     public static final double kL3L4AlgaeRemovalPrepHeight = 760; // TODO
-    public static final double kL2L3AlgaeRemovalPrepHeight = 350; // TODO
-    public static final double kElevatorDropScore = 250;
+    public static final double kL2L3AlgaeRemovalPrepHeight = 350; // TODOpublic static final double kElevatorDropScore = 250;
     public static final double kScoreDropAngle = 30;
+    public static final double kElevatorDropScore = -30;
   }
 
   public static class Intake {

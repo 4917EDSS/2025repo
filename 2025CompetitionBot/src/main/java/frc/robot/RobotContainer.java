@@ -33,6 +33,7 @@ import frc.robot.commands.BackUpAfterScoringCmd;
 import frc.robot.commands.DoNothingGrp;
 import frc.robot.commands.DriveToNearestScoreLocationCmd;
 import frc.robot.commands.ElevatorMoveWithJoystickCmd;
+import frc.robot.commands.GrabCoralGrp;
 import frc.robot.commands.HomeButton;
 import frc.robot.commands.KillAllCmd;
 import frc.robot.commands.MoveElArmGrp;
@@ -158,12 +159,12 @@ public class RobotContainer {
 
 
     //Triangle - L4 Coral Placement
-   
+
 
     // Cross - L2 Coral Placement
-    
+
     // Circle - L3 Coral Placement
-   
+
     //L1 - Remove L2-L3 Algae
     m_driverController.L1().onTrue(new AlgaeRemovalL2L3Grp(m_armSub, m_elevatorSub));
 
@@ -261,7 +262,7 @@ public class RobotContainer {
 
     // R2
     m_operatorController.R2()
-        .onTrue(new SetElevatorToHeightCmd(Constants.Elevator.kElevatorDropScore, m_elevatorSub));
+        .onTrue(new GrabCoralGrp(m_armSub, m_canSub, m_elevatorSub));
 
     // POV Up
     //m_operatorController.povUp().whileTrue() // TODO add command move the climb arm to towards the climb position while held
