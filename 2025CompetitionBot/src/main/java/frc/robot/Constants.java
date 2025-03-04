@@ -124,6 +124,8 @@ public final class Constants {
     public static final double kL3PostScoreHeight = 900.0; // TODO: Update
     public static final double kL4PreScoreHeight = kMaxHeight - 5;
     public static final double kL4PostScoreHeight = kMaxHeight - 300;
+    public static final double kElevatorDropScore = 250;
+    public static final double kScoreDropAngle = 30;
   }
 
   public static class Intake {

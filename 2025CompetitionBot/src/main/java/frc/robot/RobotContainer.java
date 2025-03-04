@@ -42,6 +42,7 @@ import frc.robot.commands.KillAllCmd;
 import frc.robot.commands.L2PlacementGrp;
 import frc.robot.commands.L3PlacementGrp;
 import frc.robot.commands.L4PlacementGrp;
+import frc.robot.commands.MoveRelElevator;
 import frc.robot.commands.SetArmToPositionCmd;
 import frc.robot.commands.SetElevatorToHeightCmd;
 import frc.robot.commands.WaitForCoralPresentCmd;
@@ -281,7 +282,8 @@ public class RobotContainer {
     m_operatorController.L2().onTrue(new AlgaeRemovalL3L4Grp(m_armSub, m_elevatorSub));
 
     // R2
-    m_operatorController.R2().whileTrue(new AlgaeRemovalL2L3Grp(m_armSub, m_elevatorSub));
+    m_operatorController.R2()
+        .onTrue(new SetElevatorToHeightCmd(Constants.Elevator.kElevatorDropScore, m_elevatorSub));
 
     // POV Up
     //m_operatorController.povUp().whileTrue() // TODO add command move the climb arm to towards the climb position while held
