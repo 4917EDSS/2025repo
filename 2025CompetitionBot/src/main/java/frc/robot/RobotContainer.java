@@ -42,6 +42,7 @@ import frc.robot.commands.L3MovePrep;
 import frc.robot.commands.L3PlacementGrp;
 import frc.robot.commands.L4MovePrep;
 import frc.robot.commands.L4PlacementGrp;
+import frc.robot.commands.MoveElArmGrp;
 import frc.robot.commands.SetArmToPositionCmd;
 import frc.robot.commands.SetElevatorToHeightCmd;
 import frc.robot.commands.tests.RunTestsGrp;
@@ -257,22 +258,27 @@ public class RobotContainer {
     m_operatorController.square().onTrue(new InstantCommand(() -> m_armSub.setTargetAngle(25), m_armSub));
 
     // Cross
-    m_operatorController.cross().onTrue(new L2MovePrep(m_armSub, m_elevatorSub));
+    m_operatorController.cross().onTrue(new MoveElArmGrp(Constants.Elevator.kL2PreScoreHeight,
+        Constants.Arm.kL2PreScoreAngle, m_armSub, m_elevatorSub));
 
     // Circle
-    m_operatorController.circle().onTrue(new L3MovePrep(m_armSub, m_elevatorSub));
+    m_operatorController.circle().onTrue(new MoveElArmGrp(Constants.Elevator.kL3PreScoreHeight,
+        Constants.Arm.kL3PreScoreAngle, m_armSub, m_elevatorSub));
 
     // Triangle
 
-    m_operatorController.triangle().onTrue(new L4MovePrep(m_armSub, m_elevatorSub));
+    m_operatorController.triangle().onTrue(new MoveElArmGrp(Constants.Elevator.kL4PreScoreHeight,
+        Constants.Arm.kL4PreScoreAngle, m_armSub, m_elevatorSub));
 
     // L1
     m_operatorController.L1()
-        .whileTrue(new StartEndCommand(() -> m_climbSub.setPower(0.10), () -> m_climbSub.setPower(0.0), m_climbSub));
+        .onTrue(new MoveElArmGrp(Constants.Elevator.kL2L3AlgaeRemovalPrepHeight,
+            Constants.Arm.kL2L3AlgaeRemovalPrepAngle, m_armSub, m_elevatorSub));
 
     // R1
     m_operatorController.R1()
-        .whileTrue(new StartEndCommand(() -> m_climbSub.setPower(-0.10), () -> m_climbSub.setPower(0.0), m_climbSub));
+        .whileTrue(new MoveElArmGrp(Constants.Elevator.kL3L4AlgaeRemovalPrepHeight,
+            Constants.Arm.kL3L4AlgaeRemovalPrepAngle, m_armSub, m_elevatorSub));
 
     // L2
     m_operatorController.L2().onTrue(new AlgaeRemovalL3L4Grp(m_armSub, m_elevatorSub));

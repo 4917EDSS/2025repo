@@ -18,7 +18,7 @@ public class L3MovePrep extends ParallelCommandGroup {
     // Add your commands in the addCommands() call, e.g.
     // addCommands(new FooCommand(), new BarCommand());
     addCommands(
-        new MoveElArmGrp(Constants.Elevator.kL3PreScoreHeight, Constants.Arm.kL3PreScoreAngle) // there weren't constants for this one ELEVATOR MAY BE WRONG HEIGHT
+        new MoveElArmGrp(Constants.Elevator.kL3PreScoreHeight, Constants.Arm.kL3PreScoreAngle, armSub, elevatorSub) // there weren't constants for this one ELEVATOR MAY BE WRONG HEIGHT
     );
   }
 }
