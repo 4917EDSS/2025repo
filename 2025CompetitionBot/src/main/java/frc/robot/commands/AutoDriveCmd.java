@@ -81,7 +81,7 @@ public class AutoDriveCmd extends Command {
     double yPower = yDist / totalDist;
     m_drivetrainSub.setControl(
         autoDrive.withVelocityX(-yPower * MaxSpeed / 10).withVelocityY(xPower * MaxSpeed / 10)
-            .withRotationalRate(-m_visionSub.getRobotRotation() / ((xDist * 50) + 50) * MaxAngularRate * 0.10));//applyRequest(() -> autoDrive.withVelocityX(xDist).withVelocityY(yDist));
+            .withRotationalRate(m_visionSub.getRobotRotation() / ((xDist * 30) + 30) * MaxAngularRate * 0.10));//applyRequest(() -> autoDrive.withVelocityX(xDist).withVelocityY(yDist));
 
     //}
 
