@@ -132,6 +132,8 @@ public final class Constants {
     public static final double kL4PostScoreHeight = kMaxHeight - 300;
     public static final double kL3L4AlgaeRemovalPrepHeight = 760; // TODO
     public static final double kL2L3AlgaeRemovalPrepHeight = 350; // TODO
+    public static final double kElevatorDropScore = 250;
+    public static final double kScoreDropAngle = 30;
   }
 
   public static class Intake {
