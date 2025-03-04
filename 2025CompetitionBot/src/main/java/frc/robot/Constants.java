@@ -86,6 +86,7 @@ public final class Constants {
     public static final double kL2PreScoreAngle = 30; // TODO
     public static final double kL3PreScoreAngle = 30; // TODO
     public static final double kL4PreScoreAngle = 30;
+    public static final double kCoralGrabbableAngle = -89;
   }
 
   public static final class Climb {

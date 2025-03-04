@@ -45,7 +45,7 @@ public class CanSub extends SubsystemBase {
     UpdateCustomSensor();
     SmartDashboard.putNumber("TOF Distance", getTOFDist());
     SmartDashboard.putNumber("Analog 0", getAnaglog0());
-    SmartDashboard.putBoolean("Coral Sensor", getCoralSensor());
+    SmartDashboard.putBoolean("Coral Sensor", isCoralPresent());
     //System.out.println(getTOFDist());
     //updateShuffleboard();
   }
@@ -169,7 +169,7 @@ public class CanSub extends SubsystemBase {
     return m_analog0;
   }
 
-  public boolean getCoralSensor() {
+  public boolean isCoralPresent() {
     if(m_coralSensor < 100) {
       return true;
     } else
