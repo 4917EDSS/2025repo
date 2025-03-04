@@ -19,6 +19,7 @@ import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants;
+import frc.robot.commands.SetElevatorToHeightCmd;
 import frc.robot.utils.SubControl;
 import frc.robot.utils.SubControl.State;
 import frc.robot.utils.TestableSubsystem;
