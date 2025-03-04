@@ -65,7 +65,7 @@ public final class Constants {
   public static final class Arm {
     public static final double kMinArmAngle = -90.0; // In degrees
     public static final double kMaxArmAngle = 30.0; // In degrees
-    public static final double kMaxPower = 0.1;
+    public static final double kMaxPower = 0.5;
 
     public static final double kEncoderPositionConversionFactor = 0.01; // 1 / 100 * 360; // From rotations to degrees (Gear Ration / 360 deg)
     public static final double kEncoderVelocityConversionFactor = 1.00; // From rotations per minute? to degrees per second
@@ -78,6 +78,12 @@ public final class Constants {
     public static final double kDangerZoneBottomVertical = -88.0; // In degrees
     public static final double kDangerZoneLowerAngle = -60.0; // In degrees
     public static final double kDangerZoneBraceAngle = -84.0; // In degrees
+
+    public static final double kSlowDownLowerAngle = -60; // In degrees
+    public static final double kSlowDownUpperAngle = 10; // In degrees
+    public static final double kSlowDownSpeed = .02; // 1 = full power
+
+    public static final double kCoralGrabbableAngle = -89;
   }
 
   public static final class Climb {
@@ -108,7 +114,7 @@ public final class Constants {
     public static final double kDangerZoneBraceBottom = 1200;
     public static final double kDangerZoneBraceTop = 1400.0;
 
-    public static final double kStartingHeight = 440.0; // Height were elevator starts with coral pre-loaded // TODO:  Update
+    public static final double kStartingHeight = 440.0; // Height where elevator starts with coral pre-loaded // TODO:  Update
     public static final double kCoralGrabbableHeight = 550.0; // Height that coral can still slide in under the arm for the coral to be grabbable // TODO: Update
     public static final double kResetHeight = 722.0; // Height where elevator encounters the encoder reset switch 
     public static final double kCoralLoadedHeight = kDangerZoneBottom + 100; // This should be some height above the bottom danger zone so arm can swing up

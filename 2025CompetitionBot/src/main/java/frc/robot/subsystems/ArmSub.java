@@ -248,7 +248,18 @@ public class ArmSub extends TestableSubsystem {
         double sign = (tempPower >= 0.0) ? 1.0 : -1.0;
         tempPower = Constants.Arm.kMaxPower * sign;
       }
-      setPower(tempPower);
+
+      // If arm is close to limit switches, limit power to avoid smashing into them
+      if((getAngle() > Constants.Arm.kSlowDownUpperAngle) && (tempPower > Constants.Arm.kSlowDownSpeed)
+          && (m_targetAngle > getAngle())) {
+        setPower(Constants.Arm.kSlowDownSpeed);
+      } else if((getAngle() < Constants.Arm.kSlowDownLowerAngle) && (tempPower > Constants.Arm.kSlowDownSpeed)
+          && (m_targetAngle < getAngle())) {
+        setPower(Constants.Arm.kSlowDownSpeed);
+      } else {
+        setPower(tempPower);
+      }
+
     }
   }
 
