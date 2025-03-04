@@ -34,6 +34,7 @@ import frc.robot.commands.BackUpAfterScoringCmd;
 import frc.robot.commands.DriveToNearestScoreLocationCmd;
 import frc.robot.commands.DoNothingGrp;
 import frc.robot.commands.ElevatorMoveWithJoystickCmd;
+import frc.robot.commands.GrabCoralGrp;
 import frc.robot.commands.HomeButton;
 import frc.robot.commands.KillAllCmd;
 import frc.robot.commands.L2PlacementGrp;
@@ -41,6 +42,7 @@ import frc.robot.commands.L3PlacementGrp;
 import frc.robot.commands.L4PlacementGrp;
 import frc.robot.commands.SetArmToPositionCmd;
 import frc.robot.commands.SetElevatorToHeightCmd;
+import frc.robot.commands.WaitForCoralPresentCmd;
 import frc.robot.commands.tests.RunTestsGrp;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.ArmSub;
@@ -269,7 +271,7 @@ public class RobotContainer {
 
     // R1
     m_operatorController.R1()
-        .whileTrue(new StartEndCommand(() -> m_climbSub.setPower(-0.10), () -> m_climbSub.setPower(0.0), m_climbSub));
+        .onTrue(new GrabCoralGrp(m_armSub, m_canSub, m_elevatorSub));
 
     // L2
     m_operatorController.L2().onTrue(new AlgaeRemovalL3L4Grp(m_armSub, m_elevatorSub));
