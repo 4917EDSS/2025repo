@@ -7,8 +7,8 @@ package frc.robot;
 import static edu.wpi.first.units.Units.MetersPerSecond;
 import static edu.wpi.first.units.Units.RadiansPerSecond;
 import static edu.wpi.first.units.Units.RotationsPerSecond;
-import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.SignalLogger;
+import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
@@ -23,29 +23,22 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandPS4Controller;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.commands.AlgaeRemovalL2L3Grp;
 import frc.robot.commands.AlgaeRemovalL3L4Grp;
 import frc.robot.commands.ArmMoveWithJoystickCmd;
-import frc.robot.commands.AutoDriveCmd;
 import frc.robot.commands.BackUpAfterScoringCmd;
-import frc.robot.commands.DriveToNearestScoreLocationCmd;
-import frc.robot.commands.DriveToPoseCmd;
 import frc.robot.commands.DoNothingGrp;
+import frc.robot.commands.DriveToNearestScoreLocationCmd;
 import frc.robot.commands.ElevatorMoveWithJoystickCmd;
 import frc.robot.commands.GrabCoralGrp;
 import frc.robot.commands.HomeButton;
 import frc.robot.commands.KillAllCmd;
-import frc.robot.commands.L2PlacementGrp;
-import frc.robot.commands.L3PlacementGrp;
-import frc.robot.commands.L4PlacementGrp;
-import frc.robot.commands.MoveRelElevator;
+import frc.robot.commands.MoveElArmGrp;
 import frc.robot.commands.SetArmToPositionCmd;
 import frc.robot.commands.SetElevatorToHeightCmd;
-import frc.robot.commands.WaitForCoralPresentCmd;
 import frc.robot.commands.tests.RunTestsGrp;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.ArmSub;
@@ -144,15 +137,6 @@ public class RobotContainer {
     NamedCommands.registerCommand("SetElevatorToHeightCmd 100",
         new SetElevatorToHeightCmd(100, m_elevatorSub)); // put whatever number you want in here. probably mm
 
-    NamedCommands.registerCommand("L2 placement",
-        new L2PlacementGrp(m_armSub, m_elevatorSub));
-
-    NamedCommands.registerCommand("L3 placement",
-        new L3PlacementGrp(m_armSub, m_elevatorSub));
-
-    NamedCommands.registerCommand("L4 placement",
-        new L4PlacementGrp(m_armSub, m_elevatorSub));
-
     NamedCommands.registerCommand("BackUpAfterScoringCmd",
         new BackUpAfterScoringCmd(m_drivetrainSub, m_constraints));
   }
@@ -165,30 +149,21 @@ public class RobotContainer {
 
     // Square
     // m_driverController.square().onTrue(new L3PlacementGrp(m_armSub, m_elevatorSub)); //TODO Make Coral Recieval Command
-    // m_driverController.square().whileTrue(AutoBuilder.pathfindToPose(
-    //     new Pose2d(2, 6.5, new Rotation2d(0)),
-    //     m_constraints,
-    //     0.0 // Goal end velocity in meters/sec
-    // ));
+    m_driverController.square().whileTrue(AutoBuilder.pathfindToPose(
+        new Pose2d(2, 6.5, new Rotation2d(0)),
+        m_constraints,
+        0.0 // Goal end velocity in meters/sec
+    ));
     //m_driverController.square()
     //    .onTrue(new L2PlacementGrp(m_armSub, m_elevatorSub, m_coralPlacementGrp, MaxAngularRate)); //TODO Make Coral Recieval Command
-    m_driverController.square().whileTrue(new AutoDriveCmd(m_visionSub, m_drivetrainSub));
 
 
     //Triangle - L4 Coral Placement
-    m_driverController.triangle()
-        .onTrue(new L4PlacementGrp(m_armSub, m_elevatorSub));
+
 
     // Cross - L2 Coral Placement
-    //m_driverController.cross().whileTrue(m_drivetrainSub.applyRequest(() -> brake));
-    m_driverController.cross().onTrue(new L2PlacementGrp(m_armSub, m_elevatorSub));
 
     // Circle - L3 Coral Placement
-    m_driverController.circle()
-        .onTrue(new L3PlacementGrp(m_armSub, m_elevatorSub));
-    // m_driverController.circle().whileTrue(m_drivetrainSub
-    //     .applyRequest(() -> point
-    //         .withModuleDirection(new Rotation2d(-m_driverController.getLeftY(), -m_driverController.getLeftX()))));
 
     //L1 - Remove L2-L3 Algae
     m_driverController.L1().onTrue(new AlgaeRemovalL2L3Grp(m_armSub, m_elevatorSub));
@@ -211,7 +186,6 @@ public class RobotContainer {
 
 
     // R2
-    m_driverController.R2().onTrue(new DriveToPoseCmd(new Pose2d(0.5, 0, new Rotation2d(0)), m_drivetrainSub));
     //m_driverController.R2().onTrue(new SetArmToPositionCmd(0, m_armSub));
     // m_driverController.R2().onTrue(new InstantCommand(() -> m_armSub.setTargetAngle(45), m_armSub));
 
@@ -261,29 +235,34 @@ public class RobotContainer {
     m_operatorController.square().onTrue(new InstantCommand(() -> m_armSub.setTargetAngle(25), m_armSub));
 
     // Cross
-    m_operatorController.cross().onTrue(new InstantCommand(() -> m_elevatorSub.setTargetHeight(1500), m_elevatorSub));
+    m_operatorController.cross().onTrue(new MoveElArmGrp(Constants.Elevator.kL2PreScoreHeight,
+        Constants.Arm.kL2PreScoreAngle, m_armSub, m_elevatorSub));
 
     // Circle
-    m_operatorController.circle().onTrue(new InstantCommand(() -> m_armSub.setTargetAngle(-88), m_armSub));
+    m_operatorController.circle().onTrue(new MoveElArmGrp(Constants.Elevator.kL3PreScoreHeight,
+        Constants.Arm.kL3PreScoreAngle, m_armSub, m_elevatorSub));
 
     // Triangle
 
-    m_operatorController.triangle().onTrue(new InstantCommand(() -> m_elevatorSub.setTargetHeight(600), m_elevatorSub));
+    m_operatorController.triangle().onTrue(new MoveElArmGrp(Constants.Elevator.kL4PreScoreHeight,
+        Constants.Arm.kL4PreScoreAngle, m_armSub, m_elevatorSub));
 
     // L1
     m_operatorController.L1()
-        .whileTrue(new StartEndCommand(() -> m_climbSub.setPower(0.10), () -> m_climbSub.setPower(0.0), m_climbSub));
+        .onTrue(new MoveElArmGrp(Constants.Elevator.kL2L3AlgaeRemovalPrepHeight,
+            Constants.Arm.kL2L3AlgaeRemovalPrepAngle, m_armSub, m_elevatorSub));
 
     // R1
     m_operatorController.R1()
-        .onTrue(new GrabCoralGrp(m_armSub, m_canSub, m_elevatorSub));
+        .whileTrue(new MoveElArmGrp(Constants.Elevator.kL3L4AlgaeRemovalPrepHeight,
+            Constants.Arm.kL3L4AlgaeRemovalPrepAngle, m_armSub, m_elevatorSub));
 
     // L2
     m_operatorController.L2().onTrue(new AlgaeRemovalL3L4Grp(m_armSub, m_elevatorSub));
 
     // R2
     m_operatorController.R2()
-        .onTrue(new SetElevatorToHeightCmd(Constants.Elevator.kElevatorDropScore, m_elevatorSub));
+        .onTrue(new GrabCoralGrp(m_armSub, m_canSub, m_elevatorSub));
 
     // POV Up
     //m_operatorController.povUp().whileTrue() // TODO add command move the climb arm to towards the climb position while held
@@ -299,8 +278,6 @@ public class RobotContainer {
     m_operatorController.share().onTrue(new HomeButton(m_armSub, m_elevatorSub));
 
     // Options
-    m_operatorController.options()
-        .onTrue(new L2PlacementGrp(m_armSub, m_elevatorSub));
 
     // PS
     m_operatorController.PS().onTrue(new InstantCommand(() -> {
