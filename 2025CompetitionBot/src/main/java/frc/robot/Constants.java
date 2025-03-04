@@ -124,6 +124,8 @@ public final class Constants {
     public static final double kL3PostScoreHeight = 1015.0; // -21 degrees for the arm
     public static final double kL4PreScoreHeight = kMaxHeight;
     public static final double kL4PostScoreHeight = 1610; // 0 degrees for the arm
+    public static final double kElevatorDropScore = 250;
+    public static final double kScoreDropAngle = 30;
   }
 
   public static class Intake {
