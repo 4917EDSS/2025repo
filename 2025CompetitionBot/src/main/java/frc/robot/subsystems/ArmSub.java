@@ -30,8 +30,14 @@ public class ArmSub extends TestableSubsystem {
   private final SparkLimitSwitch m_forwardLimitSwitch = m_armMotor.getForwardLimitSwitch();
   private final SparkLimitSwitch m_revLimitSwitch = m_armMotor.getReverseLimitSwitch();
 
-  private final ArmFeedforward m_armFeedforward = new ArmFeedforward(0.018, 0.01, 0.0);
-  private final PIDController m_armPid = new PIDController(0.005, 0, 0);
+  private double m_p = 0.005;
+  private double m_i = 0;
+  private double m_d = 0;
+  private double m_ks = 0.018;
+  private double m_kg = 0.01;
+  private double m_kv = 0;
+  private final ArmFeedforward m_armFeedforward = new ArmFeedforward(m_ks, m_kg, m_kv);
+  private final PIDController m_armPid = new PIDController(m_p, m_i, m_d);
 
   private Supplier<Double> elevatorPosition;
   private double m_targetAngle = 0;
@@ -81,8 +87,28 @@ public class ArmSub extends TestableSubsystem {
 
     SmartDashboard.putNumber("Arm Raw Enc", getPosition()); // Raw encoder position
     SmartDashboard.putNumber("Arm Ang", getAngle()); // Arm angle
-    SmartDashboard.putBoolean("Arm isBlocked", isBlocked()); // Arm blocked
+
     // Current power value is sent in setPower()
+
+    // for tuning PID and feed forward values only
+    boolean tuning = true;
+    if(tuning) {
+      double p = SmartDashboard.getNumber("Arm kP", m_p);
+      double i = SmartDashboard.getNumber("Arm kI", m_i);
+      double d = SmartDashboard.getNumber("Arm kD", m_d);
+
+      double ks = SmartDashboard.getNumber("Arm ks", m_ks);
+      double kg = SmartDashboard.getNumber("Arm kg", m_kg);
+      double kv = SmartDashboard.getNumber("Arm kv", m_kv);
+
+      SmartDashboard.putNumber("Arm kP", p);
+      SmartDashboard.putNumber("Arm kI", i);
+      SmartDashboard.putNumber("Arm kD", d);
+
+      SmartDashboard.putNumber("Arm ks", ks);
+      SmartDashboard.putNumber("Arm kg", kg);
+      SmartDashboard.putNumber("Arm kv", kv);
+    }
   }
 
   /**
@@ -244,11 +270,11 @@ public class ArmSub extends TestableSubsystem {
       double tempPower = (pidPower + fedPower);
 
 
-      if(Math.abs(tempPower) > Constants.Arm.kMaxPower) {
-        double sign = (tempPower >= 0.0) ? 1.0 : -1.0;
-        tempPower = Constants.Arm.kMaxPower * sign;
-      }
-      setPower(tempPower);
+      // if(Math.abs(tempPower) > Constants.Arm.kMaxPower) {
+      //   double sign = (tempPower >= 0.0) ? 1.0 : -1.0;
+      //   tempPower = Constants.Arm.kMaxPower * sign;
+      // }
+      // setPower(tempPower);
     }
   }
 

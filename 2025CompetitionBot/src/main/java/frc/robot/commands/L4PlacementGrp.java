@@ -22,12 +22,13 @@ public class L4PlacementGrp extends SequentialCommandGroup {
 
     addCommands(
         new ParallelCommandGroup(
-            new SetElevatorToHeightCmd(Constants.Elevator.kL4PreScoreHeight, elevatorSub), //its set to max height and itll stop once the coral gets to the height where it can hit part of the elevator so then the arm will move out and it will resume going up
-            new SetArmToPositionCmd(Constants.Arm.kMaxArmAngle, armSub)),
-        new WaitCommand(2.0),
-        new ParallelCommandGroup(
-            new SetArmToPositionCmd(0.0, armSub),
-            new SetElevatorToHeightCmd(Constants.Elevator.kL4PostScoreHeight - 300, elevatorSub)));
+            new SetElevatorToHeightCmd(Constants.Elevator.kL4PreScoreHeight, elevatorSub) //its set to max height and itll stop once the coral gets to the height where it can hit part of the elevator so then the arm will move out and it will resume going up
+        //             new SetArmToPositionCmd(Constants.Arm.kMaxArmAngle, armSub)),
+        //         new WaitCommand(2.0),
+        //         new ParallelCommandGroup(
+        // //            new SetArmToPositionCmd(0.0, armSub),
+        //             new SetElevatorToHeightCmd(Constants.Elevator.kL4PostScoreHeight - 300, elevatorSub))
+        ));
   }
 
 }
