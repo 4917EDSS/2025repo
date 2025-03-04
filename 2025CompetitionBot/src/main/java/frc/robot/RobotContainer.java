@@ -270,7 +270,7 @@ public class RobotContainer {
         .whileTrue(new StartEndCommand(() -> m_climbSub.setPower(0.10), () -> m_climbSub.setPower(0.0), m_climbSub));
 
     // R1
-    m_operatorController.R1()
+    m_operatorController.R2()
         .onTrue(new GrabCoralGrp(m_armSub, m_canSub, m_elevatorSub));
 
     // L2
