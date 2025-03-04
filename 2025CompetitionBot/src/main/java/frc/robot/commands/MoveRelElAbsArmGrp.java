@@ -12,12 +12,12 @@ import frc.robot.subsystems.ElevatorSub;
 // NOTE: Consider using this command inline, rather than writing a subclass. For more
 // information, see:
 // https://docs.wpilib.org/en/stable/docs/software/commandbased/convenience-features.html
-public class MoveRelElAbsArm extends ParallelCommandGroup {
+public class MoveRelElAbsArmGrp extends ParallelCommandGroup {
   private ElevatorSub m_elevatorSub;
   private ArmSub m_armSub;
 
   /** Creates a new MoveRelElArmGrp. */
-  public MoveRelElAbsArm(double heightChange, double absoluteAngle, ArmSub armSub, ElevatorSub elevatorSub) {
+  public MoveRelElAbsArmGrp(double heightChange, double absoluteAngle, ArmSub armSub, ElevatorSub elevatorSub) {
     // Add your commands in the addCommands() call, e.g.
     // addCommands(new FooCommand(), new BarCommand());
     addCommands(
