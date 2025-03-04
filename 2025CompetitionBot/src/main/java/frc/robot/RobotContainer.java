@@ -277,7 +277,7 @@ public class RobotContainer {
 
     // R2
     m_operatorController.R2()
-        .onTrue(new MoveRelElevator(m_elevatorSub.getPositionMm(), m_armSub.getAngle(), m_armSub, m_elevatorSub));
+        .onTrue(new SetElevatorToHeightCmd(Constants.Elevator.kElevatorDropScore, m_elevatorSub));
 
     // POV Up
     //m_operatorController.povUp().whileTrue() // TODO add command move the climb arm to towards the climb position while held

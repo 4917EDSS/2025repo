@@ -23,7 +23,7 @@ public class MoveRelElevator extends ParallelCommandGroup {
     // Add your commands in the addCommands() call, e.g.
     // addCommands(new FooCommand(), new BarCommand());
     addCommands(
-        new SetElevatorToHeightCmd(height - Constants.Elevator.kElevatorDropScore, m_elevatorSub),
-        new SetArmToPositionCmd(angle - Constants.Elevator.kScoreDropAngle, m_armSub));
+        new SetElevatorToRelHeightCmd(Constants.Elevator.kElevatorDropScore, m_elevatorSub),
+        new SetArmToPositionCmd(Constants.Elevator.kScoreDropAngle, m_armSub));
   }
 }
