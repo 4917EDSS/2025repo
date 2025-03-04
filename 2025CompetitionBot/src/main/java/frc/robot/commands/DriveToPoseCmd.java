@@ -12,7 +12,10 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.DrivetrainSub;
 
-/* You should consider using the more terse Command factories API instead https://docs.wpilib.org/en/stable/docs/software/commandbased/organizing-command-based.html#defining-commands */
+/*
+ * You should consider using the more terse Command factories API instead
+ * https://docs.wpilib.org/en/stable/docs/software/commandbased/organizing-command-based.html#defining-commands
+ */
 public class DriveToPoseCmd extends Command {
   DrivetrainSub m_drivetrainSub;
   Pose2d m_targetPose;
@@ -29,7 +32,8 @@ public class DriveToPoseCmd extends Command {
   Double m_rotP = 0.01; //TODO: Get proper value
   Double m_rotI = 0.0; //TODO: Get proper value
   Double m_rotD = 0.01; //TODO: Get proper value
-    /** Creates a new DriveToPoseCmd. */
+
+  /** Creates a new DriveToPoseCmd. */
   public DriveToPoseCmd(Pose2d targetPose, DrivetrainSub drivetrainSub) {
     m_targetPose = targetPose;
     m_drivetrainSub = drivetrainSub;
@@ -55,24 +59,24 @@ public class DriveToPoseCmd extends Command {
     double outputRotPower = m_error.getRotation().getDegrees() * m_rotP;
 
     //D
-    outputDrivePower = outputDrivePower.plus(m_error.minus(m_prevError).getTranslation().times(m_driveD/0.02));//0.02 is the amount of time between periodic calls, which is why it is used as the change in time
-    outputRotPower += (m_error.minus(m_prevError).getRotation().getDegrees())*m_rotD/0.02;
+    outputDrivePower = outputDrivePower.plus((m_error.minus(m_prevError)).getTranslation().times(m_driveD / 0.02));//0.02 is the amount of time between periodic calls, which is why it is used as the change in time
+    outputRotPower += ((m_error.minus(m_prevError)).getRotation().getDegrees()) * m_rotD / 0.02;
 
     // I believe setControl is just a less confusing version of applyRequest.
-    m_drivetrainSub.setControl(backDrive.withVelocityX(outputDrivePower.getX()).withVelocityY(outputDrivePower.getY()).withRotationalRate(outputRotPower));
+    m_drivetrainSub.setControl(backDrive.withVelocityX(outputDrivePower.getX()).withVelocityY(outputDrivePower.getY())
+        .withRotationalRate(outputRotPower));
   }
 
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    // TODO - tell m_drivetrainSub to stop
+    m_drivetrainSub.setControl(backDrive.withVelocityX(0.0).withVelocityY(0.0).withVelocityY(0.0));
   }
 
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    // TODO - also add conditions for rotation being close (lets say 2 degrees) and that we are moving slowly
-    if(m_error.getTranslation().getNorm()<0.02){
+    if(m_error.getTranslation().getNorm() < 0.02 && Math.abs(m_error.getRotation().getDegrees()) < 2) {
       return true;
     }
     return false;

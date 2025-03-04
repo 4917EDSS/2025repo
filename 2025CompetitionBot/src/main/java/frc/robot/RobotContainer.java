@@ -158,12 +158,12 @@ public class RobotContainer {
 
 
     //Triangle - L4 Coral Placement
-
+   
 
     // Cross - L2 Coral Placement
-
+    
     // Circle - L3 Coral Placement
-
+   
     //L1 - Remove L2-L3 Algae
     m_driverController.L1().onTrue(new AlgaeRemovalL2L3Grp(m_armSub, m_elevatorSub));
 
