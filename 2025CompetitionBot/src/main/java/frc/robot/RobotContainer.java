@@ -32,6 +32,7 @@ import frc.robot.commands.AutoAlgaeRemovalL3L4Grp;
 import frc.robot.commands.AutoCoralScoreL2Grp;
 import frc.robot.commands.AutoCoralScoreL3Grp;
 import frc.robot.commands.AutoCoralScoreL4Grp;
+import frc.robot.commands.AutoDriveCmd;
 import frc.robot.commands.BackUpAfterScoringCmd;
 import frc.robot.commands.DoNothingGrp;
 import frc.robot.commands.DriveToNearestScoreLocationCmd;
@@ -151,6 +152,7 @@ public class RobotContainer {
 
     // Square
     m_driverController.square().onTrue(new GrabCoralGrp(m_armSub, m_canSub, m_elevatorSub));
+    //m_driverController.square().whileTrue(new AutoDriveCmd(m_visionSub, m_drivetrainSub));
 
     // Cross
     m_driverController.cross().onTrue(new AutoCoralScoreL2Grp()); // TODO: Implement this command group

@@ -20,12 +20,12 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.utils.LimelightHelpers;
 
 public class VisionSub extends SubsystemBase {
-  private static String LEFT = "limelight-left";
+  private static String LEFT = "limelight-drive";
   private static String RIGHT = "limelight-right";
   private static Logger m_logger = Logger.getLogger(VisionSub.class.getName());
 
   LimelightHelpers.PoseEstimate mt2;
-  Map<String, Double> m_previousTimestamps = Map.of(LEFT, 0.0, RIGHT, 0.0);
+  double m_previousTimestamp = 0.0;//Map<String, Double> m_previousTimestamps = Map.of(LEFT, 0.0);//, RIGHT, 0.0);
   DrivetrainSub m_drivetrainSub;
   NetworkTable m_networkTableL = NetworkTableInstance.getDefault().getTable(LEFT);
   NetworkTable m_networkTableR = NetworkTableInstance.getDefault().getTable(RIGHT);
@@ -64,16 +64,16 @@ public class VisionSub extends SubsystemBase {
   public VisionSub(DrivetrainSub drivetrainSub) {
     // For now, we will just use the left camera for shuffleboard.
     // TODO - add the right camera in here.
-    m_t2d = m_networkTableR.getEntry("t2d");
-    m_tid = m_networkTableR.getEntry("tid");
-    m_tv = m_networkTableR.getEntry("tv");
-    m_tx = m_networkTableR.getEntry("tx");
-    m_ty = m_networkTableR.getEntry("ty");
-    m_ta = m_networkTableR.getEntry("ta");
-    m_pipeline = m_networkTableR.getEntry("getpipe");
-    m_pipetype = m_networkTableR.getEntry("getpipetype");
-    m_botposeTarget = m_networkTableR.getEntry("botpose_targetspace");
-    m_botpose = m_networkTableR.getEntry("botpose");
+    m_t2d = m_networkTableL.getEntry("t2d");
+    m_tid = m_networkTableL.getEntry("tid");
+    m_tv = m_networkTableL.getEntry("tv");
+    m_tx = m_networkTableL.getEntry("tx");
+    m_ty = m_networkTableL.getEntry("ty");
+    m_ta = m_networkTableL.getEntry("ta");
+    m_pipeline = m_networkTableL.getEntry("getpipe");
+    m_pipetype = m_networkTableL.getEntry("getpipetype");
+    m_botposeTarget = m_networkTableL.getEntry("botpose_targetspace");
+    m_botpose = m_networkTableL.getEntry("botpose");
 
     m_shuffleboardID = m_ShuffleboardTab.add("Primary ID", 0).getEntry();
     m_shuffleboardTv = m_ShuffleboardTab.add("Sees tag?", 0).getEntry();
@@ -136,7 +136,7 @@ public class VisionSub extends SubsystemBase {
 
   private void updateOdometry(SwerveDriveState swerveDriveState) {
     updateOdemetry(swerveDriveState, LEFT);
-    updateOdemetry(swerveDriveState, RIGHT);
+    //updateOdemetry(swerveDriveState, RIGHT);
   }
 
   private void updateOdemetry(SwerveDriveState swerveDriveState, String camera) {
@@ -147,8 +147,8 @@ public class VisionSub extends SubsystemBase {
     }
     double timestamp = mt2.timestampSeconds;
 
-    if(timestamp != m_previousTimestamps.get(camera)) {
-      m_previousTimestamps.replace(camera, timestamp);
+    if(timestamp != m_previousTimestamp) {//m_previousTimestamps.get(camera)) {
+      m_previousTimestamp = timestamp;//m_previousTimestamps.replace(camera, timestamp);
       double standardDeviation = 0.7; // 0.7 is a good starting value according to limelight docs.
 
       if(Math.abs(swerveDriveState.Speeds.omegaRadiansPerSecond) > Math.PI) // if our angular velocity is greater than 360 degrees per second, ignore vision updates
