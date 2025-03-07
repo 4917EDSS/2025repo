@@ -76,8 +76,8 @@ public class RobotContainer {
   private final TestManager m_testManager = new TestManager();
 
   // Robot subsystems
-  private final ArmSub m_armSub = new ArmSub();
   private final CanSub m_canSub = new CanSub(Constants.CanIds.kElevatorCustomCanBoard);
+  private final ArmSub m_armSub = new ArmSub(m_canSub);
   private final ClimbSub m_climbSub = new ClimbSub();
   private final DrivetrainSub m_drivetrainSub = TunerConstants.createDrivetrain();
   private final ElevatorSub m_elevatorSub = new ElevatorSub();
