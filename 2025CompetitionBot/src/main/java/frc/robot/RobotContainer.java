@@ -151,8 +151,8 @@ public class RobotContainer {
     // Drive controller bindings ////////////////////////////////////////////////////////////////////////////////////////////////
 
     // Square
-    m_driverController.square().onTrue(new GrabCoralGrp(m_armSub, m_canSub, m_elevatorSub));
-    //m_driverController.square().whileTrue(new AutoDriveCmd(m_visionSub, m_drivetrainSub, 0.22));
+    //m_driverController.square().onTrue(new GrabCoralGrp(m_armSub, m_canSub, m_elevatorSub));
+    m_driverController.square().whileTrue(new AutoDriveCmd(m_visionSub, m_drivetrainSub, 0.22));
 
     // Cross
     m_driverController.cross().onTrue(new AutoCoralScoreL2Grp()); // TODO: Implement this command group
