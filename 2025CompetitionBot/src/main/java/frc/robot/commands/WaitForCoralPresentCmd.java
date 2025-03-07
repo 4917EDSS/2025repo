@@ -13,6 +13,7 @@ import frc.robot.subsystems.CanSub;
  */
 public class WaitForCoralPresentCmd extends Command {
   private final CanSub m_canSub;
+  public boolean gotCoral = false;
 
   /** Creates a new WaitForCoralPresentCmd. */
   public WaitForCoralPresentCmd(CanSub canSub) {
@@ -28,7 +29,10 @@ public class WaitForCoralPresentCmd extends Command {
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
-  public void execute() {}
+  public void execute() {
+    if(m_canSub.isCoralPresent()) {
+    }
+  }
 
   // Called once the command ends or is interrupted.
   @Override
