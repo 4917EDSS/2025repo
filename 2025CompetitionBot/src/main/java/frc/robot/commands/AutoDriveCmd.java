@@ -54,28 +54,6 @@ public class AutoDriveCmd extends Command {
   public void execute() {
     m_apriltagPos = m_visionSub.getTagPose2d();
     //check if angle is positive or negative
-
-    System.out.println(m_visionSub.getTx());
-
-    // if(m_visionSub.getTx() > 5 || m_visionSub.getTx() < -5) {
-    //   System.out.println("aa");
-    //   if(m_visionSub.getTx() > 0) {
-    //     System.out.println("bb");
-    //     m_drivetrainSub.setControl(autoDrive.withVelocityX(0).withVelocityY(0)
-    //         .withRotationalRate(-MaxAngularRate / 10));//RotationsPerSecond.of(-0.1).in(RadiansPerSecond)));
-    //     // m_drivetrainSub 
-    //     //     .applyRequest(() -> autoDrive.withVelocityX(0).withVelocityY(0)
-    //     //         .withRotationalRate(RotationsPerSecond.of(-0.75).in(RadiansPerSecond)));
-    //   } else {
-    //     System.out.println("cc");
-    // m_drivetrainSub.setControl(autoDrive.withVelocityX(0).withVelocityY(0)
-    //.withRotationalRate(MaxAngularRate / 10));//RotationsPerSecond.of(0.1).in(RadiansPerSecond)));
-    // m_drivetrainSub
-    //     .applyRequest(() -> autoDrive.withVelocityX(0).withVelocityY(0)
-    //         .withRotationalRate(RotationsPerSecond.of(0.75).in(RadiansPerSecond)));
-    //}
-    //} else {
-    //xSystem.out.println("dd");
     xDist = m_apriltagPos.getX() + offset;
     yDist = m_apriltagPos.getY() + 0.15;
     double totalDist = Math.sqrt((xDist * xDist) + (yDist * yDist));
@@ -92,9 +70,6 @@ public class AutoDriveCmd extends Command {
             .withRotationalRate(m_visionSub.getRobotRotation() / ((xDist * 20) + 20) * MaxAngularRate * 0.20));//applyRequest(() -> autoDrive.withVelocityX(xDist).withVelocityY(yDist));
 
     //}
-
-    System.out.println(xDist);
-    System.out.println(yDist);
 
     if(m_visionSub.getTv() == 0) {
       counter++;
@@ -118,11 +93,9 @@ public class AutoDriveCmd extends Command {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    //System.out.println(yDist);
-    //System.out.println(counter);
-    //xDist < 0.05 && xDist > -0.05 && yDist < 0.45 && yDist > .3
+
     if(Math.abs(yDist) < 0.5 && Math.abs(xDist) < 0.15) {
-      System.out.println("yDist" + yDist);
+      System.out.println("yDist: " + yDist);
 
       return true;
     }
