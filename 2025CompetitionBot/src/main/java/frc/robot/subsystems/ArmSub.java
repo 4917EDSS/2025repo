@@ -21,8 +21,10 @@ import frc.robot.Constants;
 import frc.robot.utils.SubControl;
 import frc.robot.utils.SubControl.State;
 import frc.robot.utils.TestableSubsystem;
+import frc.robot.subsystems.CanSub;
 
 public class ArmSub extends TestableSubsystem {
+  CanSub m_canSub;
   private static Logger m_logger = Logger.getLogger(ArmSub.class.getName());
 
   private final SparkMax m_armMotor = new SparkMax(Constants.CanIds.kArmMotor, MotorType.kBrushless);
@@ -46,7 +48,7 @@ public class ArmSub extends TestableSubsystem {
   private SubControl m_currentControl = new SubControl(); // Current states of mechanism
 
   /** Creates a new ArmSub. */
-  public ArmSub() {
+  public ArmSub(CanSub canSub) {
     SparkMaxConfig motorConfig = new SparkMaxConfig();
     motorConfig
         .inverted(true) // Set to true to invert the forward motor direction
@@ -58,6 +60,7 @@ public class ArmSub extends TestableSubsystem {
     AbsoluteEncoderConfig encoderConfig = new AbsoluteEncoderConfig();
     encoderConfig.zeroOffset(Constants.Arm.kAbsoluteEncoderOffset);
     motorConfig.apply(encoderConfig);
+    m_canSub = canSub;
 
     // Save the configuration to the motor
     // Only persist parameters when configuring the motor on start up as this operation can be slow
@@ -321,6 +324,7 @@ public class ArmSub extends TestableSubsystem {
   public void testEnableMotorTestMode(int motorId) {
     disableAutomation();
   }
+
 
   /**
    * Puts the motor back into normal opeation mode.
