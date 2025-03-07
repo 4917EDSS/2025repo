@@ -159,12 +159,11 @@ public class RobotContainer {
 
     // Circle
     m_driverController.cross()
-        .onTrue(new AutoCoralScoreL3Grp(0.22, m_armSub, m_canSub, m_drivetrainSub, m_elevatorSub, m_visionSub)); // TODO: Implement this command group
+        .onTrue(new AutoCoralScoreL3Grp(0.22, m_armSub, m_canSub, m_drivetrainSub, m_elevatorSub, m_visionSub));
 
     // Triangle
     m_driverController.cross()
-        .onTrue(new AutoCoralScoreL4Grp(0.22, m_armSub, m_canSub, m_drivetrainSub, m_elevatorSub, m_visionSub)); // TODO: Implement this command group
-
+        .onTrue(new AutoCoralScoreL4Grp(0.22, m_armSub, m_canSub, m_drivetrainSub, m_elevatorSub, m_visionSub));
     // L1
     m_driverController.L1().onTrue(new AutoAlgaeRemovalL2L3Grp(m_armSub, m_elevatorSub));
 
