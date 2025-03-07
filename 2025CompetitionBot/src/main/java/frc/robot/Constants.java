@@ -80,7 +80,7 @@ public final class Constants {
     public static final double kL2PreScoreAngle = kMaxArmAngle;
     public static final double kL2PostScoreAngle = 0.0;
     public static final double kL3PreScoreAngle = kMaxArmAngle;
-    public static final double kL3PostScoreAngle = -21.0;
+    public static final double kL3PostScoreAngle = 0.0;
     public static final double kL4PreScoreAngle = kMaxArmAngle;
     public static final double kL4PostScoreAngle = 0.0;
     public static final double kCoralGrabbableAngle = kMinArmAngle;
@@ -114,22 +114,22 @@ public final class Constants {
     public static final double kSlowDownUpperStagePower = 0.15;
     public static final double kSlowDownUpperStageHeight = kMaxHeight - 10;
 
-    public static final double kDangerZoneBottom = 780;
-    public static final double kDangerZoneBraceBottom = 1200;
-    public static final double kDangerZoneBraceTop = 1400.0;
+    public static final double kDangerZoneBottom = 817;
+    public static final double kDangerZoneBraceBottom = 1203;
+    public static final double kDangerZoneBraceTop = 1405;
 
     public static final double kStartingHeight = 560.0; // Height where elevator starts with coral pre-loaded
     public static final double kResetHeight = 722.0; // Height where elevator encounters the encoder reset switch 
-    public static final double kCoralLoadedHeight = kDangerZoneBottom + 100; // This should be some height above the bottom danger zone so arm can swing up
-    public static final double kCoralGrabbableHeight = 750.0; // Height that coral can still slide in under the arm for the coral to be grabbable
-    public static final double kL2PreScoreHeight = 750.0;
-    public static final double kL2PostScoreHeight = 535.0;
-    public static final double kL3PreScoreHeight = 1110.0;
-    public static final double kL3PostScoreHeight = 1015.0;
+    public static final double kCoralLoadedHeight = 674.0; // This should be some height above the bottom danger zone so arm can swing up
+    public static final double kCoralGrabbableHeight = 901.0; // Height that coral can still slide in under the arm for the coral to be grabbable
+    public static final double kL2PreScoreHeight = 693.0;
+    public static final double kL2PostScoreHeight = 513.0;
+    public static final double kL3PreScoreHeight = 1077.0;
+    public static final double kL3PostScoreHeight = 933.0;
     public static final double kL4PreScoreHeight = kMaxHeight;
-    public static final double kL4PostScoreHeight = 1610;
-    public static final double kL3L4AlgaeRemovalPrepHeight = 760; // TODO
-    public static final double kL2L3AlgaeRemovalPrepHeight = 350; // TODO
+    public static final double kL4PostScoreHeight = 1334;
+    public static final double kL3L4AlgaeRemovalPrepHeight = 949; // TODO
+    public static final double kL2L3AlgaeRemovalPrepHeight = 582; // TODO
     // public static final double kScoreDropAngle = 30;
     // public static final double kElevatorDropScore = -30;
   }
