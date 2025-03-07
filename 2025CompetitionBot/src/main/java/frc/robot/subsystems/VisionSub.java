@@ -20,7 +20,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.utils.LimelightHelpers;
 
 public class VisionSub extends SubsystemBase {
-  private static String LEFT = "limelight-drive";
+  private static String LEFT = "limelight-left";
   private static String RIGHT = "limelight-right";
   private static Logger m_logger = Logger.getLogger(VisionSub.class.getName());
 
@@ -29,22 +29,34 @@ public class VisionSub extends SubsystemBase {
   DrivetrainSub m_drivetrainSub;
   NetworkTable m_networkTableL = NetworkTableInstance.getDefault().getTable(LEFT);
   NetworkTable m_networkTableR = NetworkTableInstance.getDefault().getTable(RIGHT);
+  NetworkTable m_mainNetworkTable;
 
   ShuffleboardTab m_ShuffleboardTab = Shuffleboard.getTab("Vision");
   GenericEntry m_shuffleboardID, m_shuffleboardTv, m_shuffleboardT2d, m_shuffleboardTx, m_shuffleboardTy,
       m_shuffleboardTa,
-      m_shuffleboardPipeline, m_shuffleboardPipetype;
+      m_shuffleboardPipeline, m_shuffleboardPipetype, m_currentLimelight;
 
-  NetworkTableEntry m_tid;
-  NetworkTableEntry m_t2d;
-  NetworkTableEntry m_tv;
-  NetworkTableEntry m_tx;
-  NetworkTableEntry m_ty;
-  NetworkTableEntry m_ta;
-  NetworkTableEntry m_pipeline;
-  NetworkTableEntry m_pipetype;
-  NetworkTableEntry m_botposeTarget;
-  NetworkTableEntry m_botpose;
+  NetworkTableEntry m_tidL;
+  NetworkTableEntry m_t2dL;
+  NetworkTableEntry m_tvL;
+  NetworkTableEntry m_txL;
+  NetworkTableEntry m_tyL;
+  NetworkTableEntry m_taL;
+  NetworkTableEntry m_pipelineL;
+  NetworkTableEntry m_pipetypeL;
+  NetworkTableEntry m_botposeTargetL;
+  NetworkTableEntry m_botposeL;
+
+  NetworkTableEntry m_tidR;
+  NetworkTableEntry m_t2dR;
+  NetworkTableEntry m_tvR;
+  NetworkTableEntry m_txR;
+  NetworkTableEntry m_tyR;
+  NetworkTableEntry m_taR;
+  NetworkTableEntry m_pipelineR;
+  NetworkTableEntry m_pipetypeR;
+  NetworkTableEntry m_botposeTargetR;
+  NetworkTableEntry m_botposeR;
 
   long id;
   double[] t2d;
@@ -64,16 +76,27 @@ public class VisionSub extends SubsystemBase {
   public VisionSub(DrivetrainSub drivetrainSub) {
     // For now, we will just use the left camera for shuffleboard.
     // TODO - add the right camera in here.
-    m_t2d = m_networkTableL.getEntry("t2d");
-    m_tid = m_networkTableL.getEntry("tid");
-    m_tv = m_networkTableL.getEntry("tv");
-    m_tx = m_networkTableL.getEntry("tx");
-    m_ty = m_networkTableL.getEntry("ty");
-    m_ta = m_networkTableL.getEntry("ta");
-    m_pipeline = m_networkTableL.getEntry("getpipe");
-    m_pipetype = m_networkTableL.getEntry("getpipetype");
-    m_botposeTarget = m_networkTableL.getEntry("botpose_targetspace");
-    m_botpose = m_networkTableL.getEntry("botpose");
+    m_t2dL = m_networkTableL.getEntry("t2d");
+    m_tidL = m_networkTableL.getEntry("tid");
+    m_tvL = m_networkTableL.getEntry("tv");
+    m_txL = m_networkTableL.getEntry("tx");
+    m_tyL = m_networkTableL.getEntry("ty");
+    m_taL = m_networkTableL.getEntry("ta");
+    m_pipelineL = m_networkTableL.getEntry("getpipe");
+    m_pipetypeL = m_networkTableL.getEntry("getpipetype");
+    m_botposeTargetL = m_networkTableL.getEntry("botpose_targetspace");
+    m_botposeL = m_networkTableL.getEntry("botpose");
+
+    m_t2dR = m_networkTableR.getEntry("t2d");
+    m_tidR = m_networkTableR.getEntry("tid");
+    m_tvR = m_networkTableR.getEntry("tv");
+    m_txR = m_networkTableR.getEntry("tx");
+    m_tyR = m_networkTableR.getEntry("ty");
+    m_taR = m_networkTableR.getEntry("ta");
+    m_pipelineR = m_networkTableR.getEntry("getpipe");
+    m_pipetypeR = m_networkTableR.getEntry("getpipetype");
+    m_botposeTargetR = m_networkTableR.getEntry("botpose_targetspace");
+    m_botposeR = m_networkTableR.getEntry("botpose");
 
     m_shuffleboardID = m_ShuffleboardTab.add("Primary ID", 0).getEntry();
     m_shuffleboardTv = m_ShuffleboardTab.add("Sees tag?", 0).getEntry();
@@ -83,6 +106,7 @@ public class VisionSub extends SubsystemBase {
     m_shuffleboardTa = m_ShuffleboardTab.add("Area of tag", 0).getEntry();
     m_shuffleboardPipeline = m_ShuffleboardTab.add("Pipeline", -1).getEntry();
     m_shuffleboardPipetype = m_ShuffleboardTab.add("Pipetype", "unknown").getEntry();
+    m_currentLimelight = m_ShuffleboardTab.add("Main Limelight:", "none").getEntry();
 
     m_drivetrainSub = drivetrainSub;
     init();
@@ -94,17 +118,33 @@ public class VisionSub extends SubsystemBase {
 
   @Override
   public void periodic() {
+    if(m_tvL.getInteger(-1) == 1) {
+      id = m_tidL.getInteger(0);
+      t2d = m_t2dL.getDoubleArray(new double[2]);
+      tv = m_tvL.getInteger(0);
+      x = m_txL.getDouble(0.0);
+      y = m_tyL.getDouble(0.0);
+      a = m_taL.getDouble(0.0);
+      pipeline = m_pipelineL.getInteger(0);
+      pipetype = m_pipetypeL.getString("");
+      botposeTarget = m_botposeTargetL.getDoubleArray(new double[8]);
+      botpose = m_botposeL.getDoubleArray(new double[8]);
+      m_currentLimelight.setString("left");
+    } else {
+      id = m_tidR.getInteger(0);
+      t2d = m_t2dR.getDoubleArray(new double[2]);
+      tv = m_tvR.getInteger(-1);
+      x = m_txR.getDouble(0.0);
+      y = m_tyR.getDouble(0.0);
+      a = m_taR.getDouble(0.0);
+      pipeline = m_pipelineR.getInteger(0);
+      pipetype = m_pipetypeR.getString("");
+      botposeTarget = m_botposeTargetR.getDoubleArray(new double[8]);
+      botpose = m_botposeR.getDoubleArray(new double[8]);
+      m_currentLimelight.setString("right");
+    }
     // This method will be called once per scheduler run
-    id = m_tid.getInteger(0);
-    t2d = m_t2d.getDoubleArray(new double[2]);
-    tv = m_tv.getInteger(0);
-    x = m_tx.getDouble(0.0);
-    y = m_ty.getDouble(0.0);
-    a = m_ta.getDouble(0.0);
-    pipeline = m_pipeline.getInteger(0);
-    pipetype = m_pipetype.getString("");
-    botposeTarget = m_botposeTarget.getDoubleArray(new double[8]);
-    botpose = m_botpose.getDoubleArray(new double[8]);
+
 
     m_shuffleboardID.setInteger(id);
     m_shuffleboardT2d.setDouble(t2d[1]);

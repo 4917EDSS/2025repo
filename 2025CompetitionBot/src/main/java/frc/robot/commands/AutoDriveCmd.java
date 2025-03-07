@@ -25,7 +25,8 @@ public class AutoDriveCmd extends Command {
   private final VisionSub m_visionSub;
   private final SwerveRequest.RobotCentric autoDrive = new SwerveRequest.RobotCentric()
       .withDriveRequestType(DriveRequestType.OpenLoopVoltage);
-  private final SwerveRequest.SwerveDriveBrake brake = new SwerveRequest.SwerveDriveBrake();
+  private final SwerveRequest.SwerveDriveBrake brake =
+      new SwerveRequest.SwerveDriveBrake();
   Pose2d m_apriltagPos;
   double xDist;
   double yDist;
@@ -34,9 +35,10 @@ public class AutoDriveCmd extends Command {
   private final DrivetrainSub m_drivetrainSub;
 
   /** Creates a new AutoDriveCmd. */
-  public AutoDriveCmd(VisionSub visionSub, DrivetrainSub drivetrainSub) {
+  public AutoDriveCmd(VisionSub visionSub, DrivetrainSub drivetrainSub, double offset) {
     m_visionSub = visionSub;
     m_drivetrainSub = drivetrainSub;
+    this.offset = offset;
     addRequirements(drivetrainSub);// Use addRequirements() here to declare subsystem dependencies.
   }
 
@@ -74,14 +76,20 @@ public class AutoDriveCmd extends Command {
     //}
     //} else {
     //xSystem.out.println("dd");
-    xDist = m_apriltagPos.getX();
-    yDist = m_apriltagPos.getY();
+    xDist = m_apriltagPos.getX() + offset;
+    yDist = m_apriltagPos.getY() + 0.15;
     double totalDist = Math.sqrt((xDist * xDist) + (yDist * yDist));
     double xPower = xDist / totalDist;
     double yPower = yDist / totalDist;
+    double slowDown;
+    if(yDist > -1.0) {
+      slowDown = 10;
+    } else {
+      slowDown = 4;
+    }
     m_drivetrainSub.setControl(
-        autoDrive.withVelocityX(-yPower * MaxSpeed / 5).withVelocityY(xPower * MaxSpeed / 5)
-            .withRotationalRate(m_visionSub.getRobotRotation() / ((xDist * 30) + 30) * MaxAngularRate * 0.10));//applyRequest(() -> autoDrive.withVelocityX(xDist).withVelocityY(yDist));
+        autoDrive.withVelocityX(-yPower * MaxSpeed / slowDown).withVelocityY(xPower * MaxSpeed / 4)
+            .withRotationalRate(m_visionSub.getRobotRotation() / ((xDist * 20) + 20) * MaxAngularRate * 0.20));//applyRequest(() -> autoDrive.withVelocityX(xDist).withVelocityY(yDist));
 
     //}
 
@@ -103,8 +111,8 @@ public class AutoDriveCmd extends Command {
   @Override
   public void end(boolean interrupted) {
     System.out.println("end");
+    m_drivetrainSub.applyRequest(() -> brake);
     m_drivetrainSub.setControl(autoDrive.withVelocityX(0).withVelocityY(0).withRotationalRate(0));
-    m_drivetrainSub.setControl(brake);
   }
 
   // Returns true when the command should end.
@@ -113,7 +121,7 @@ public class AutoDriveCmd extends Command {
     //System.out.println(yDist);
     //System.out.println(counter);
     //xDist < 0.05 && xDist > -0.05 && yDist < 0.45 && yDist > .3
-    if(Math.abs(yDist) < 0.3 && m_visionSub.getTv() != 0) {
+    if(Math.abs(yDist) < 0.5 && Math.abs(xDist) < 0.15) {
       System.out.println("yDist" + yDist);
 
       return true;
