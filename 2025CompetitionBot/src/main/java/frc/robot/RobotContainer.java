@@ -34,6 +34,8 @@ import frc.robot.commands.AutoCoralScoreL3Grp;
 import frc.robot.commands.AutoCoralScoreL4Grp;
 import frc.robot.commands.AutoDriveCmd;
 import frc.robot.commands.BackUpAfterScoringCmd;
+import frc.robot.commands.ClimbDeployCmd;
+import frc.robot.commands.ClimbRetractCmd;
 import frc.robot.commands.DoNothingGrp;
 import frc.robot.commands.DriveToNearestScoreLocationCmd;
 import frc.robot.commands.ElevatorMoveWithJoystickCmd;
@@ -52,6 +54,7 @@ import frc.robot.subsystems.ElevatorSub;
 import frc.robot.subsystems.VisionSub;
 import frc.robot.utils.SwerveTelemetry;
 import frc.robot.utils.TestManager;
+import frc.robot.utils.RobotState;
 
 
 /**
@@ -82,6 +85,7 @@ public class RobotContainer {
   private final DrivetrainSub m_drivetrainSub = TunerConstants.createDrivetrain();
   private final ElevatorSub m_elevatorSub = new ElevatorSub();
   private final VisionSub m_visionSub;
+  private final RobotState m_robotState = new RobotState();
 
   // Controllers
   private final CommandPS4Controller m_driverController =
@@ -180,26 +184,28 @@ public class RobotContainer {
     // R2
 
     // POV Up
-    // TODO add command move the climb arm to the climb position
+    m_driverController.povUp().whileTrue(new ClimbDeployCmd(m_climbSub));
+
 
     // POV Right
     // TODO:  Target scoring to pipe to the right of the vision target
 
     // POV Down
-    // TODO Move Climb arm in to climb
+    m_driverController.povDown().whileTrue(new ClimbRetractCmd(m_climbSub));
 
     // POV Left
     // TODO:  Target scoring to pipe to the left of the vision target
 
     // Share
-    m_driverController.share().onTrue(new BackUpAfterScoringCmd(m_drivetrainSub));
+    m_driverController.share().onTrue(new InstantCommand(() -> m_robotState.setLeft()));
 
     // Options
-    m_driverController.options().whileTrue(AutoBuilder.pathfindToPose(
-        new Pose2d(2, 6.5, new Rotation2d(0)),
-        m_constraints,
-        0.0 // Goal end velocity in meters/sec
-    ));
+    m_driverController.options().onTrue(new InstantCommand(() -> m_robotState.setRight()));
+    // m_driverController.options().whileTrue(AutoBuilder.pathfindToPose(
+    //     new Pose2d(2, 6.5, new Rotation2d(0)),
+    //     m_constraints,
+    //     0.0 // Goal end velocity in meters/sec
+    // ));
 
     // PS
     m_driverController.PS().onTrue(m_drivetrainSub.runOnce(() -> m_drivetrainSub.seedFieldCentric())); // Reset the field-centric heading
