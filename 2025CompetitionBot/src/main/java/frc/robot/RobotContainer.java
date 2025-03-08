@@ -171,7 +171,7 @@ public class RobotContainer {
 
     // Square
 
-    m_driverController.square().onTrue(new AutoGrabCoralGrp(m_armSub, m_canSub, m_elevatorSub));
+    m_driverController.square().onTrue(new AutoGrabCoralGrp(m_armSub, m_canSub, m_elevatorSub));//.whileTrue(new AutoDriveCmd(m_visionSub, m_drivetrainSub, true));//
 
 
     // Cross
@@ -213,10 +213,10 @@ public class RobotContainer {
     // TODO:  Target scoring to pipe to the left of the vision target
 
     // Share
-    m_driverController.share().onTrue(new InstantCommand(() -> m_robotState.setLeft()));
+    m_driverController.share().onTrue(new InstantCommand(() -> RobotState.setLeft()));
 
     // Options
-    m_driverController.options().onTrue(new InstantCommand(() -> m_robotState.setRight()));
+    m_driverController.options().onTrue(new InstantCommand(() -> RobotState.setRight()));
     // m_driverController.options().whileTrue(AutoBuilder.pathfindToPose(
     //     new Pose2d(2, 6.5, new Rotation2d(0)),
     //     m_constraints,

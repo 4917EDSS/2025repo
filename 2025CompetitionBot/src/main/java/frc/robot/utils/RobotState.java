@@ -16,8 +16,8 @@ public class RobotState extends Command {
 
   /** Creates a new RobotState. */
   public RobotState() {
-    robotLeftRight = "left";
-    robotLastReefPosition = "L2";
+    // robotLeftRight = "left";
+    // robotLastReefPosition = "L2";
     // Use addRequirements() here to declare subsystem dependencies.
   }
 
