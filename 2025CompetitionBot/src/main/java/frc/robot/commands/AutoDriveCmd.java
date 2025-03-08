@@ -28,8 +28,8 @@ public class AutoDriveCmd extends Command {
   private final SwerveRequest.SwerveDriveBrake brake =
       new SwerveRequest.SwerveDriveBrake();
   Pose2d m_apriltagPos;
-  double xDist;
-  double yDist;
+  double lrDist;
+  double fbDist;
   int counter;
   double offset;
   private final DrivetrainSub m_drivetrainSub;
@@ -54,20 +54,20 @@ public class AutoDriveCmd extends Command {
   public void execute() {
     m_apriltagPos = m_visionSub.getTagPose2d();
     //check if angle is positive or negative
-    xDist = m_apriltagPos.getX() + offset;
-    yDist = m_apriltagPos.getY() + 0.15;
-    double totalDist = Math.sqrt((xDist * xDist) + (yDist * yDist));
-    double xPower = xDist / totalDist;
-    double yPower = yDist / totalDist;
+    lrDist = m_apriltagPos.getX() + offset;
+    fbDist = m_apriltagPos.getY() + 0.15;
+    double totalDist = Math.sqrt((lrDist * lrDist) + (fbDist * fbDist));
+    double xPower = lrDist / totalDist;
+    double yPower = fbDist / totalDist;
     double slowDown;
-    if(yDist > -1.0) {
+    if(fbDist > -1.0) {
       slowDown = 10;
     } else {
       slowDown = 4;
     }
     m_drivetrainSub.setControl(
         autoDrive.withVelocityX(-yPower * MaxSpeed / slowDown).withVelocityY(xPower * MaxSpeed / 4)
-            .withRotationalRate(m_visionSub.getRobotRotation() / ((xDist * 20) + 20) * MaxAngularRate * 0.20));//applyRequest(() -> autoDrive.withVelocityX(xDist).withVelocityY(yDist));
+            .withRotationalRate(m_visionSub.getRobotRotation() / ((lrDist * 20) + 20) * MaxAngularRate * 0.20));//applyRequest(() -> autoDrive.withVelocityX(xDist).withVelocityY(yDist));
 
     //}
 
@@ -94,8 +94,8 @@ public class AutoDriveCmd extends Command {
   @Override
   public boolean isFinished() {
 
-    if(Math.abs(yDist) < 0.5 && Math.abs(xDist) < 0.15) {
-      System.out.println("yDist: " + yDist);
+    if(Math.abs(fbDist) < 0.5 && Math.abs(lrDist) < 0.15) {
+      System.out.println("Forward/backward dist: " + fbDist);
 
       return true;
     }
