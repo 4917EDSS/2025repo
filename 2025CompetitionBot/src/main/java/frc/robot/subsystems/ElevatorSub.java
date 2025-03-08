@@ -40,6 +40,7 @@ public class ElevatorSub extends TestableSubsystem {
   private double m_kD = 0.0;
   private final ElevatorFeedforward m_feedforward = new ElevatorFeedforward(m_kS, m_kG, m_kV);
   private final PIDController m_elevatorPID = new PIDController(m_kP, m_kI, m_kD);
+  private final PIDController m_negitiveelevatorPID = new PIDController(0.002, 0, 0);
 
   private Supplier<Double> m_armAngle;
   private double m_targetHeight = 0.0;
@@ -356,9 +357,14 @@ public class ElevatorSub extends TestableSubsystem {
 
     double ffPower = m_feedforward.calculate(getVelocity());
     double pidPower = (m_elevatorPID.calculate(getPositionMm(), activeTarget));
+    double negitivepidPower = (m_negitiveelevatorPID.calculate(getPositionMm(), activeTarget));
 
     if(updatePower) {
-      setPower(ffPower + pidPower);
+      if(activeTarget > getPositionMm()) {
+        setPower(ffPower + pidPower);
+      } else {
+        setPower(ffPower + negitivepidPower);
+      }
     }
   }
 

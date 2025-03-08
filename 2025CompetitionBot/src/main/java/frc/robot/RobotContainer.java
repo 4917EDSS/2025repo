@@ -20,6 +20,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandPS4Controller;
 import frc.robot.Constants.OperatorConstants;
@@ -39,6 +40,7 @@ import frc.robot.commands.DriveToNearestScoreLocationCmd;
 import frc.robot.commands.ElevatorMoveWithJoystickCmd;
 import frc.robot.commands.KillAllCmd;
 import frc.robot.commands.MoveElArmGrp;
+import frc.robot.commands.MoveElArmPostManualCmd;
 import frc.robot.commands.SetArmToPositionCmd;
 import frc.robot.commands.SetElevatorToHeightCmd;
 import frc.robot.commands.tests.RunTestsGrp;
@@ -251,32 +253,40 @@ public class RobotContainer {
     m_operatorController.square().onTrue(new AutoGrabCoralGrp(m_armSub, m_canSub, m_elevatorSub));
 
     // Cross
-    m_operatorController.cross().onTrue(new MoveElArmGrp(Constants.Elevator.kL2PreScoreHeight,
-        Constants.Arm.kL2PreScoreAngle, m_armSub, m_elevatorSub));
+    m_operatorController.cross().onTrue(new ParallelCommandGroup(
+        new MoveElArmGrp(Constants.Elevator.kL2PreScoreHeight, Constants.Arm.kL2PreScoreAngle, m_armSub, m_elevatorSub),
+        new InstantCommand(() -> RobotState.l2())));
 
     // Circle
-    m_operatorController.circle().onTrue(new MoveElArmGrp(Constants.Elevator.kL3PreScoreHeight,
-        Constants.Arm.kL3PreScoreAngle, m_armSub, m_elevatorSub));
+    m_operatorController.circle().onTrue(new ParallelCommandGroup(
+        new MoveElArmGrp(Constants.Elevator.kL3PreScoreHeight,
+            Constants.Arm.kL3PreScoreAngle, m_armSub, m_elevatorSub),
+        new InstantCommand(() -> RobotState.l3())));
 
     // Triangle
-    m_operatorController.triangle().onTrue(new MoveElArmGrp(Constants.Elevator.kL4PreScoreHeight,
-        Constants.Arm.kL4PreScoreAngle, m_armSub, m_elevatorSub));
+    m_operatorController.triangle()
+        .onTrue(new ParallelCommandGroup(new MoveElArmGrp(Constants.Elevator.kL4PreScoreHeight,
+            Constants.Arm.kL4PreScoreAngle, m_armSub, m_elevatorSub),
+            new InstantCommand(() -> RobotState.l4())));
 
     // L1
     m_operatorController.L1()
-        .onTrue(new MoveElArmGrp(Constants.Elevator.kL2L3AlgaeRemovalPrepHeight,
-            Constants.Arm.kL2L3AlgaeRemovalPrepAngle, m_armSub, m_elevatorSub));
+        .onTrue(new ParallelCommandGroup(new MoveElArmGrp(Constants.Elevator.kL2L3AlgaeRemovalPrepHeight,
+            Constants.Arm.kL2L3AlgaeRemovalPrepAngle, m_armSub, m_elevatorSub),
+            new InstantCommand(() -> RobotState.l2L3Algae())));
 
     // R1
     m_operatorController.R1()
-        .whileTrue(new MoveElArmGrp(Constants.Elevator.kL3L4AlgaeRemovalPrepHeight,
-            Constants.Arm.kL3L4AlgaeRemovalPrepAngle, m_armSub, m_elevatorSub));
+        .whileTrue(new ParallelCommandGroup(new MoveElArmGrp(Constants.Elevator.kL3L4AlgaeRemovalPrepHeight,
+            Constants.Arm.kL3L4AlgaeRemovalPrepAngle, m_armSub, m_elevatorSub),
+            new InstantCommand(() -> RobotState.l2L3Algae())));
 
     // L2
     // TODO: Remove algae based on which one we are prepped for
 
     // R2
     // TODO: Score coral based on which one we are prepped for
+    m_operatorController.R2().onTrue(new MoveElArmPostManualCmd(m_armSub, m_elevatorSub));
 
     // POV Up
     m_operatorController.povUp()
