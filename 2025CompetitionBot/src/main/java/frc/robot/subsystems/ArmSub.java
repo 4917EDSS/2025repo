@@ -21,31 +21,31 @@ import frc.robot.Constants;
 import frc.robot.utils.SubControl;
 import frc.robot.utils.SubControl.State;
 import frc.robot.utils.TestableSubsystem;
-import frc.robot.subsystems.CanSub;
 
 public class ArmSub extends TestableSubsystem {
-  CanSub m_canSub;
   private static Logger m_logger = Logger.getLogger(ArmSub.class.getName());
 
   private final SparkMax m_armMotor = new SparkMax(Constants.CanIds.kArmMotor, MotorType.kBrushless);
   private final SparkAbsoluteEncoder m_absoluteEncoder = m_armMotor.getAbsoluteEncoder();
   private final SparkLimitSwitch m_forwardLimitSwitch = m_armMotor.getForwardLimitSwitch();
-  private final SparkLimitSwitch m_revLimitSwitch = m_armMotor.getReverseLimitSwitch();
+  private final SparkLimitSwitch m_reverseLimitSwitch = m_armMotor.getReverseLimitSwitch();
 
-  private double m_p = 0.005;
-  private double m_i = 0;
-  private double m_d = 0;
-  private double m_ks = 0.018;
-  private double m_kg = 0.01;
-  private double m_kv = 0;
-  private final ArmFeedforward m_armFeedforward = new ArmFeedforward(m_ks, m_kg, m_kv);
-  private final PIDController m_armPid = new PIDController(m_p, m_i, m_d);
+  private double m_kS = 0.018;
+  private double m_kG = 0.01;
+  private double m_kV = 0;
+  private double m_kP = 0.005;
+  private double m_kI = 0;
+  private double m_kD = 0;
+  private final ArmFeedforward m_armFeedforward = new ArmFeedforward(m_kS, m_kG, m_kV);
+  private final PIDController m_armPid = new PIDController(m_kP, m_kI, m_kD);
 
   private Supplier<Double> elevatorPosition;
   private double m_targetAngle = 0;
   private double m_blockedAngle;
   private boolean m_automationEnabled = false;
+  private double m_smartDashboardCounter = 0;
   private SubControl m_currentControl = new SubControl(); // Current states of mechanism
+
 
   /** Creates a new ArmSub. */
   public ArmSub(CanSub canSub) {
@@ -60,7 +60,6 @@ public class ArmSub extends TestableSubsystem {
     AbsoluteEncoderConfig encoderConfig = new AbsoluteEncoderConfig();
     encoderConfig.zeroOffset(Constants.Arm.kAbsoluteEncoderOffset);
     motorConfig.apply(encoderConfig);
-    m_canSub = canSub;
 
     // Save the configuration to the motor
     // Only persist parameters when configuring the motor on start up as this operation can be slow
@@ -73,7 +72,6 @@ public class ArmSub extends TestableSubsystem {
    */
   public void init() {
     m_logger.info("Initializing ArmSub Subsystem");
-
   }
 
   /**
@@ -88,29 +86,34 @@ public class ArmSub extends TestableSubsystem {
     updateStateMachine();
     runAngleControl(m_automationEnabled);
 
-    SmartDashboard.putNumber("Arm Raw Enc", getPosition()); // Raw encoder position
-    SmartDashboard.putNumber("Arm Ang", getAngle()); // Arm angle
-
+    SmartDashboard.putNumber("Arm Raw Enc", getPosition());
+    SmartDashboard.putNumber("Arm Angle", getAngle());
+    SmartDashboard.putBoolean("Arm Lower Limit", isAtLowerLimit());
+    SmartDashboard.putBoolean("Arm Upper Limit", isAtUpperLimit());
     // Current power value is sent in setPower()
 
     // for tuning PID and feed forward values only
     boolean tuning = true;
     if(tuning) {
-      double p = SmartDashboard.getNumber("Arm kP", m_p);
-      double i = SmartDashboard.getNumber("Arm kI", m_i);
-      double d = SmartDashboard.getNumber("Arm kD", m_d);
+      // Lighten the load by only updating these twice a second
+      if(++m_smartDashboardCounter >= 30) {
+        m_smartDashboardCounter = 0;
+        double kP = SmartDashboard.getNumber("Arm kP", m_kP);
+        double kI = SmartDashboard.getNumber("Arm kI", m_kI);
+        double kD = SmartDashboard.getNumber("Arm kD", m_kD);
 
-      double ks = SmartDashboard.getNumber("Arm ks", m_ks);
-      double kg = SmartDashboard.getNumber("Arm kg", m_kg);
-      double kv = SmartDashboard.getNumber("Arm kv", m_kv);
+        double kS = SmartDashboard.getNumber("Arm kS", m_kS);
+        double kG = SmartDashboard.getNumber("Arm kG", m_kG);
+        double kV = SmartDashboard.getNumber("Arm kV", m_kV);
 
-      SmartDashboard.putNumber("Arm kP", p);
-      SmartDashboard.putNumber("Arm kI", i);
-      SmartDashboard.putNumber("Arm kD", d);
+        SmartDashboard.putNumber("Arm kP", kP);
+        SmartDashboard.putNumber("Arm kI", kI);
+        SmartDashboard.putNumber("Arm kD", kD);
 
-      SmartDashboard.putNumber("Arm ks", ks);
-      SmartDashboard.putNumber("Arm kg", kg);
-      SmartDashboard.putNumber("Arm kv", kv);
+        SmartDashboard.putNumber("Arm kS", kS);
+        SmartDashboard.putNumber("Arm kG", kG);
+        SmartDashboard.putNumber("Arm kV", kV);
+      }
     }
   }
 
@@ -189,7 +192,7 @@ public class ArmSub extends TestableSubsystem {
    * @return true when it's at the limit, false otherwise
    */
   public boolean isAtLowerLimit() {
-    return false; // TODO: Read this from the SparkMax since the switch would be wired directly into it
+    return m_reverseLimitSwitch.isPressed();
   }
 
   /**
@@ -198,7 +201,7 @@ public class ArmSub extends TestableSubsystem {
    * @return true when it's at the limit, false otherwise
    */
   public boolean isAtUpperLimit() {
-    return false; // TODO: Read this from the SparkMax since the switch would be wired directly into it
+    return m_forwardLimitSwitch.isPressed();
   }
 
   /**
@@ -210,7 +213,7 @@ public class ArmSub extends TestableSubsystem {
     switch(m_currentControl.state) {
 
       case MOVING:
-        SmartDashboard.putBoolean("Arm blocked", false);
+        SmartDashboard.putBoolean("Arm Is Blocked", false);
         // If the mechanism is moving, check if it has arrived at it's target.
         if(isBlocked()) {
           m_blockedAngle = (getAngle());
@@ -219,7 +222,7 @@ public class ArmSub extends TestableSubsystem {
         break;
 
       case INTERRUPTED:
-        SmartDashboard.putBoolean("Arm blocked", true);
+        SmartDashboard.putBoolean("Arm Is Blocked", true);
         // If the mechanism is no longer blocked, transition to MOVING
         if(!isBlocked()) {
           m_currentControl.state = State.MOVING;

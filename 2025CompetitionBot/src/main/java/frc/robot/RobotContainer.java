@@ -315,8 +315,8 @@ public class RobotContainer {
    * Create a list of auto period action choices
    */
   void autoChooserSetup() {
-    m_Chooser.addOption("Leave Auto", new PathPlannerAuto("Leave Auto"));
-    m_Chooser.addOption("DoNothingAuto", new DoNothingGrp());
-    SmartDashboard.putData("auto choices", m_Chooser);
+    m_Chooser.addOption("Leave", new PathPlannerAuto("Leave Auto"));
+    m_Chooser.addOption("Do-Nothing", new DoNothingGrp());
+    SmartDashboard.putData("Auto Choices", m_Chooser);
   }
 }

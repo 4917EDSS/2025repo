@@ -32,8 +32,14 @@ public class ElevatorSub extends TestableSubsystem {
   private final DigitalInput m_elevatorUpperLimit = new DigitalInput(Constants.DioIds.kElevatorUpperLimit);
   private final DigitalInput m_encoderResetSwitch = new DigitalInput(Constants.DioIds.kElevatorEncoderResetSwitch);
 
-  private final ElevatorFeedforward m_feedforward = new ElevatorFeedforward(0.0, 0.06, 0.0);
-  private final PIDController m_elevatorPID = new PIDController(0.01, 0.0, 0.0);
+  private double m_kS = 0.0;
+  private double m_kG = 0.06;
+  private double m_kV = 0.0;
+  private double m_kP = 0.01;
+  private double m_kI = 0.0;
+  private double m_kD = 0.0;
+  private final ElevatorFeedforward m_feedforward = new ElevatorFeedforward(m_kS, m_kG, m_kV);
+  private final PIDController m_elevatorPID = new PIDController(m_kP, m_kI, m_kD);
 
   private Supplier<Double> m_armAngle;
   private double m_targetHeight = 0.0;
@@ -42,6 +48,7 @@ public class ElevatorSub extends TestableSubsystem {
   private boolean m_isElevatorEncoderSet = false;
   private int m_hitEncoderSwitchCounter = 0;
   private double m_preTestHeight = 0;
+  private double m_smartDashboardCounter = 0;
   private SubControl m_currentControl = new SubControl(); // Current states of mechanism
 
   /** Creates a new ElevatorSub. */
@@ -115,13 +122,34 @@ public class ElevatorSub extends TestableSubsystem {
       }
     }
 
-    SmartDashboard.putNumber("El Enc", getPositionMm()); // Elevator position
-    SmartDashboard.putBoolean("El UpLimit", isAtUpperLimit()); // True if we are at the upper limit
-    SmartDashboard.putBoolean("El RstEnc", encoderResetSwitchHit()); // True if we hit the encoder reset switch
-    SmartDashboard.putBoolean("El Auto", m_enableAutomation); // True if automation is running
-    SmartDashboard.putBoolean("El Set Enc", m_isElevatorEncoderSet); // True once the encoder is set
-    SmartDashboard.putBoolean("El isBlocked", isBlocked()); // True if we we are blocked
+    SmartDashboard.putNumber("El Height", getPositionMm()); // Elevator position
+    SmartDashboard.putBoolean("El Upper Limit", isAtUpperLimit()); // True if we are at the upper limit
+    SmartDashboard.putBoolean("El Calib Switch", encoderResetSwitchHit()); // True if we hit the encoder reset switch
+    SmartDashboard.putBoolean("El Height Is Set", m_isElevatorEncoderSet); // True once the encoder is set
     // Current power value is sent in setPower()
+
+    boolean tuning = true;
+    if(tuning) {
+      // Lighten the load by only updating these twice a second
+      if(++m_smartDashboardCounter >= 30) {
+        m_smartDashboardCounter = 0;
+        double kP = SmartDashboard.getNumber("El kP", m_kP);
+        double kI = SmartDashboard.getNumber("El kI", m_kI);
+        double kD = SmartDashboard.getNumber("El kD", m_kD);
+
+        double kS = SmartDashboard.getNumber("El kS", m_kS);
+        double kG = SmartDashboard.getNumber("El kG", m_kG);
+        double kV = SmartDashboard.getNumber("El kV", m_kV);
+
+        SmartDashboard.putNumber("El kP", kP);
+        SmartDashboard.putNumber("El kI", kI);
+        SmartDashboard.putNumber("El kD", kD);
+
+        SmartDashboard.putNumber("El kS", kS);
+        SmartDashboard.putNumber("El kG", kG);
+        SmartDashboard.putNumber("El kV", kV);
+      }
+    }
   }
 
   /**
@@ -250,7 +278,7 @@ public class ElevatorSub extends TestableSubsystem {
     // Determine what power the mechanism should use based on the current state
     switch(m_currentControl.state) {
       case MOVING:
-        SmartDashboard.putBoolean("El blocked", false);
+        SmartDashboard.putBoolean("El Is Blocked", false);
         // If the mechanism is moving, check if it has arrived at it's target.
         if(isBlocked()) {
           m_blockedPosition = getPositionMm();
@@ -259,7 +287,7 @@ public class ElevatorSub extends TestableSubsystem {
         break;
 
       case INTERRUPTED:
-        SmartDashboard.putBoolean("El blocked", true);
+        SmartDashboard.putBoolean("El Is Blocked", true);
         // If the mechanism is no longer blocked, transition to MOVING
         if(!isBlocked()) {
           m_currentControl.state = State.MOVING;

@@ -114,7 +114,7 @@ public class VisionSub extends SubsystemBase {
       pipetype = m_pipetypeL.getString("");
       botposeTarget = m_botposeTargetL.getDoubleArray(new double[8]);
       botpose = m_botposeL.getDoubleArray(new double[8]);
-      SmartDashboard.putBoolean("LL is left", true);
+      SmartDashboard.putBoolean("Vi Use Left LL", true);
     } else {
       id = m_tidR.getInteger(0);
       t2d = m_t2dR.getDoubleArray(new double[2]);
@@ -126,18 +126,18 @@ public class VisionSub extends SubsystemBase {
       pipetype = m_pipetypeR.getString("");
       botposeTarget = m_botposeTargetR.getDoubleArray(new double[8]);
       botpose = m_botposeR.getDoubleArray(new double[8]);
-      SmartDashboard.putBoolean("LL is left", false);
+      SmartDashboard.putBoolean("Vi Use Left LL", false);
     }
     // This method will be called once per scheduler run
-    SmartDashboard.putNumber("Primary ID", id);
-    SmartDashboard.putNumber("Sees tag?", t2d[1]);
-    SmartDashboard.putNumber("# of Tags", tv);
-    SmartDashboard.putNumber("tag x", x);
-    SmartDashboard.putNumber("tag y", y);
-    SmartDashboard.putNumber("Area of tag", a);
-    SmartDashboard.putNumber("Pipeline", pipeline);
-    SmartDashboard.putString("Pipetype", pipetype);
-    SmartDashboard.putString("Main Limelight:", "none");
+    SmartDashboard.putNumber("Vi Primary ID", id);
+    SmartDashboard.putNumber("Vi Sees Tag", t2d[1]);
+    SmartDashboard.putNumber("Vi # of Tags", tv);
+    SmartDashboard.putNumber("Vi Tag X", x);
+    SmartDashboard.putNumber("Vi Tag Y", y);
+    SmartDashboard.putNumber("Vi Tag Area", a);
+    SmartDashboard.putNumber("Vi Pipeline", pipeline);
+    SmartDashboard.putString("Vi Pipetype", pipetype);
+    //SmartDashboard.putString("Main Limelight:", "none");
 
     updateOdometry(m_drivetrainSub.getState());
   }
