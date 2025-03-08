@@ -39,7 +39,7 @@ import frc.robot.commands.ClimbRetractCmd;
 import frc.robot.commands.DoNothingGrp;
 import frc.robot.commands.DriveToNearestScoreLocationCmd;
 import frc.robot.commands.ElevatorMoveWithJoystickCmd;
-import frc.robot.commands.GrabCoralGrp;
+import frc.robot.commands.AutoGrabCoralGrp;
 import frc.robot.commands.KillAllCmd;
 import frc.robot.commands.MoveElArmGrp;
 import frc.robot.commands.SetArmToPositionCmd;
@@ -54,6 +54,7 @@ import frc.robot.subsystems.ElevatorSub;
 import frc.robot.subsystems.VisionSub;
 import frc.robot.utils.SwerveTelemetry;
 import frc.robot.utils.TestManager;
+import frc.robot.utils.RobotState;
 
 
 /**
@@ -78,12 +79,13 @@ public class RobotContainer {
   private final TestManager m_testManager = new TestManager();
 
   // Robot subsystems
-  private final ArmSub m_armSub = new ArmSub();
   private final CanSub m_canSub = new CanSub(Constants.CanIds.kElevatorCustomCanBoard);
+  private final ArmSub m_armSub = new ArmSub(m_canSub);
   private final ClimbSub m_climbSub = new ClimbSub();
   private final DrivetrainSub m_drivetrainSub = TunerConstants.createDrivetrain();
   private final ElevatorSub m_elevatorSub = new ElevatorSub();
   private final VisionSub m_visionSub;
+  private final RobotState m_robotState = new RobotState();
 
   // Controllers
   private final CommandPS4Controller m_driverController =
@@ -153,18 +155,21 @@ public class RobotContainer {
     // Drive controller bindings ////////////////////////////////////////////////////////////////////////////////////////////////
 
     // Square
-    m_driverController.square().onTrue(new GrabCoralGrp(m_armSub, m_canSub, m_elevatorSub));
-    //m_driverController.square().whileTrue(new AutoDriveCmd(m_visionSub, m_drivetrainSub, 0.22));
+
+    m_driverController.square().onTrue(new AutoGrabCoralGrp(m_armSub, m_canSub, m_elevatorSub));
+
 
     // Cross
-    m_driverController.cross().onTrue(new AutoCoralScoreL2Grp()); // TODO: Implement this command group
+    m_driverController.cross()
+        .onTrue(new AutoCoralScoreL2Grp(0.22, m_armSub, m_canSub, m_drivetrainSub, m_elevatorSub, m_visionSub));
 
     // Circle
-    m_driverController.cross().onTrue(new AutoCoralScoreL3Grp()); // TODO: Implement this command group
+    m_driverController.circle()
+        .onTrue(new AutoCoralScoreL3Grp(0.22, m_armSub, m_canSub, m_drivetrainSub, m_elevatorSub, m_visionSub));
 
     // Triangle
-    m_driverController.cross().onTrue(new AutoCoralScoreL4Grp()); // TODO: Implement this command group
-
+    m_driverController.triangle()
+        .onTrue(new AutoCoralScoreL4Grp(0.22, m_armSub, m_canSub, m_drivetrainSub, m_elevatorSub, m_visionSub));
     // L1
     m_driverController.L1().onTrue(new AutoAlgaeRemovalL2L3Grp(m_armSub, m_elevatorSub));
 
@@ -190,14 +195,16 @@ public class RobotContainer {
     // TODO:  Target scoring to pipe to the left of the vision target
 
     // Share
-    m_driverController.share().onTrue(new BackUpAfterScoringCmd(m_drivetrainSub, m_constraints));
+    m_driverController.share().onTrue(new InstantCommand(() -> m_robotState.setLeft()));
+    //m_driverController.share().onTrue(new BackUpAfterScoringCmd(m_drivetrainSub, m_constraints));
 
     // Options
-    m_driverController.options().whileTrue(AutoBuilder.pathfindToPose(
-        new Pose2d(2, 6.5, new Rotation2d(0)),
-        m_constraints,
-        0.0 // Goal end velocity in meters/sec
-    ));
+    m_driverController.options().onTrue(new InstantCommand(() -> m_robotState.setRight()));
+    // m_driverController.options().whileTrue(AutoBuilder.pathfindToPose(
+    //     new Pose2d(2, 6.5, new Rotation2d(0)),
+    //     m_constraints,
+    //     0.0 // Goal end velocity in meters/sec
+    // ));
 
     // PS
     m_driverController.PS().onTrue(m_drivetrainSub.runOnce(() -> m_drivetrainSub.seedFieldCentric())); // Reset the field-centric heading
@@ -226,7 +233,7 @@ public class RobotContainer {
     // Operator Controller Bindings /////////////////////////////////////////////////////////////////////////////////////////////
 
     // Square
-    m_operatorController.square().onTrue(new GrabCoralGrp(m_armSub, m_canSub, m_elevatorSub));
+    m_operatorController.square().onTrue(new AutoGrabCoralGrp(m_armSub, m_canSub, m_elevatorSub));
 
     // Cross
     m_operatorController.cross().onTrue(new MoveElArmGrp(Constants.Elevator.kL2PreScoreHeight,
@@ -317,8 +324,8 @@ public class RobotContainer {
    * Create a list of auto period action choices
    */
   void autoChooserSetup() {
-    m_Chooser.addOption("Leave Auto", new PathPlannerAuto("Leave Auto"));
-    m_Chooser.addOption("DoNothingAuto", new DoNothingGrp());
-    SmartDashboard.putData("auto choices", m_Chooser);
+    m_Chooser.addOption("Leave", new PathPlannerAuto("Leave Auto"));
+    m_Chooser.addOption("Do-Nothing", new DoNothingGrp());
+    SmartDashboard.putData("Auto Choices", m_Chooser);
   }
 }

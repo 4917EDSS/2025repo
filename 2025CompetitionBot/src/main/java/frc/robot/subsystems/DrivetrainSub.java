@@ -25,7 +25,6 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
-import frc.robot.Constants;
 import frc.robot.generated.TunerConstants.TunerSwerveDrivetrain;
 
 /**
@@ -235,11 +234,11 @@ public class DrivetrainSub extends TunerSwerveDrivetrain implements Subsystem {
       });
     }
     m_field.setRobotPose(getPose());
-    SmartDashboard.putNumber("X Position", getState().Pose.getX());
-    SmartDashboard.putNumber("Y Position", getState().Pose.getY());
-    SmartDashboard.putNumber("SPEED",
+    SmartDashboard.putNumber("Dr X Pos", getState().Pose.getX());
+    SmartDashboard.putNumber("Dr Y Pos", getState().Pose.getY());
+    SmartDashboard.putNumber("Dr Speed",
         Math.sqrt(Math.pow(getState().Speeds.vxMetersPerSecond, 2) + Math.pow(getState().Speeds.vyMetersPerSecond, 2)));
-    SmartDashboard.putNumber("Heading", getState().Pose.getRotation().getDegrees());
+    SmartDashboard.putNumber("Dr Heading", getState().Pose.getRotation().getDegrees());
   }
 
   private void startSimThread() {
