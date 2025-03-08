@@ -18,7 +18,7 @@ import frc.robot.subsystems.VisionSub;
 // https://docs.wpilib.org/en/stable/docs/software/commandbased/convenience-features.html
 public class AutoCoralScoreL2Grp extends SequentialCommandGroup {
   /** Creates a new AutoCoralScoreL2Grp. */
-  public AutoCoralScoreL2Grp(double offset, ArmSub armSub, CanSub canSub, DrivetrainSub drivetrainSub,
+  public AutoCoralScoreL2Grp(ArmSub armSub, CanSub canSub, DrivetrainSub drivetrainSub,
       ElevatorSub elevatorSub, VisionSub visionSub) {
 
     // Add your commands in the addCommands() call, e.g.

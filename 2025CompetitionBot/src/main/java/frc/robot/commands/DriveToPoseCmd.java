@@ -89,6 +89,13 @@ public class DriveToPoseCmd extends Command {
     if(outputDrivePower.getNorm() < 0.1) {
       outputDrivePower = outputDrivePower.times((0.1 / outputDrivePower.getNorm()));
     }
+    if(outputDrivePower.getNorm() > 3.0) {
+      outputDrivePower = outputDrivePower.times((3.0 / outputDrivePower.getNorm()));
+    }
+
+    if(Math.abs(outputRotPower) < 0.1) {
+      outputRotPower = outputRotPower * ((0.1 / Math.abs(outputRotPower)));
+    }
 
     // I believe setControl is just a less confusing version of applyRequest.
     m_drivetrainSub.setControl(backDrive.withVelocityX(outputDrivePower.getX())
@@ -105,7 +112,10 @@ public class DriveToPoseCmd extends Command {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    if(m_error.getTranslation().getNorm() < 0.02 && Math.abs(m_error.getRotation().getDegrees()) < 2) {
+    double speed = Math.sqrt(((Math.pow(m_drivetrainSub.getRobotRelativeSpeeds().vxMetersPerSecond, 2))
+        + (Math.pow(m_drivetrainSub.getRobotRelativeSpeeds().vyMetersPerSecond, 2))));
+    if(m_error.getTranslation().getNorm() < 0.02 && Math.abs(m_error.getRotation().getDegrees()) < 1
+        && Math.abs(m_drivetrainSub.getRobotRelativeSpeeds().omegaRadiansPerSecond) < Math.PI / 30.0 && speed < 0.2) {
       return true;
     }
     return false;
