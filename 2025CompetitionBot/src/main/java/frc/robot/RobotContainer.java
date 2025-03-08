@@ -34,6 +34,8 @@ import frc.robot.commands.AutoCoralScoreL3Grp;
 import frc.robot.commands.AutoCoralScoreL4Grp;
 import frc.robot.commands.AutoDriveCmd;
 import frc.robot.commands.BackUpAfterScoringCmd;
+import frc.robot.commands.ClimbDeployCmd;
+import frc.robot.commands.ClimbRetractCmd;
 import frc.robot.commands.DoNothingGrp;
 import frc.robot.commands.DriveToNearestScoreLocationCmd;
 import frc.robot.commands.ElevatorMoveWithJoystickCmd;
@@ -175,13 +177,14 @@ public class RobotContainer {
     // R2
 
     // POV Up
-    // TODO add command move the climb arm to the climb position
+    m_driverController.povUp().whileTrue(new ClimbDeployCmd(m_climbSub));
+
 
     // POV Right
     // TODO:  Target scoring to pipe to the right of the vision target
 
     // POV Down
-    // TODO Move Climb arm in to climb
+    m_driverController.povDown().whileTrue(new ClimbRetractCmd(m_climbSub));
 
     // POV Left
     // TODO:  Target scoring to pipe to the left of the vision target

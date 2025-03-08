@@ -92,6 +92,7 @@ public final class Constants {
   public static final class Climb {
     public static final double kGrabCageAngle = 45; // TODO
     public static final double kClimbedAngle = 0; // TODO
+    public static final double kClimbMotorPower = 0.1; //TODO
   }
 
   public static final class DriveTrain {
