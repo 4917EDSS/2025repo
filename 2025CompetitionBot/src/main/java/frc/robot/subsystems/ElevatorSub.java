@@ -63,6 +63,7 @@ public class ElevatorSub extends TestableSubsystem {
     talonFxConfiguarator.apply(limitConfigs);
     talonFxConfiguarator2.apply(limitConfigs);
 
+
     // This is how you can set a deadband, invert the motor rotation and set brake/coast
     MotorOutputConfigs outputConfigs = new MotorOutputConfigs();
     outputConfigs.Inverted = InvertedValue.CounterClockwise_Positive;
@@ -126,6 +127,9 @@ public class ElevatorSub extends TestableSubsystem {
     SmartDashboard.putBoolean("El Upper Limit", isAtUpperLimit()); // True if we are at the upper limit
     SmartDashboard.putBoolean("El Calib Switch", encoderResetSwitchHit()); // True if we hit the encoder reset switch
     SmartDashboard.putBoolean("El Height Is Set", m_isElevatorEncoderSet); // True once the encoder is set
+    SmartDashboard.putNumber("El Current 1", testGetMotorAmps(1));
+    SmartDashboard.putNumber("El Current 2", testGetMotorAmps(2));
+
     // Current power value is sent in setPower()
 
     boolean tuning = true;
@@ -518,7 +522,6 @@ public class ElevatorSub extends TestableSubsystem {
         current = -1.0;
         break;
     }
-
     return current;
   }
 }
