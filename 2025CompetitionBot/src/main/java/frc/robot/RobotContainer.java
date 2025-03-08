@@ -30,6 +30,7 @@ import frc.robot.commands.AutoAlgaeRemovalL3L4Grp;
 import frc.robot.commands.AutoCoralScoreL2Grp;
 import frc.robot.commands.AutoCoralScoreL3Grp;
 import frc.robot.commands.AutoCoralScoreL4Grp;
+import frc.robot.commands.AutoDriveCmd;
 import frc.robot.commands.AutoGrabCoralGrp;
 import frc.robot.commands.BackUpAfterScoringCmd;
 import frc.robot.commands.ClimbDeployCmd;
@@ -67,7 +68,7 @@ public class RobotContainer {
   private double MaxSpeed = TunerConstants.kSpeedAt12Volts.in(MetersPerSecond); // kSpeedAt12Volts desired top speed
   private double MaxAngularRate = RotationsPerSecond.of(2.08 / 2.0).in(RadiansPerSecond); // 3/4 of a rotation per second max angular velocity, 2.08 is the speed that made it tip over, very funny video
   private final SwerveRequest.FieldCentric drive = new SwerveRequest.FieldCentric()
-      .withDeadband(MaxSpeed * 0.01).withRotationalDeadband(MaxAngularRate * 0.01) // Add a 1% deadband
+      .withDeadband(MaxSpeed * 0.01).withRotationalDeadband(MaxAngularRate * 0.05) // Add a 1% deadband
       .withDriveRequestType(DriveRequestType.Velocity);
   private final SwerveRequest.SwerveDriveBrake brake = new SwerveRequest.SwerveDriveBrake();
   private final SwerveRequest.PointWheelsAt point = new SwerveRequest.PointWheelsAt();
@@ -135,6 +136,7 @@ public class RobotContainer {
     registerNamedCommands();
   }
 
+  /* Named commands are essentially commands the pathplanner can access */
   private void registerNamedCommands() {
     NamedCommands.registerCommand("SetArmToPositionCmd 63",
         new SetArmToPositionCmd(63, m_armSub)); // put whatever number you want in here, I assume its in degrees
@@ -144,6 +146,21 @@ public class RobotContainer {
 
     NamedCommands.registerCommand("BackUpAfterScoringCmd",
         new BackUpAfterScoringCmd(m_drivetrainSub));
+
+    NamedCommands.registerCommand("AutoCoralScoreL2Grp",
+        new AutoCoralScoreL2Grp(0.22, m_armSub, m_canSub, m_drivetrainSub, m_elevatorSub, m_visionSub)); // TODO: Carson is implementing a fix for this
+
+    NamedCommands.registerCommand("AutoCoralScoreL3Grp",
+        new AutoCoralScoreL3Grp(0.22, m_armSub, m_canSub, m_drivetrainSub, m_elevatorSub, m_visionSub)); // TODO: Carson is implementing a fix for this
+
+    NamedCommands.registerCommand("AutoCoralScoreL4Grp",
+        new AutoCoralScoreL4Grp(0.22, m_armSub, m_canSub, m_drivetrainSub, m_elevatorSub, m_visionSub));// TODO: Carson is implementing a fix for this
+
+    NamedCommands.registerCommand("AutoGrabCoralGrp",
+        new AutoGrabCoralGrp(m_armSub, m_canSub, m_elevatorSub));
+
+    NamedCommands.registerCommand("AutoDriveCmd",
+        new AutoDriveCmd(m_visionSub, m_drivetrainSub, true)); // TODO: Carson is implementing a fix for this
   }
 
   /**
@@ -154,7 +171,7 @@ public class RobotContainer {
 
     // Square
 
-    m_driverController.square().onTrue(new AutoGrabCoralGrp(m_armSub, m_canSub, m_elevatorSub));
+    m_driverController.square().onTrue(new AutoGrabCoralGrp(m_armSub, m_canSub, m_elevatorSub));//.whileTrue(new AutoDriveCmd(m_visionSub, m_drivetrainSub, true));//
 
 
     // Cross
@@ -196,10 +213,10 @@ public class RobotContainer {
     // TODO:  Target scoring to pipe to the left of the vision target
 
     // Share
-    m_driverController.share().onTrue(new InstantCommand(() -> m_robotState.setLeft()));
+    m_driverController.share().onTrue(new InstantCommand(() -> RobotState.setLeft()));
 
     // Options
-    m_driverController.options().onTrue(new InstantCommand(() -> m_robotState.setRight()));
+    m_driverController.options().onTrue(new InstantCommand(() -> RobotState.setRight()));
     // m_driverController.options().whileTrue(AutoBuilder.pathfindToPose(
     //     new Pose2d(2, 6.5, new Rotation2d(0)),
     //     m_constraints,

@@ -25,7 +25,7 @@ public class AutoCoralScoreL3Grp extends SequentialCommandGroup {
     // addCommands(new FooCommand(), new BarCommand());
     addCommands(
         new MoveElArmGrp(Constants.Elevator.kL3PreScoreHeight, Constants.Arm.kL3PreScoreAngle, armSub, elevatorSub), //Move to pre score position
-        new AutoDriveCmd(visionSub, drivetrainSub, offset), //Drive to score location
+        new AutoDriveCmd(visionSub, drivetrainSub, true), //Drive to score location
         new MoveElArmGrp(Constants.Elevator.kL3PostScoreHeight, Constants.Arm.kL3PostScoreAngle, armSub, elevatorSub), //Move to post score location (score)
         new BackUpAfterScoringCmd(drivetrainSub), //Back up
         new ScheduleCommand(new AutoGrabCoralGrp(armSub, canSub, elevatorSub)) //Grab coral

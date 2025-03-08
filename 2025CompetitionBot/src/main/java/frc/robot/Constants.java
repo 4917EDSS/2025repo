@@ -66,15 +66,15 @@ public final class Constants {
     public static final double kAbsoluteEncoderOffset = 0.0; //practice bot 0.65 // From range to 0 - 1
 
     public static final double kTargetAngleDeadband = 2.0; // In degrees
-    public static final double kAngleTolerance = 5; // In degrees
+    public static final double kAngleTolerance = 1.5; // In degrees
     public static final double kAtTargetMaxVelocity = 0.02; // In degrees per second?
 
     public static final double kDangerZoneBottomVertical = -88.0; // In degrees
     public static final double kDangerZoneLowerAngle = -60.0; // In degrees
     public static final double kDangerZoneBraceAngle = -84.0; // In degrees
 
-    public static final double kSlowDownLowerAngle = kMinArmAngle + 2; // In degrees
-    public static final double kSlowDownUpperAngle = kMaxArmAngle - 2; // In degrees
+    public static final double kSlowDownLowerAngle = kMinArmAngle + 5; // In degrees
+    public static final double kSlowDownUpperAngle = kMaxArmAngle - 5; // In degrees
     public static final double kSlowDownSpeed = 0.15; // 1 = full power
 
     public static final double kL2PreScoreAngle = kMaxArmAngle;
