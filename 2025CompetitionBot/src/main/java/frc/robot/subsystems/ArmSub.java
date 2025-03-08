@@ -281,12 +281,12 @@ public class ArmSub extends TestableSubsystem {
     double fedPower = m_armFeedforward.calculate(Math.toRadians(getAngle()), 8 * Math.PI / 3); // Feed forward expects 0 degrees as horizontal
 
     if(updatePower) {
-      double tempPower = (pidPower + fedPower);
+      double realPower = (pidPower + fedPower);
 
 
-      if(Math.abs(tempPower) > Constants.Arm.kMaxPower) {
-        double sign = (tempPower >= 0.0) ? 1.0 : -1.0;
-        tempPower = Constants.Arm.kMaxPower * sign;
+      if(Math.abs(realPower) > Constants.Arm.kMaxPower) {
+        double sign = (realPower >= 0.0) ? 1.0 : -1.0;
+        realPower = Constants.Arm.kMaxPower * sign;
       }
 
       // If arm is close to limit switches, limit power to avoid smashing into them
@@ -297,14 +297,13 @@ public class ArmSub extends TestableSubsystem {
 
       if(!m_automationEnabled) {
         double currentAngle = getAngle();
-        if((currentAngle >= Constants.Arm.kSlowDownUpperAngle) && (tempPower > Constants.Arm.kSlowDownSpeed)) {
-          setPower(Constants.Arm.kSlowDownSpeed);
-        } else if((currentAngle < Constants.Arm.kSlowDownLowerAngle) && (tempPower < -Constants.Arm.kSlowDownSpeed)) {
-          setPower(-Constants.Arm.kSlowDownSpeed);
-        } else {
-          setPower(tempPower);
+        if((currentAngle >= Constants.Arm.kSlowDownUpperAngle) && (realPower > Constants.Arm.kSlowDownSpeed)) {
+          realPower = Constants.Arm.kSlowDownSpeed;
+        } else if((currentAngle < Constants.Arm.kSlowDownLowerAngle) && (realPower < -Constants.Arm.kSlowDownSpeed)) {
+          realPower = -Constants.Arm.kSlowDownSpeed;
         }
       }
+      setPower(realPower);
     }
   }
 
