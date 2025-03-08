@@ -5,16 +5,51 @@
     "data": {
       "commands": [
         {
-          "type": "parallel",
+          "type": "path",
           "data": {
-            "commands": [
-              {
-                "type": "path",
-                "data": {
-                  "pathName": "Start - 1st Auto"
-                }
-              }
-            ]
+            "pathName": "Start - 1st Auto"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "AutoCoralScoreL4Grp"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "1st Score - Pickup"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Pickup - 2nd Auto"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "AutoCoralScoreL4Grp"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "2nd Score - Pickup"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Pickup - 3rd Score"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "AutoCoralScoreL4Grp"
           }
         }
       ]

@@ -159,8 +159,6 @@ public class RobotContainer {
 
     NamedCommands.registerCommand("AutoDriveCmd",
         new AutoDriveCmd(m_visionSub, m_drivetrainSub, true)); // TODO: Carson is implementing a fix for this
-
-
   }
 
   /**
