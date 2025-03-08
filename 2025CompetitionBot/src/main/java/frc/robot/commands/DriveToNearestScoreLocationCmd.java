@@ -32,7 +32,7 @@ public class DriveToNearestScoreLocationCmd extends SelectCommand<Translation2d>
   private static final Translation2d MIDDLE_OF_RED_REEF = new Translation2d(13.0594, 4.0315);
   private static final double MIDDLE_OF_REEF_TO_SCORING_FACE = 0.831;
   private static final double MIDDLE_SCORING_FACE_TO_BRANCH = 0.164;
-  private static final double REEF_TO_MIDDLE_OF_ROBOT_SCORING = 0.381;
+  private static final double REEF_TO_MIDDLE_OF_ROBOT_SCORING = 0.381 + 0.19; //Robot width plus distance from score
   private static List<Pose2d> s_targetPoses = new ArrayList<Pose2d>();
 
   /**
@@ -64,23 +64,25 @@ public class DriveToNearestScoreLocationCmd extends SelectCommand<Translation2d>
         Rotation2d scoringFaceRotation = robotsRotation.minus(Rotation2d.k180deg);
         Translation2d reefToScoringFace =
             new Translation2d(MIDDLE_OF_REEF_TO_SCORING_FACE + REEF_TO_MIDDLE_OF_ROBOT_SCORING, scoringFaceRotation);
-        // TODO - work out what this translation should be. Orthogonal to scoring face.
-        Translation2d scoringFaceToBranch = new Translation2d(MIDDLE_SCORING_FACE_TO_BRANCH, 4917);
+        Translation2d scoringFaceToBranch =
+            new Translation2d(MIDDLE_SCORING_FACE_TO_BRANCH, scoringFaceRotation.plus(Rotation2d.kCW_90deg));
         s_targetPoses.add(new Pose2d(middleOfReef.plus(reefToScoringFace).plus(scoringFaceToBranch), robotsRotation));
         s_targetPoses.add(new Pose2d(middleOfReef.plus(reefToScoringFace).minus(scoringFaceToBranch), robotsRotation));
       }
+    }
+    for(Pose2d p : s_targetPoses) {
+      System.out.println(p);
     }
     assert s_targetPoses.size() == 2 * 6 * 2; // 2 reefs, 6 faces, 2 branches/face
   }
 
   private static Map<Translation2d, Command> s_locationToCommandMap = new HashMap<Translation2d, Command>();
 
-  public static void warmUpMap(PathConstraints constraints) {
+  public static void warmUpMap(DrivetrainSub drivetrainSub) {
     generateTargetPoses();
     for(Pose2d targetPose : s_targetPoses) {
-      s_locationToCommandMap.put(targetPose.getTranslation(), AutoBuilder.pathfindToPose(targetPose, constraints));
+      s_locationToCommandMap.put(targetPose.getTranslation(), new DriveToPoseCmd(targetPose, drivetrainSub));
     }
-    PathfindingCommand.warmupCommand().schedule();
   }
 
   private static Translation2d getClosest(Pose2d location) {

@@ -127,7 +127,7 @@ public class RobotContainer {
     WebServer.start(5800, Filesystem.getDeployDirectory().getPath());
 
     // Warmup MUST happen before we configure buttons or autos.
-    DriveToNearestScoreLocationCmd.warmUpMap(m_constraints);
+    DriveToNearestScoreLocationCmd.warmUpMap(m_drivetrainSub);
 
     configureBindings();
     autoChooserSetup();
@@ -197,7 +197,7 @@ public class RobotContainer {
     m_driverController.L2().onTrue(new InstantCommand(() -> slowDown())).onFalse(new InstantCommand(() -> speedUp()));
 
     // R2
-    m_driverController.R2().onTrue(new BackUpAfterScoringCmd(m_drivetrainSub));
+    m_driverController.R2().onTrue(new DriveToNearestScoreLocationCmd(m_drivetrainSub));
 
     // POV Up
     m_driverController.povUp().whileTrue(new ClimbDeployCmd(m_climbSub));
