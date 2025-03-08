@@ -25,7 +25,7 @@ public class ClimbRetractCmd extends Command {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    m_climbSub.setPower(-Constants.Climb.kClimbMotorPower); // going oposite way
+    m_climbSub.setPower(Constants.Climb.kClimbMotorPower); // going oposite way
   }
 
   // Called every time the scheduler runs while the command is scheduled.
