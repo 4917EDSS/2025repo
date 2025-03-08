@@ -37,7 +37,7 @@ import frc.robot.commands.BackUpAfterScoringCmd;
 import frc.robot.commands.DoNothingGrp;
 import frc.robot.commands.DriveToNearestScoreLocationCmd;
 import frc.robot.commands.ElevatorMoveWithJoystickCmd;
-import frc.robot.commands.GrabCoralGrp;
+import frc.robot.commands.AutoGrabCoralGrp;
 import frc.robot.commands.KillAllCmd;
 import frc.robot.commands.MoveElArmGrp;
 import frc.robot.commands.SetArmToPositionCmd;
@@ -153,18 +153,20 @@ public class RobotContainer {
     // Drive controller bindings ////////////////////////////////////////////////////////////////////////////////////////////////
 
     // Square
-    //m_driverController.square().onTrue(new GrabCoralGrp(m_armSub, m_canSub, m_elevatorSub));
-    m_driverController.square().whileTrue(new AutoDriveCmd(m_visionSub, m_drivetrainSub, 0.22));
+
+    m_driverController.square().onTrue(new AutoGrabCoralGrp(m_armSub, m_canSub, m_elevatorSub));
+
 
     // Cross
-    m_driverController.cross().onTrue(new AutoCoralScoreL2Grp(m_armSub, m_elevatorSub)); // TODO: Implement this command group
+    m_driverController.cross()
+        .onTrue(new AutoCoralScoreL2Grp(0.22, m_armSub, m_canSub, m_drivetrainSub, m_elevatorSub, m_visionSub));
 
     // Circle
-    m_driverController.cross()
+    m_driverController.circle()
         .onTrue(new AutoCoralScoreL3Grp(0.22, m_armSub, m_canSub, m_drivetrainSub, m_elevatorSub, m_visionSub));
 
     // Triangle
-    m_driverController.cross()
+    m_driverController.triangle()
         .onTrue(new AutoCoralScoreL4Grp(0.22, m_armSub, m_canSub, m_drivetrainSub, m_elevatorSub, m_visionSub));
     // L1
     m_driverController.L1().onTrue(new AutoAlgaeRemovalL2L3Grp(m_armSub, m_elevatorSub));
@@ -228,7 +230,7 @@ public class RobotContainer {
     // Operator Controller Bindings /////////////////////////////////////////////////////////////////////////////////////////////
 
     // Square
-    m_operatorController.square().onTrue(new GrabCoralGrp(m_armSub, m_canSub, m_elevatorSub));
+    m_operatorController.square().onTrue(new AutoGrabCoralGrp(m_armSub, m_canSub, m_elevatorSub));
 
     // Cross
     m_operatorController.cross().onTrue(new MoveElArmGrp(Constants.Elevator.kL2PreScoreHeight,

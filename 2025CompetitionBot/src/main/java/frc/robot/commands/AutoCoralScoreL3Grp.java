@@ -24,10 +24,13 @@ public class AutoCoralScoreL3Grp extends SequentialCommandGroup {
     // Add your commands in the addCommands() call, e.g.
     // addCommands(new FooCommand(), new BarCommand());
     addCommands(
-        new MoveElArmGrp(Constants.Elevator.kL3PreScoreHeight, Constants.Arm.kL3PreScoreAngle, armSub, elevatorSub),
-        new AutoDriveCmd(visionSub, drivetrainSub, offset),
-        new MoveElArmGrp(Constants.Elevator.kL3PostScoreHeight, Constants.Arm.kL3PostScoreAngle, armSub, elevatorSub),
-        new DriveToPoseCmd(new Pose2d(0, 0.5, new Rotation2d(0)), drivetrainSub),
-        new WaitForCoralPresentCmd(canSub));
+        new MoveElArmGrp(Constants.Elevator.kL3PreScoreHeight, Constants.Arm.kL3PreScoreAngle, armSub, elevatorSub), //Move to pre score position
+        new AutoDriveCmd(visionSub, drivetrainSub, offset), //Drive to score location
+        new MoveElArmGrp(Constants.Elevator.kL3PostScoreHeight, Constants.Arm.kL3PostScoreAngle, armSub, elevatorSub), //Move to post score location (score)
+        new DriveToPoseCmd(new Pose2d(0, 0.5, new Rotation2d(0)), drivetrainSub), //Back up
+        new MoveElArmGrp(Constants.Elevator.kCoralGrabbableHeight, Constants.Arm.kCoralGrabbableAngle, armSub, //Get ready to grab coral
+            elevatorSub),
+        new AutoGrabCoralGrp(armSub, canSub, elevatorSub) //Grab coral
+    );
   }
 }
