@@ -23,14 +23,12 @@ import frc.robot.subsystems.DrivetrainSub;
 public class BackUpAfterScoringCmd extends DeferredCommand {
 
   private static Command returnAutoBuilder(DrivetrainSub drivetrainSub) {
-    System.out.println(drivetrainSub.getPose().toString());
 
 
     Pose2d backupPose = new Pose2d(
         drivetrainSub.getPose().getTranslation()
             .plus(new Translation2d(0.75, drivetrainSub.getPose().getRotation().minus(Rotation2d.k180deg))),
         drivetrainSub.getPose().getRotation());
-    System.out.println(backupPose);
     return new DriveToPoseCmd(backupPose, drivetrainSub);
   }
 
