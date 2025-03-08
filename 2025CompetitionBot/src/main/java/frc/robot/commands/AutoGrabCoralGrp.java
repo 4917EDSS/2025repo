@@ -19,6 +19,8 @@ public class AutoGrabCoralGrp extends SequentialCommandGroup {
     // Add your commands in the addCommands() call, e.g.
     // addCommands(new FooCommand(), new BarCommand());
     addCommands(
+        new MoveElArmGrp(Constants.Elevator.kCoralGrabbableHeight, Constants.Arm.kCoralGrabbableAngle, armSub, //Get ready to grab coral
+            elevatorSub),
         new WaitForCoralPresentCmd(canSub),
         new MoveElArmGrp(Constants.Arm.kMinArmAngle, Constants.Elevator.kCoralLoadedHeight, armSub, elevatorSub),
         new MoveElArmGrp(Constants.Arm.kMinArmAngle, Constants.Elevator.kCoralGrabbableHeight, armSub, elevatorSub));

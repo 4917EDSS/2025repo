@@ -87,6 +87,8 @@ public final class Constants {
 
     public static final double kL3L4AlgaeRemovalPrepAngle = 25; // TODO
     public static final double kL2L3AlgaeRemovalPrepAngle = 20; // TODO
+    public static final double kL2L3AlgaeRemovalPostAngle = kMaxArmAngle;
+    public static final double kL3L4AlgaeRemovalPostAngle = kMaxArmAngle;
   }
 
   public static final class Climb {
@@ -130,6 +132,8 @@ public final class Constants {
     public static final double kL4PostScoreHeight = 1334;
     public static final double kL3L4AlgaeRemovalPrepHeight = 949; // TODO
     public static final double kL2L3AlgaeRemovalPrepHeight = 582; // TODO
+    public static final double kL2L3AlgaeRemovalPostHeight = kL2L3AlgaeRemovalPrepHeight;
+    public static final double kL3L4AlgaeRemovalPostHeight = kL3L4AlgaeRemovalPrepHeight;
     // public static final double kScoreDropAngle = 30;
     // public static final double kElevatorDropScore = -30;
   }
