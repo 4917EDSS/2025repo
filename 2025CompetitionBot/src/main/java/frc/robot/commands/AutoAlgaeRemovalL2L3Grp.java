@@ -4,6 +4,8 @@
 
 package frc.robot.commands;
 
+
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ScheduleCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.Constants;
@@ -12,6 +14,8 @@ import frc.robot.subsystems.CanSub;
 import frc.robot.subsystems.DrivetrainSub;
 import frc.robot.subsystems.ElevatorSub;
 import frc.robot.subsystems.VisionSub;
+import frc.robot.utils.RobotState;
+
 
 // NOTE: Consider using this command inline, rather than writing a subclass. For more
 // information, see:
@@ -30,6 +34,7 @@ public class AutoAlgaeRemovalL2L3Grp extends SequentialCommandGroup {
         new MoveElArmGrp(Constants.Elevator.kL2L3AlgaeRemovalPostHeight, Constants.Arm.kL2L3AlgaeRemovalPostAngle,
             armSub, elevatorSub), // Remove algae
         new BackUpAfterScoringCmd(drivetrainSub), // Backup
-        new ScheduleCommand(new AutoGrabCoralGrp(armSub, canSub, elevatorSub))); //Pick up coral
+        new ScheduleCommand(new AutoGrabCoralGrp(armSub, canSub, elevatorSub)),
+        new InstantCommand(() -> RobotState.l2L3Algae())); //Pick up coral
   }
 }
