@@ -160,7 +160,7 @@ public class VisionSub extends SubsystemBase {
 
   private void updateOdometry(SwerveDriveState swerveDriveState) {
     updateOdemetry(swerveDriveState, LEFT);
-    //updateOdemetry(swerveDriveState, RIGHT);
+    updateOdemetry(swerveDriveState, RIGHT);
   }
 
   private void updateOdemetry(SwerveDriveState swerveDriveState, String camera) {
