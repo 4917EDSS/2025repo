@@ -34,6 +34,8 @@ import frc.robot.commands.AutoCoralScoreL3Grp;
 import frc.robot.commands.AutoCoralScoreL4Grp;
 import frc.robot.commands.AutoDriveCmd;
 import frc.robot.commands.BackUpAfterScoringCmd;
+import frc.robot.commands.ClimbDeployCmd;
+import frc.robot.commands.ClimbRetractCmd;
 import frc.robot.commands.DoNothingGrp;
 import frc.robot.commands.DriveToNearestScoreLocationCmd;
 import frc.robot.commands.ElevatorMoveWithJoystickCmd;
@@ -143,7 +145,7 @@ public class RobotContainer {
         new SetElevatorToHeightCmd(100, m_elevatorSub)); // put whatever number you want in here. probably mm
 
     NamedCommands.registerCommand("BackUpAfterScoringCmd",
-        new BackUpAfterScoringCmd(m_drivetrainSub, m_constraints));
+        new BackUpAfterScoringCmd(m_drivetrainSub));
   }
 
   /**
@@ -169,10 +171,12 @@ public class RobotContainer {
     m_driverController.triangle()
         .onTrue(new AutoCoralScoreL4Grp(0.22, m_armSub, m_canSub, m_drivetrainSub, m_elevatorSub, m_visionSub));
     // L1
-    m_driverController.L1().onTrue(new AutoAlgaeRemovalL2L3Grp(m_armSub, m_elevatorSub));
+    m_driverController.L1()
+        .onTrue(new AutoAlgaeRemovalL2L3Grp(m_armSub, m_canSub, m_drivetrainSub, m_elevatorSub, m_visionSub));
 
     // R1
-    m_driverController.R1().onTrue(new AutoAlgaeRemovalL3L4Grp(m_armSub, m_elevatorSub));
+    m_driverController.R1()
+        .onTrue(new AutoAlgaeRemovalL3L4Grp(m_armSub, m_canSub, m_drivetrainSub, m_elevatorSub, m_visionSub));
 
     // L2
     m_driverController.L2().onTrue(new InstantCommand(() -> slowDown())).onFalse(new InstantCommand(() -> speedUp()));
@@ -180,20 +184,20 @@ public class RobotContainer {
     // R2
 
     // POV Up
-    // TODO add command move the climb arm to the climb position
+    m_driverController.povUp().whileTrue(new ClimbDeployCmd(m_climbSub));
+
 
     // POV Right
     // TODO:  Target scoring to pipe to the right of the vision target
 
     // POV Down
-    // TODO Move Climb arm in to climb
+    m_driverController.povDown().whileTrue(new ClimbRetractCmd(m_climbSub));
 
     // POV Left
     // TODO:  Target scoring to pipe to the left of the vision target
 
     // Share
     m_driverController.share().onTrue(new InstantCommand(() -> m_robotState.setLeft()));
-    //m_driverController.share().onTrue(new BackUpAfterScoringCmd(m_drivetrainSub, m_constraints));
 
     // Options
     m_driverController.options().onTrue(new InstantCommand(() -> m_robotState.setRight()));
