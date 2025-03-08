@@ -14,6 +14,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.DrivetrainSub;
 import frc.robot.subsystems.VisionSub;
+import frc.robot.utils.RobotState;
 
 /*
  * You should consider using the more terse Command factories API instead
@@ -32,19 +33,29 @@ public class AutoDriveCmd extends Command {
   double fbDist;
   int counter;
   double offset;
+  boolean useOffset;
   private final DrivetrainSub m_drivetrainSub;
 
   /** Creates a new AutoDriveCmd. */
-  public AutoDriveCmd(VisionSub visionSub, DrivetrainSub drivetrainSub, double offset) {
+  public AutoDriveCmd(VisionSub visionSub, DrivetrainSub drivetrainSub, boolean useOffset) {
     m_visionSub = visionSub;
     m_drivetrainSub = drivetrainSub;
-    this.offset = offset;
+    this.useOffset = useOffset;
     addRequirements(drivetrainSub);// Use addRequirements() here to declare subsystem dependencies.
   }
 
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
+    if(useOffset) {
+      if(RobotState.getSide().equals("left")) {
+        offset = 0.22;
+      } else {
+        offset = -0.22;
+      }
+    } else {
+      offset = 0;
+    }
     // Use open-loop control for drive motors
     counter = 0;
   }
@@ -66,7 +77,7 @@ public class AutoDriveCmd extends Command {
       slowDown = 4;
     }
     m_drivetrainSub.setControl(
-        autoDrive.withVelocityX(-yPower * MaxSpeed / slowDown).withVelocityY(xPower * MaxSpeed / 4)
+        autoDrive.withVelocityX(-yPower * MaxSpeed / slowDown).withVelocityY(xPower * MaxSpeed / 3)
             .withRotationalRate(m_visionSub.getRobotRotation() / ((lrDist * 20) + 20) * MaxAngularRate * 0.20));//applyRequest(() -> autoDrive.withVelocityX(xDist).withVelocityY(yDist));
 
     //}
@@ -94,7 +105,7 @@ public class AutoDriveCmd extends Command {
   @Override
   public boolean isFinished() {
 
-    if(Math.abs(fbDist) < 0.5 && Math.abs(lrDist) < 0.15) {
+    if(Math.abs(fbDist) < 0.50 && Math.abs(lrDist) < 0.025) {
       System.out.println("Forward/backward dist: " + fbDist);
 
       return true;
