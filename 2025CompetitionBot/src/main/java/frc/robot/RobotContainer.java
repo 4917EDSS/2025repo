@@ -52,6 +52,7 @@ import frc.robot.subsystems.ElevatorSub;
 import frc.robot.subsystems.VisionSub;
 import frc.robot.utils.SwerveTelemetry;
 import frc.robot.utils.TestManager;
+import frc.robot.utils.RobotState;
 
 
 /**
@@ -82,6 +83,7 @@ public class RobotContainer {
   private final DrivetrainSub m_drivetrainSub = TunerConstants.createDrivetrain();
   private final ElevatorSub m_elevatorSub = new ElevatorSub();
   private final VisionSub m_visionSub;
+  private final RobotState m_robotState = new RobotState();
 
   // Controllers
   private final CommandPS4Controller m_driverController =
@@ -188,14 +190,16 @@ public class RobotContainer {
     // TODO:  Target scoring to pipe to the left of the vision target
 
     // Share
-    m_driverController.share().onTrue(new BackUpAfterScoringCmd(m_drivetrainSub, m_constraints));
+    m_driverController.share().onTrue(new InstantCommand(() -> m_robotState.setLeft()));
+    //m_driverController.share().onTrue(new BackUpAfterScoringCmd(m_drivetrainSub, m_constraints));
 
     // Options
-    m_driverController.options().whileTrue(AutoBuilder.pathfindToPose(
-        new Pose2d(2, 6.5, new Rotation2d(0)),
-        m_constraints,
-        0.0 // Goal end velocity in meters/sec
-    ));
+    m_driverController.options().onTrue(new InstantCommand(() -> m_robotState.setRight()));
+    // m_driverController.options().whileTrue(AutoBuilder.pathfindToPose(
+    //     new Pose2d(2, 6.5, new Rotation2d(0)),
+    //     m_constraints,
+    //     0.0 // Goal end velocity in meters/sec
+    // ));
 
     // PS
     m_driverController.PS().onTrue(m_drivetrainSub.runOnce(() -> m_drivetrainSub.seedFieldCentric())); // Reset the field-centric heading
