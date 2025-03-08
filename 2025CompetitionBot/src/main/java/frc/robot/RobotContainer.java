@@ -29,6 +29,7 @@ import frc.robot.commands.AutoAlgaeRemovalL3L4Grp;
 import frc.robot.commands.AutoCoralScoreL2Grp;
 import frc.robot.commands.AutoCoralScoreL3Grp;
 import frc.robot.commands.AutoCoralScoreL4Grp;
+import frc.robot.commands.AutoDriveCmd;
 import frc.robot.commands.AutoGrabCoralGrp;
 import frc.robot.commands.BackUpAfterScoringCmd;
 import frc.robot.commands.ClimbDeployCmd;
@@ -133,6 +134,7 @@ public class RobotContainer {
     registerNamedCommands();
   }
 
+  /* Named commands are essentially commands the pathplanner can access */
   private void registerNamedCommands() {
     NamedCommands.registerCommand("SetArmToPositionCmd 63",
         new SetArmToPositionCmd(63, m_armSub)); // put whatever number you want in here, I assume its in degrees
@@ -142,6 +144,23 @@ public class RobotContainer {
 
     NamedCommands.registerCommand("BackUpAfterScoringCmd",
         new BackUpAfterScoringCmd(m_drivetrainSub));
+
+    NamedCommands.registerCommand("AutoCoralScoreL2Grp",
+        new AutoCoralScoreL2Grp(true, m_armSub, m_canSub, m_drivetrainSub, m_elevatorSub, m_visionSub)); // TODO: Carson is implementing a fix for this
+
+    NamedCommands.registerCommand("AutoCoralScoreL3Grp",
+        new AutoCoralScoreL3Grp(true, m_armSub, m_canSub, m_drivetrainSub, m_elevatorSub, m_visionSub)); // TODO: Carson is implementing a fix for this
+
+    NamedCommands.registerCommand("AutoCoralScoreL4Grp",
+        new AutoCoralScoreL4Grp(true, m_armSub, m_canSub, m_drivetrainSub, m_elevatorSub, m_visionSub));// TODO: Carson is implementing a fix for this
+
+    NamedCommands.registerCommand("AutoGrabCoralGrp",
+        new AutoGrabCoralGrp(m_armSub, m_canSub, m_elevatorSub));
+
+    NamedCommands.registerCommand("AutoDriveCmd",
+        new AutoDriveCmd(m_visionSub, m_drivetrainSub, true)); // TODO: Carson is implementing a fix for this
+
+
   }
 
   /**
