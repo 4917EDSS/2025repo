@@ -4,18 +4,15 @@
 
 package frc.robot.subsystems;
 
-import java.util.Map;
 import java.util.logging.Logger;
 import com.ctre.phoenix6.swerve.SwerveDrivetrain.SwerveDriveState;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
-import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
-import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.utils.LimelightHelpers;
 
@@ -27,14 +24,10 @@ public class VisionSub extends SubsystemBase {
   LimelightHelpers.PoseEstimate mt2;
   double m_previousTimestamp = 0.0;//Map<String, Double> m_previousTimestamps = Map.of(LEFT, 0.0);//, RIGHT, 0.0);
   DrivetrainSub m_drivetrainSub;
+
   NetworkTable m_networkTableL = NetworkTableInstance.getDefault().getTable(LEFT);
   NetworkTable m_networkTableR = NetworkTableInstance.getDefault().getTable(RIGHT);
   NetworkTable m_mainNetworkTable;
-
-  ShuffleboardTab m_ShuffleboardTab = Shuffleboard.getTab("Vision");
-  GenericEntry m_shuffleboardID, m_shuffleboardTv, m_shuffleboardT2d, m_shuffleboardTx, m_shuffleboardTy,
-      m_shuffleboardTa,
-      m_shuffleboardPipeline, m_shuffleboardPipetype, m_currentLimelight;
 
   NetworkTableEntry m_tidL;
   NetworkTableEntry m_t2dL;
@@ -76,6 +69,7 @@ public class VisionSub extends SubsystemBase {
   public VisionSub(DrivetrainSub drivetrainSub) {
     // For now, we will just use the left camera for shuffleboard.
     // TODO - add the right camera in here.
+
     m_t2dL = m_networkTableL.getEntry("t2d");
     m_tidL = m_networkTableL.getEntry("tid");
     m_tvL = m_networkTableL.getEntry("tv");
@@ -98,15 +92,6 @@ public class VisionSub extends SubsystemBase {
     m_botposeTargetR = m_networkTableR.getEntry("botpose_targetspace");
     m_botposeR = m_networkTableR.getEntry("botpose");
 
-    m_shuffleboardID = m_ShuffleboardTab.add("Primary ID", 0).getEntry();
-    m_shuffleboardTv = m_ShuffleboardTab.add("Sees tag?", 0).getEntry();
-    m_shuffleboardT2d = m_ShuffleboardTab.add("# of Tags", 0).getEntry();
-    m_shuffleboardTx = m_ShuffleboardTab.add("tag x", 0).getEntry();
-    m_shuffleboardTy = m_ShuffleboardTab.add("tag y", 0).getEntry();
-    m_shuffleboardTa = m_ShuffleboardTab.add("Area of tag", 0).getEntry();
-    m_shuffleboardPipeline = m_ShuffleboardTab.add("Pipeline", -1).getEntry();
-    m_shuffleboardPipetype = m_ShuffleboardTab.add("Pipetype", "unknown").getEntry();
-    m_currentLimelight = m_ShuffleboardTab.add("Main Limelight:", "none").getEntry();
 
     m_drivetrainSub = drivetrainSub;
     init();
@@ -129,7 +114,7 @@ public class VisionSub extends SubsystemBase {
       pipetype = m_pipetypeL.getString("");
       botposeTarget = m_botposeTargetL.getDoubleArray(new double[8]);
       botpose = m_botposeL.getDoubleArray(new double[8]);
-      m_currentLimelight.setString("left");
+      SmartDashboard.putBoolean("Vi Use Left LL", true);
     } else {
       id = m_tidR.getInteger(0);
       t2d = m_t2dR.getDoubleArray(new double[2]);
@@ -141,19 +126,18 @@ public class VisionSub extends SubsystemBase {
       pipetype = m_pipetypeR.getString("");
       botposeTarget = m_botposeTargetR.getDoubleArray(new double[8]);
       botpose = m_botposeR.getDoubleArray(new double[8]);
-      m_currentLimelight.setString("right");
+      SmartDashboard.putBoolean("Vi Use Left LL", false);
     }
     // This method will be called once per scheduler run
-
-
-    m_shuffleboardID.setInteger(id);
-    m_shuffleboardT2d.setDouble(t2d[1]);
-    m_shuffleboardTv.setInteger(tv);
-    m_shuffleboardTx.setDouble(x);
-    m_shuffleboardTy.setDouble(y);
-    m_shuffleboardTa.setDouble(a);
-    m_shuffleboardPipeline.setInteger(pipeline);
-    m_shuffleboardPipetype.setString(pipetype);
+    SmartDashboard.putNumber("Vi Primary ID", id);
+    SmartDashboard.putNumber("Vi Sees Tag", t2d[1]);
+    SmartDashboard.putNumber("Vi # of Tags", tv);
+    SmartDashboard.putNumber("Vi Tag X", x);
+    SmartDashboard.putNumber("Vi Tag Y", y);
+    SmartDashboard.putNumber("Vi Tag Area", a);
+    SmartDashboard.putNumber("Vi Pipeline", pipeline);
+    SmartDashboard.putString("Vi Pipetype", pipetype);
+    //SmartDashboard.putString("Main Limelight:", "none");
 
     updateOdometry(m_drivetrainSub.getState());
   }

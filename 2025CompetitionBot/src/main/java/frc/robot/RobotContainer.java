@@ -76,8 +76,8 @@ public class RobotContainer {
   private final TestManager m_testManager = new TestManager();
 
   // Robot subsystems
-  private final ArmSub m_armSub = new ArmSub();
   private final CanSub m_canSub = new CanSub(Constants.CanIds.kElevatorCustomCanBoard);
+  private final ArmSub m_armSub = new ArmSub(m_canSub);
   private final ClimbSub m_climbSub = new ClimbSub();
   private final DrivetrainSub m_drivetrainSub = TunerConstants.createDrivetrain();
   private final ElevatorSub m_elevatorSub = new ElevatorSub();
@@ -151,18 +151,21 @@ public class RobotContainer {
     // Drive controller bindings ////////////////////////////////////////////////////////////////////////////////////////////////
 
     // Square
-    m_driverController.square().onTrue(new AutoGrabCoralGrp(m_armSub, m_canSub, m_elevatorSub));
-    //m_driverController.square().whileTrue(new AutoDriveCmd(m_visionSub, m_drivetrainSub, 0.22));
+
+    //m_driverController.square().onTrue(new GrabCoralGrp(m_armSub, m_canSub, m_elevatorSub));
+    m_driverController.square().whileTrue(new AutoDriveCmd(m_visionSub, m_drivetrainSub, 0.22));
+
 
     // Cross
-    m_driverController.cross().onTrue(new AutoCoralScoreL2Grp()); // TODO: Implement this command group
+    m_driverController.cross().onTrue(new AutoCoralScoreL2Grp(m_armSub, m_elevatorSub)); // TODO: Implement this command group
 
     // Circle
-    m_driverController.cross().onTrue(new AutoCoralScoreL3Grp()); // TODO: Implement this command group
+    m_driverController.cross()
+        .onTrue(new AutoCoralScoreL3Grp(0.22, m_armSub, m_canSub, m_drivetrainSub, m_elevatorSub, m_visionSub));
 
     // Triangle
-    m_driverController.cross().onTrue(new AutoCoralScoreL4Grp()); // TODO: Implement this command group
-
+    m_driverController.cross()
+        .onTrue(new AutoCoralScoreL4Grp(0.22, m_armSub, m_canSub, m_drivetrainSub, m_elevatorSub, m_visionSub));
     // L1
     m_driverController.L1().onTrue(new AutoAlgaeRemovalL2L3Grp(m_armSub, m_elevatorSub));
 
@@ -314,8 +317,8 @@ public class RobotContainer {
    * Create a list of auto period action choices
    */
   void autoChooserSetup() {
-    m_Chooser.addOption("Leave Auto", new PathPlannerAuto("Leave Auto"));
-    m_Chooser.addOption("DoNothingAuto", new DoNothingGrp());
-    SmartDashboard.putData("auto choices", m_Chooser);
+    m_Chooser.addOption("Leave", new PathPlannerAuto("Leave Auto"));
+    m_Chooser.addOption("Do-Nothing", new DoNothingGrp());
+    SmartDashboard.putData("Auto Choices", m_Chooser);
   }
 }

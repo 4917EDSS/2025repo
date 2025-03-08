@@ -43,9 +43,9 @@ public class CanSub extends SubsystemBase {
 
     // Read sensor(s)
     UpdateCustomSensor();
-    SmartDashboard.putNumber("TOF Distance", getTOFDist());
-    SmartDashboard.putNumber("Analog 0", getAnaglog0());
-    SmartDashboard.putBoolean("Coral Sensor", isCoralPresent());
+    SmartDashboard.putNumber("CAN TOF Dist", getTOFDist());
+    SmartDashboard.putNumber("CAN Coral Raw", getAnaglog0());
+    SmartDashboard.putBoolean("CAN Coral In", isCoralPresent());
     //System.out.println(getTOFDist());
     //updateShuffleboard();
   }

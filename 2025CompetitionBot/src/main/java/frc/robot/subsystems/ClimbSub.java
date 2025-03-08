@@ -40,12 +40,6 @@ public class ClimbSub extends TestableSubsystem {
     outputConfigs.NeutralMode = NeutralModeValue.Brake;
     talonFxConfiguarator.apply(outputConfigs);
 
-    /* Add motor and limit switche(s) to Smartdashboard */
-    // Climb power widget is in setPower method
-    // Tells us if climb is all the way in or out
-    SmartDashboard.putBoolean("Cl InLimit", isAtInLimit());
-    SmartDashboard.putBoolean("Cl OutLimit", isAtOutLimit());
-
     init();
   }
 
@@ -58,6 +52,11 @@ public class ClimbSub extends TestableSubsystem {
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
+    // Add motor and limit switche(s) to Smartdashboard
+    SmartDashboard.putNumber("Cl Angle", getPosition());
+    SmartDashboard.putBoolean("Cl In Limit", isAtInLimit());
+    SmartDashboard.putBoolean("Cl Out Limit", isAtOutLimit());
+    SmartDashboard.putNumber("Cl Current", getElectricalCurrent());
   }
 
   public boolean isAtInLimit() {
@@ -208,7 +207,7 @@ public class ClimbSub extends TestableSubsystem {
 
     switch(motorId) {
       case 1:
-        current = m_climbMotor.getStatorCurrent().getValueAsDouble();
+        current = getElectricalCurrent();
         break;
       default:
         // Return an invalid value
