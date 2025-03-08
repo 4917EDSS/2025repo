@@ -8,24 +8,24 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 1.7494615621158334,
-        "y": 7.059360878751191
+        "x": 1.8300140919860446,
+        "y": 6.311481799640395
       },
       "isLocked": false,
       "linkedName": "1st Pickup"
     },
     {
       "anchor": {
-        "x": 3.694736842105263,
-        "y": 5.093009868421053
+        "x": 2.404109589041096,
+        "y": 4.235359589041096
       },
       "prevControl": {
-        "x": 3.550411184210527,
-        "y": 5.4682565789473685
+        "x": 2.303239199887756,
+        "y": 4.689526484461743
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "3rd Score"
+      "linkedName": "3rd Auto Score"
     }
   ],
   "rotationTargets": [],
@@ -42,7 +42,7 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": -60.724745722747436
+    "rotation": 0.0
   },
   "reversed": false,
   "folder": null,

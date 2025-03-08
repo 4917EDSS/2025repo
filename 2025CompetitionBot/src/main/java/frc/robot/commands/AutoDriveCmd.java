@@ -47,6 +47,13 @@ public class AutoDriveCmd extends Command {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
+    // Use open-loop control for drive motors
+    counter = 0;
+  }
+
+  // Called every time the scheduler runs while the command is scheduled.
+  @Override
+  public void execute() {
     if(useOffset) {
       if(RobotState.getSide().equals("left")) {
         offset = 0.22;
@@ -56,13 +63,6 @@ public class AutoDriveCmd extends Command {
     } else {
       offset = 0;
     }
-    // Use open-loop control for drive motors
-    counter = 0;
-  }
-
-  // Called every time the scheduler runs while the command is scheduled.
-  @Override
-  public void execute() {
     m_apriltagPos = m_visionSub.getTagPose2d();
     //check if angle is positive or negative
     lrDist = m_apriltagPos.getX() + offset;

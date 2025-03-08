@@ -30,12 +30,12 @@ public class ArmSub extends TestableSubsystem {
   private final SparkLimitSwitch m_forwardLimitSwitch = m_armMotor.getForwardLimitSwitch();
   private final SparkLimitSwitch m_reverseLimitSwitch = m_armMotor.getReverseLimitSwitch();
 
-  private double m_kS = 0.018;
-  private double m_kG = 0.01;
-  private double m_kV = 0;
-  private double m_kP = 0.005;
-  private double m_kI = 0;
-  private double m_kD = 0;
+  private double m_kS = 0.0;
+  private double m_kG = 0.001;
+  private double m_kV = 0.005;
+  private double m_kP = 0.012;
+  private double m_kI = 0.0;
+  private double m_kD = 0.0;
   private final ArmFeedforward m_armFeedforward = new ArmFeedforward(m_kS, m_kG, m_kV);
   private final PIDController m_armPid = new PIDController(m_kP, m_kI, m_kD);
 
@@ -105,6 +105,14 @@ public class ArmSub extends TestableSubsystem {
         double kS = SmartDashboard.getNumber("Arm kS", m_kS);
         double kG = SmartDashboard.getNumber("Arm kG", m_kG);
         double kV = SmartDashboard.getNumber("Arm kV", m_kV);
+
+        m_armFeedforward.setKs(kS);
+        m_armFeedforward.setKg(kG);
+        m_armFeedforward.setKv(kV);
+
+        m_armPid.setP(kP);
+        m_armPid.setI(kI);
+        m_armPid.setD(kD);
 
         SmartDashboard.putNumber("Arm kP", kP);
         SmartDashboard.putNumber("Arm kI", kI);
@@ -270,7 +278,7 @@ public class ArmSub extends TestableSubsystem {
     }
 
     double pidPower = m_armPid.calculate(getAngle(), activeAngle);
-    double fedPower = m_armFeedforward.calculate(Math.toRadians(getAngle()), pidPower); // Feed forward expects 0 degrees as horizontal
+    double fedPower = m_armFeedforward.calculate(Math.toRadians(getAngle()), 8 * Math.PI / 3); // Feed forward expects 0 degrees as horizontal
 
     if(updatePower) {
       double tempPower = (pidPower + fedPower);

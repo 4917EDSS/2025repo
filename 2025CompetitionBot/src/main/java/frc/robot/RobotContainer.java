@@ -20,6 +20,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandPS4Controller;
 import frc.robot.Constants.OperatorConstants;
@@ -39,6 +40,7 @@ import frc.robot.commands.DriveToNearestScoreLocationCmd;
 import frc.robot.commands.ElevatorMoveWithJoystickCmd;
 import frc.robot.commands.KillAllCmd;
 import frc.robot.commands.MoveElArmGrp;
+import frc.robot.commands.MoveElArmPostManualCmd;
 import frc.robot.commands.SetArmToPositionCmd;
 import frc.robot.commands.SetElevatorToHeightCmd;
 import frc.robot.commands.tests.RunTestsGrp;
@@ -66,7 +68,7 @@ public class RobotContainer {
   private double MaxSpeed = TunerConstants.kSpeedAt12Volts.in(MetersPerSecond); // kSpeedAt12Volts desired top speed
   private double MaxAngularRate = RotationsPerSecond.of(2.08 / 2.0).in(RadiansPerSecond); // 3/4 of a rotation per second max angular velocity, 2.08 is the speed that made it tip over, very funny video
   private final SwerveRequest.FieldCentric drive = new SwerveRequest.FieldCentric()
-      .withDeadband(MaxSpeed * 0.01).withRotationalDeadband(MaxAngularRate * 0.05) // Add a 1% deadband
+      .withDeadband(MaxSpeed * 0.01).withRotationalDeadband(MaxAngularRate * 0.01) // Add a 1% deadband
       .withDriveRequestType(DriveRequestType.Velocity);
   private final SwerveRequest.SwerveDriveBrake brake = new SwerveRequest.SwerveDriveBrake();
   private final SwerveRequest.PointWheelsAt point = new SwerveRequest.PointWheelsAt();
@@ -142,25 +144,23 @@ public class RobotContainer {
     NamedCommands.registerCommand("SetElevatorToHeightCmd 100",
         new SetElevatorToHeightCmd(100, m_elevatorSub)); // put whatever number you want in here. probably mm
 
-    NamedCommands.registerCommand("BackUpAfterScoringCmd",
-        new BackUpAfterScoringCmd(m_drivetrainSub));
+    // NamedCommands.registerCommand("BackUpAfterScoringCmd",
+    //     new BackUpAfterScoringCmd(m_drivetrainSub));
 
     NamedCommands.registerCommand("AutoCoralScoreL2Grp",
-        new AutoCoralScoreL2Grp(0.22, m_armSub, m_canSub, m_drivetrainSub, m_elevatorSub, m_visionSub)); // TODO: Carson is implementing a fix for this
+        new AutoCoralScoreL2Grp(m_armSub, m_canSub, m_drivetrainSub, m_elevatorSub, m_visionSub)); // TODO: Carson is implementing a fix for this
 
     NamedCommands.registerCommand("AutoCoralScoreL3Grp",
-        new AutoCoralScoreL3Grp(0.22, m_armSub, m_canSub, m_drivetrainSub, m_elevatorSub, m_visionSub)); // TODO: Carson is implementing a fix for this
+        new AutoCoralScoreL3Grp(m_armSub, m_canSub, m_drivetrainSub, m_elevatorSub, m_visionSub)); // TODO: Carson is implementing a fix for this
 
     NamedCommands.registerCommand("AutoCoralScoreL4Grp",
-        new AutoCoralScoreL4Grp(0.22, m_armSub, m_canSub, m_drivetrainSub, m_elevatorSub, m_visionSub));// TODO: Carson is implementing a fix for this
+        new AutoCoralScoreL4Grp(m_armSub, m_canSub, m_drivetrainSub, m_elevatorSub, m_visionSub));// TODO: Carson is implementing a fix for this
 
     NamedCommands.registerCommand("AutoGrabCoralGrp",
         new AutoGrabCoralGrp(m_armSub, m_canSub, m_elevatorSub));
 
     NamedCommands.registerCommand("AutoDriveCmd",
         new AutoDriveCmd(m_visionSub, m_drivetrainSub, true)); // TODO: Carson is implementing a fix for this
-
-
   }
 
   /**
@@ -176,15 +176,15 @@ public class RobotContainer {
 
     // Cross
     m_driverController.cross()
-        .onTrue(new AutoCoralScoreL2Grp(0.22, m_armSub, m_canSub, m_drivetrainSub, m_elevatorSub, m_visionSub));
+        .onTrue(new AutoCoralScoreL2Grp(m_armSub, m_canSub, m_drivetrainSub, m_elevatorSub, m_visionSub));
 
     // Circle
     m_driverController.circle()
-        .onTrue(new AutoCoralScoreL3Grp(0.22, m_armSub, m_canSub, m_drivetrainSub, m_elevatorSub, m_visionSub));
+        .onTrue(new AutoCoralScoreL3Grp(m_armSub, m_canSub, m_drivetrainSub, m_elevatorSub, m_visionSub));
 
     // Triangle
     m_driverController.triangle()
-        .onTrue(new AutoCoralScoreL4Grp(0.22, m_armSub, m_canSub, m_drivetrainSub, m_elevatorSub, m_visionSub));
+        .onTrue(new AutoCoralScoreL4Grp(m_armSub, m_canSub, m_drivetrainSub, m_elevatorSub, m_visionSub));
     // L1
     m_driverController.L1()
         .onTrue(new AutoAlgaeRemovalL2L3Grp(m_armSub, m_canSub, m_drivetrainSub, m_elevatorSub, m_visionSub));
@@ -253,32 +253,40 @@ public class RobotContainer {
     m_operatorController.square().onTrue(new AutoGrabCoralGrp(m_armSub, m_canSub, m_elevatorSub));
 
     // Cross
-    m_operatorController.cross().onTrue(new MoveElArmGrp(Constants.Elevator.kL2PreScoreHeight,
-        Constants.Arm.kL2PreScoreAngle, m_armSub, m_elevatorSub));
+    m_operatorController.cross().onTrue(new ParallelCommandGroup(
+        new MoveElArmGrp(Constants.Elevator.kL2PreScoreHeight, Constants.Arm.kL2PreScoreAngle, m_armSub, m_elevatorSub),
+        new InstantCommand(() -> RobotState.l2())));
 
     // Circle
-    m_operatorController.circle().onTrue(new MoveElArmGrp(Constants.Elevator.kL3PreScoreHeight,
-        Constants.Arm.kL3PreScoreAngle, m_armSub, m_elevatorSub));
+    m_operatorController.circle().onTrue(new ParallelCommandGroup(
+        new MoveElArmGrp(Constants.Elevator.kL3PreScoreHeight,
+            Constants.Arm.kL3PreScoreAngle, m_armSub, m_elevatorSub),
+        new InstantCommand(() -> RobotState.l3())));
 
     // Triangle
-    m_operatorController.triangle().onTrue(new MoveElArmGrp(Constants.Elevator.kL4PreScoreHeight,
-        Constants.Arm.kL4PreScoreAngle, m_armSub, m_elevatorSub));
+    m_operatorController.triangle()
+        .onTrue(new ParallelCommandGroup(new MoveElArmGrp(Constants.Elevator.kL4PreScoreHeight,
+            Constants.Arm.kL4PreScoreAngle, m_armSub, m_elevatorSub),
+            new InstantCommand(() -> RobotState.l4())));
 
     // L1
     m_operatorController.L1()
-        .onTrue(new MoveElArmGrp(Constants.Elevator.kL2L3AlgaeRemovalPrepHeight,
-            Constants.Arm.kL2L3AlgaeRemovalPrepAngle, m_armSub, m_elevatorSub));
+        .onTrue(new ParallelCommandGroup(new MoveElArmGrp(Constants.Elevator.kL2L3AlgaeRemovalPrepHeight,
+            Constants.Arm.kL2L3AlgaeRemovalPrepAngle, m_armSub, m_elevatorSub),
+            new InstantCommand(() -> RobotState.l2L3Algae())));
 
     // R1
     m_operatorController.R1()
-        .whileTrue(new MoveElArmGrp(Constants.Elevator.kL3L4AlgaeRemovalPrepHeight,
-            Constants.Arm.kL3L4AlgaeRemovalPrepAngle, m_armSub, m_elevatorSub));
+        .whileTrue(new ParallelCommandGroup(new MoveElArmGrp(Constants.Elevator.kL3L4AlgaeRemovalPrepHeight,
+            Constants.Arm.kL3L4AlgaeRemovalPrepAngle, m_armSub, m_elevatorSub),
+            new InstantCommand(() -> RobotState.l2L3Algae())));
 
     // L2
     // TODO: Remove algae based on which one we are prepped for
 
     // R2
     // TODO: Score coral based on which one we are prepped for
+    m_operatorController.R2().onTrue(new MoveElArmPostManualCmd(m_armSub, m_elevatorSub));
 
     // POV Up
     m_operatorController.povUp()
