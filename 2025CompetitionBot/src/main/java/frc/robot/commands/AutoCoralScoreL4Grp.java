@@ -22,7 +22,7 @@ import frc.robot.utils.RobotState;
 // https://docs.wpilib.org/en/stable/docs/software/commandbased/convenience-features.html
 public class AutoCoralScoreL4Grp extends SequentialCommandGroup {
   /** Creates a new AutoCoralScoreL4Grp. */
-  public AutoCoralScoreL4Grp(double offset, ArmSub armSub, CanSub canSub, DrivetrainSub drivetrainSub,
+  public AutoCoralScoreL4Grp(ArmSub armSub, CanSub canSub, DrivetrainSub drivetrainSub,
       ElevatorSub elevatorSub, VisionSub visionSub) {
     // Add your commands in the addCommands() call, e.g.
     // addCommands(new FooCommand(), new BarCommand());

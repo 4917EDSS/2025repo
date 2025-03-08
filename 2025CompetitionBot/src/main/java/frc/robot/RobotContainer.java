@@ -66,7 +66,7 @@ public class RobotContainer {
   private double MaxSpeed = TunerConstants.kSpeedAt12Volts.in(MetersPerSecond); // kSpeedAt12Volts desired top speed
   private double MaxAngularRate = RotationsPerSecond.of(2.08 / 2.0).in(RadiansPerSecond); // 3/4 of a rotation per second max angular velocity, 2.08 is the speed that made it tip over, very funny video
   private final SwerveRequest.FieldCentric drive = new SwerveRequest.FieldCentric()
-      .withDeadband(MaxSpeed * 0.01).withRotationalDeadband(MaxAngularRate * 0.05) // Add a 1% deadband
+      .withDeadband(MaxSpeed * 0.01).withRotationalDeadband(MaxAngularRate * 0.01) // Add a 1% deadband
       .withDriveRequestType(DriveRequestType.Velocity);
   private final SwerveRequest.SwerveDriveBrake brake = new SwerveRequest.SwerveDriveBrake();
   private final SwerveRequest.PointWheelsAt point = new SwerveRequest.PointWheelsAt();
@@ -142,17 +142,17 @@ public class RobotContainer {
     NamedCommands.registerCommand("SetElevatorToHeightCmd 100",
         new SetElevatorToHeightCmd(100, m_elevatorSub)); // put whatever number you want in here. probably mm
 
-    NamedCommands.registerCommand("BackUpAfterScoringCmd",
-        new BackUpAfterScoringCmd(m_drivetrainSub));
+    // NamedCommands.registerCommand("BackUpAfterScoringCmd",
+    //     new BackUpAfterScoringCmd(m_drivetrainSub));
 
     NamedCommands.registerCommand("AutoCoralScoreL2Grp",
-        new AutoCoralScoreL2Grp(0.22, m_armSub, m_canSub, m_drivetrainSub, m_elevatorSub, m_visionSub)); // TODO: Carson is implementing a fix for this
+        new AutoCoralScoreL2Grp(m_armSub, m_canSub, m_drivetrainSub, m_elevatorSub, m_visionSub)); // TODO: Carson is implementing a fix for this
 
     NamedCommands.registerCommand("AutoCoralScoreL3Grp",
-        new AutoCoralScoreL3Grp(0.22, m_armSub, m_canSub, m_drivetrainSub, m_elevatorSub, m_visionSub)); // TODO: Carson is implementing a fix for this
+        new AutoCoralScoreL3Grp(m_armSub, m_canSub, m_drivetrainSub, m_elevatorSub, m_visionSub)); // TODO: Carson is implementing a fix for this
 
     NamedCommands.registerCommand("AutoCoralScoreL4Grp",
-        new AutoCoralScoreL4Grp(0.22, m_armSub, m_canSub, m_drivetrainSub, m_elevatorSub, m_visionSub));// TODO: Carson is implementing a fix for this
+        new AutoCoralScoreL4Grp(m_armSub, m_canSub, m_drivetrainSub, m_elevatorSub, m_visionSub));// TODO: Carson is implementing a fix for this
 
     NamedCommands.registerCommand("AutoGrabCoralGrp",
         new AutoGrabCoralGrp(m_armSub, m_canSub, m_elevatorSub));
@@ -174,15 +174,15 @@ public class RobotContainer {
 
     // Cross
     m_driverController.cross()
-        .onTrue(new AutoCoralScoreL2Grp(0.22, m_armSub, m_canSub, m_drivetrainSub, m_elevatorSub, m_visionSub));
+        .onTrue(new AutoCoralScoreL2Grp(m_armSub, m_canSub, m_drivetrainSub, m_elevatorSub, m_visionSub));
 
     // Circle
     m_driverController.circle()
-        .onTrue(new AutoCoralScoreL3Grp(0.22, m_armSub, m_canSub, m_drivetrainSub, m_elevatorSub, m_visionSub));
+        .onTrue(new AutoCoralScoreL3Grp(m_armSub, m_canSub, m_drivetrainSub, m_elevatorSub, m_visionSub));
 
     // Triangle
     m_driverController.triangle()
-        .onTrue(new AutoCoralScoreL4Grp(0.22, m_armSub, m_canSub, m_drivetrainSub, m_elevatorSub, m_visionSub));
+        .onTrue(new AutoCoralScoreL4Grp(m_armSub, m_canSub, m_drivetrainSub, m_elevatorSub, m_visionSub));
     // L1
     m_driverController.L1()
         .onTrue(new AutoAlgaeRemovalL2L3Grp(m_armSub, m_canSub, m_drivetrainSub, m_elevatorSub, m_visionSub));
