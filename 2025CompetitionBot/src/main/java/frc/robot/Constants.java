@@ -66,15 +66,15 @@ public final class Constants {
     public static final double kAbsoluteEncoderOffset = 0.0; //practice bot 0.65 // From range to 0 - 1
 
     public static final double kTargetAngleDeadband = 2.0; // In degrees
-    public static final double kAngleTolerance = 5; // In degrees
+    public static final double kAngleTolerance = 1.5; // In degrees
     public static final double kAtTargetMaxVelocity = 0.02; // In degrees per second?
 
     public static final double kDangerZoneBottomVertical = -88.0; // In degrees
     public static final double kDangerZoneLowerAngle = -60.0; // In degrees
     public static final double kDangerZoneBraceAngle = -84.0; // In degrees
 
-    public static final double kSlowDownLowerAngle = kMinArmAngle + 2; // In degrees
-    public static final double kSlowDownUpperAngle = kMaxArmAngle - 2; // In degrees
+    public static final double kSlowDownLowerAngle = kMinArmAngle + 5; // In degrees
+    public static final double kSlowDownUpperAngle = kMaxArmAngle - 5; // In degrees
     public static final double kSlowDownSpeed = 0.15; // 1 = full power
 
     public static final double kL2PreScoreAngle = kMaxArmAngle;
@@ -87,11 +87,14 @@ public final class Constants {
 
     public static final double kL3L4AlgaeRemovalPrepAngle = 25;
     public static final double kL2L3AlgaeRemovalPrepAngle = 20;
+    public static final double kL2L3AlgaeRemovalPostAngle = kMaxArmAngle;
+    public static final double kL3L4AlgaeRemovalPostAngle = kMaxArmAngle;
   }
 
   public static final class Climb {
     public static final double kGrabCageAngle = 45; // TODO
     public static final double kClimbedAngle = 0; // TODO
+    public static final double kClimbMotorPower = 0.1; //TODO
   }
 
   public static final class DriveTrain {
@@ -130,6 +133,8 @@ public final class Constants {
     public static final double kL4PostScoreHeight = 1334;
     public static final double kL3L4AlgaeRemovalPrepHeight = 949;
     public static final double kL2L3AlgaeRemovalPrepHeight = 582;
+    public static final double kL2L3AlgaeRemovalPostHeight = kL2L3AlgaeRemovalPrepHeight;
+    public static final double kL3L4AlgaeRemovalPostHeight = kL3L4AlgaeRemovalPrepHeight;
     // public static final double kScoreDropAngle = 30;
     // public static final double kElevatorDropScore = -30;
   }

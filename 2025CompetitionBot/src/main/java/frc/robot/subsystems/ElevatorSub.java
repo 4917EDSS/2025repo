@@ -40,6 +40,7 @@ public class ElevatorSub extends TestableSubsystem {
   private double m_kD = 0.0;
   private final ElevatorFeedforward m_feedforward = new ElevatorFeedforward(m_kS, m_kG, m_kV);
   private final PIDController m_elevatorPID = new PIDController(m_kP, m_kI, m_kD);
+  private final PIDController m_negitiveelevatorPID = new PIDController(0.002, 0, 0);
 
   private Supplier<Double> m_armAngle;
   private double m_targetHeight = 0.0;
@@ -62,6 +63,7 @@ public class ElevatorSub extends TestableSubsystem {
     limitConfigs.StatorCurrentLimitEnable = true;
     talonFxConfiguarator.apply(limitConfigs);
     talonFxConfiguarator2.apply(limitConfigs);
+
 
     // This is how you can set a deadband, invert the motor rotation and set brake/coast
     MotorOutputConfigs outputConfigs = new MotorOutputConfigs();
@@ -126,6 +128,9 @@ public class ElevatorSub extends TestableSubsystem {
     SmartDashboard.putBoolean("El Upper Limit", isAtUpperLimit()); // True if we are at the upper limit
     SmartDashboard.putBoolean("El Calib Switch", encoderResetSwitchHit()); // True if we hit the encoder reset switch
     SmartDashboard.putBoolean("El Height Is Set", m_isElevatorEncoderSet); // True once the encoder is set
+    SmartDashboard.putNumber("El Current 1", testGetMotorAmps(1));
+    SmartDashboard.putNumber("El Current 2", testGetMotorAmps(2));
+
     // Current power value is sent in setPower()
 
     boolean tuning = true;
@@ -352,9 +357,14 @@ public class ElevatorSub extends TestableSubsystem {
 
     double ffPower = m_feedforward.calculate(getVelocity());
     double pidPower = (m_elevatorPID.calculate(getPositionMm(), activeTarget));
+    double negitivepidPower = (m_negitiveelevatorPID.calculate(getPositionMm(), activeTarget));
 
     if(updatePower) {
-      setPower(ffPower + pidPower);
+      if(activeTarget > getPositionMm()) {
+        setPower(ffPower + pidPower);
+      } else {
+        setPower(ffPower + negitivepidPower);
+      }
     }
   }
 
@@ -518,7 +528,6 @@ public class ElevatorSub extends TestableSubsystem {
         current = -1.0;
         break;
     }
-
     return current;
   }
 }

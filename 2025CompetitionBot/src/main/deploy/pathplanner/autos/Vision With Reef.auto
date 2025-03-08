@@ -11,6 +11,12 @@
           }
         },
         {
+          "type": "named",
+          "data": {
+            "name": "AutoCoralScoreL4Grp"
+          }
+        },
+        {
           "type": "path",
           "data": {
             "pathName": "1st Score - Pickup"
@@ -23,6 +29,12 @@
           }
         },
         {
+          "type": "named",
+          "data": {
+            "name": "AutoCoralScoreL4Grp"
+          }
+        },
+        {
           "type": "path",
           "data": {
             "pathName": "2nd Score - Pickup"
@@ -31,13 +43,13 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Pickup - 2nd Auto"
+            "pathName": "Pickup - 3rd Score"
           }
         },
         {
-          "type": "path",
+          "type": "named",
           "data": {
-            "pathName": "3rd Score - Pickup"
+            "name": "AutoCoralScoreL4Grp"
           }
         }
       ]

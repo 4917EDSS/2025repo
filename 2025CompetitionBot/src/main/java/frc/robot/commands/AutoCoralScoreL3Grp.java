@@ -4,8 +4,8 @@
 
 package frc.robot.commands;
 
-import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
+
+import edu.wpi.first.wpilibj2.command.ScheduleCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.Constants;
 import frc.robot.subsystems.ArmSub;
@@ -19,18 +19,16 @@ import frc.robot.subsystems.VisionSub;
 // https://docs.wpilib.org/en/stable/docs/software/commandbased/convenience-features.html
 public class AutoCoralScoreL3Grp extends SequentialCommandGroup {
   /** Creates a new AutoCoralScoreL3Grp. */
-  public AutoCoralScoreL3Grp(double offset, ArmSub armSub, CanSub canSub, DrivetrainSub drivetrainSub,
+  public AutoCoralScoreL3Grp(ArmSub armSub, CanSub canSub, DrivetrainSub drivetrainSub,
       ElevatorSub elevatorSub, VisionSub visionSub) {
     // Add your commands in the addCommands() call, e.g.
     // addCommands(new FooCommand(), new BarCommand());
     addCommands(
         new MoveElArmGrp(Constants.Elevator.kL3PreScoreHeight, Constants.Arm.kL3PreScoreAngle, armSub, elevatorSub), //Move to pre score position
-        new AutoDriveCmd(visionSub, drivetrainSub, offset), //Drive to score location
+        new AutoDriveCmd(visionSub, drivetrainSub, true), //Drive to score location
         new MoveElArmGrp(Constants.Elevator.kL3PostScoreHeight, Constants.Arm.kL3PostScoreAngle, armSub, elevatorSub), //Move to post score location (score)
-        new DriveToPoseCmd(new Pose2d(0, 0.5, new Rotation2d(0)), drivetrainSub), //Back up
-        new MoveElArmGrp(Constants.Elevator.kCoralGrabbableHeight, Constants.Arm.kCoralGrabbableAngle, armSub, //Get ready to grab coral
-            elevatorSub),
-        new AutoGrabCoralGrp(armSub, canSub, elevatorSub) //Grab coral
+        new BackUpAfterScoringCmd(drivetrainSub), //Back up
+        new ScheduleCommand(new AutoGrabCoralGrp(armSub, canSub, elevatorSub)) //Grab coral
     );
   }
 }

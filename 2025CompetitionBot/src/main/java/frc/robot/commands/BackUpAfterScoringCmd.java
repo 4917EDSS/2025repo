@@ -22,20 +22,14 @@ import frc.robot.subsystems.DrivetrainSub;
  */
 public class BackUpAfterScoringCmd extends DeferredCommand {
 
-  private static Command returnAutoBuilder(DrivetrainSub drivetrainSub, PathConstraints constraints) {
-    System.out.println(drivetrainSub.getPose().toString());
+  private static Command returnAutoBuilder(DrivetrainSub drivetrainSub) {
 
-    System.out.println(new Pose2d(drivetrainSub.getPose().getTranslation()
-        .plus(new Translation2d(0.75, drivetrainSub.getPose().getRotation().minus(Rotation2d.k180deg))),
-        drivetrainSub.getPose().getRotation()).toString());
-    return AutoBuilder.pathfindToPose(
-        new Pose2d(
-            drivetrainSub.getPose().getTranslation()
-                .plus(new Translation2d(0.75, drivetrainSub.getPose().getRotation().minus(Rotation2d.k180deg))),
-            drivetrainSub.getPose().getRotation()), // TODO - fill this is in with a pose calculated by us!
-        constraints,
-        0 // In m/s - don't need it to be stopped when finished, we are just backing off.
-    );
+
+    Pose2d backupPose = new Pose2d(
+        drivetrainSub.getPose().getTranslation()
+            .plus(new Translation2d(0.75, drivetrainSub.getPose().getRotation().minus(Rotation2d.k180deg))),
+        drivetrainSub.getPose().getRotation());
+    return new DriveToPoseCmd(backupPose, drivetrainSub);
   }
 
   @Override
@@ -45,7 +39,7 @@ public class BackUpAfterScoringCmd extends DeferredCommand {
   }
 
   /** Creates a new BackUpAfterScoringCmd. */
-  public BackUpAfterScoringCmd(DrivetrainSub drivetrainSub, PathConstraints constraints) {
-    super(() -> returnAutoBuilder(drivetrainSub, constraints), Set.of(drivetrainSub));
+  public BackUpAfterScoringCmd(DrivetrainSub drivetrainSub) {
+    super(() -> returnAutoBuilder(drivetrainSub), Set.of(drivetrainSub));
   }
 }
