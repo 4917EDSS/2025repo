@@ -10,13 +10,20 @@ import com.ctre.phoenix6.swerve.SwerveRequest;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj2.command.Command;
+import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.DrivetrainSub;
+import static edu.wpi.first.units.Units.MetersPerSecond;
+import static edu.wpi.first.units.Units.RadiansPerSecond;
+import static edu.wpi.first.units.Units.RotationsPerSecond;
 
 /*
  * You should consider using the more terse Command factories API instead
  * https://docs.wpilib.org/en/stable/docs/software/commandbased/organizing-command-based.html#defining-commands
  */
 public class DriveToPoseCmd extends Command {
+  private double MaxSpeed = TunerConstants.kSpeedAt12Volts.in(MetersPerSecond);
+  private double MaxAngularRate = RotationsPerSecond.of(2.08 / 2.0).in(RadiansPerSecond);
+
   DrivetrainSub m_drivetrainSub;
   Pose2d m_targetPose;
   Pose2d m_currentPose;
@@ -43,9 +50,7 @@ public class DriveToPoseCmd extends Command {
 
   // Called when the command is initially scheduled.
   @Override
-  public void initialize() {
-
-  }
+  public void initialize() {}
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
@@ -62,9 +67,21 @@ public class DriveToPoseCmd extends Command {
     outputDrivePower = outputDrivePower.plus((m_error.minus(m_prevError)).getTranslation().times(m_driveD / 0.02));//0.02 is the amount of time between periodic calls, which is why it is used as the change in time
     outputRotPower += ((m_error.minus(m_prevError)).getRotation().getDegrees()) * m_rotD / 0.02;
 
+    Double totalSpeed = Math.sqrt(Math.pow(outputDrivePower.getX(), 2) + Math.pow(outputDrivePower.getY(), 2));
+    Double driveNormalizationValue = 1.0;
+    if(totalSpeed > MaxSpeed) {
+      driveNormalizationValue = MaxSpeed / totalSpeed;
+    }
+
+    Double rotNormalizationValue = 1.0;
+    if(outputRotPower > MaxAngularRate) {
+      rotNormalizationValue = MaxAngularRate / outputRotPower;
+    }
+
     // I believe setControl is just a less confusing version of applyRequest.
-    m_drivetrainSub.setControl(backDrive.withVelocityX(outputDrivePower.getX()).withVelocityY(outputDrivePower.getY())
-        .withRotationalRate(outputRotPower));
+    m_drivetrainSub.setControl(backDrive.withVelocityX(outputDrivePower.getX() * driveNormalizationValue)
+        .withVelocityY(outputDrivePower.getY() * driveNormalizationValue)
+        .withRotationalRate(outputRotPower * rotNormalizationValue));
   }
 
   // Called once the command ends or is interrupted.

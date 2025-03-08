@@ -10,12 +10,9 @@ import static edu.wpi.first.units.Units.RotationsPerSecond;
 import com.ctre.phoenix6.SignalLogger;
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.swerve.SwerveRequest;
-import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.commands.PathPlannerAuto;
 import com.pathplanner.lib.path.PathConstraints;
-import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.net.WebServer;
 import edu.wpi.first.wpilibj.Filesystem;
@@ -32,14 +29,13 @@ import frc.robot.commands.AutoAlgaeRemovalL3L4Grp;
 import frc.robot.commands.AutoCoralScoreL2Grp;
 import frc.robot.commands.AutoCoralScoreL3Grp;
 import frc.robot.commands.AutoCoralScoreL4Grp;
-import frc.robot.commands.AutoDriveCmd;
+import frc.robot.commands.AutoGrabCoralGrp;
 import frc.robot.commands.BackUpAfterScoringCmd;
 import frc.robot.commands.ClimbDeployCmd;
 import frc.robot.commands.ClimbRetractCmd;
 import frc.robot.commands.DoNothingGrp;
 import frc.robot.commands.DriveToNearestScoreLocationCmd;
 import frc.robot.commands.ElevatorMoveWithJoystickCmd;
-import frc.robot.commands.AutoGrabCoralGrp;
 import frc.robot.commands.KillAllCmd;
 import frc.robot.commands.MoveElArmGrp;
 import frc.robot.commands.SetArmToPositionCmd;
@@ -52,9 +48,9 @@ import frc.robot.subsystems.ClimbSub;
 import frc.robot.subsystems.DrivetrainSub;
 import frc.robot.subsystems.ElevatorSub;
 import frc.robot.subsystems.VisionSub;
+import frc.robot.utils.RobotState;
 import frc.robot.utils.SwerveTelemetry;
 import frc.robot.utils.TestManager;
-import frc.robot.utils.RobotState;
 
 
 /**
@@ -145,7 +141,7 @@ public class RobotContainer {
         new SetElevatorToHeightCmd(100, m_elevatorSub)); // put whatever number you want in here. probably mm
 
     NamedCommands.registerCommand("BackUpAfterScoringCmd",
-        new BackUpAfterScoringCmd(m_drivetrainSub, m_constraints));
+        new BackUpAfterScoringCmd(m_drivetrainSub));
   }
 
   /**
@@ -171,15 +167,18 @@ public class RobotContainer {
     m_driverController.triangle()
         .onTrue(new AutoCoralScoreL4Grp(0.22, m_armSub, m_canSub, m_drivetrainSub, m_elevatorSub, m_visionSub));
     // L1
-    m_driverController.L1().onTrue(new AutoAlgaeRemovalL2L3Grp(m_armSub, m_elevatorSub));
+    m_driverController.L1()
+        .onTrue(new AutoAlgaeRemovalL2L3Grp(m_armSub, m_canSub, m_drivetrainSub, m_elevatorSub, m_visionSub));
 
     // R1
-    m_driverController.R1().onTrue(new AutoAlgaeRemovalL3L4Grp(m_armSub, m_elevatorSub));
+    m_driverController.R1()
+        .onTrue(new AutoAlgaeRemovalL3L4Grp(m_armSub, m_canSub, m_drivetrainSub, m_elevatorSub, m_visionSub));
 
     // L2
     m_driverController.L2().onTrue(new InstantCommand(() -> slowDown())).onFalse(new InstantCommand(() -> speedUp()));
 
     // R2
+    m_driverController.R2().onTrue(new BackUpAfterScoringCmd(m_drivetrainSub));
 
     // POV Up
     m_driverController.povUp().whileTrue(new ClimbDeployCmd(m_climbSub));
@@ -196,7 +195,6 @@ public class RobotContainer {
 
     // Share
     m_driverController.share().onTrue(new InstantCommand(() -> m_robotState.setLeft()));
-    //m_driverController.share().onTrue(new BackUpAfterScoringCmd(m_drivetrainSub, m_constraints));
 
     // Options
     m_driverController.options().onTrue(new InstantCommand(() -> m_robotState.setRight()));

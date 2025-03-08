@@ -103,7 +103,7 @@ public class VisionSub extends SubsystemBase {
 
   @Override
   public void periodic() {
-    if(m_tvL.getInteger(-1) == 1) {
+    if(m_taL.getDouble(0) > m_taR.getDouble(0)) {
       id = m_tidL.getInteger(0);
       t2d = m_t2dL.getDoubleArray(new double[2]);
       tv = m_tvL.getInteger(0);
@@ -160,7 +160,7 @@ public class VisionSub extends SubsystemBase {
 
   private void updateOdometry(SwerveDriveState swerveDriveState) {
     updateOdemetry(swerveDriveState, LEFT);
-    //updateOdemetry(swerveDriveState, RIGHT);
+    updateOdemetry(swerveDriveState, RIGHT);
   }
 
   private void updateOdemetry(SwerveDriveState swerveDriveState, String camera) {
