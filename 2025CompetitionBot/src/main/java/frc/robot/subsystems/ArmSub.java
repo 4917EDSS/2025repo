@@ -287,16 +287,16 @@ public class ArmSub extends TestableSubsystem {
       // Also, this may not be necessary since the encoder is absolute and this kind of guard is usually only necessary when
       // there's a chance that the mechnism and encoder get out of sync.  Of course there's the case when you're in manual control.
 
-      // double currentAngle = getAngle();
-      // if((currentAngle > Constants.Arm.kSlowDownUpperAngle) && (tempPower > Constants.Arm.kSlowDownSpeed)
-      //     && (m_targetAngle > currentAngle)) {
-      //   setPower(Constants.Arm.kSlowDownSpeed);
-      // } else if((currentAngle < Constants.Arm.kSlowDownLowerAngle) && (tempPower > Constants.Arm.kSlowDownSpeed)
-      //     && (m_targetAngle < currentAngle)) {
-      //   setPower(Constants.Arm.kSlowDownSpeed);
-      // } else {
-      setPower(tempPower);
-      //}
+      if(!m_automationEnabled) {
+        double currentAngle = getAngle();
+        if((currentAngle >= Constants.Arm.kSlowDownUpperAngle) && (tempPower > Constants.Arm.kSlowDownSpeed)) {
+          setPower(Constants.Arm.kSlowDownSpeed);
+        } else if((currentAngle < Constants.Arm.kSlowDownLowerAngle) && (tempPower < -Constants.Arm.kSlowDownSpeed)) {
+          setPower(-Constants.Arm.kSlowDownSpeed);
+        } else {
+          setPower(tempPower);
+        }
+      }
     }
   }
 
