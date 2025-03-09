@@ -144,7 +144,7 @@ public class TestManager {
    */
   public void resetTestStatuses() {
     // Reset all individual tests
-    for (int id = 0; id < m_testStatuses.size(); id++) {
+    for(int id = 0; id < m_testStatuses.size(); id++) {
       updateTestStatus(id, Result.kFail, "Not Run");
     }
 
@@ -158,11 +158,11 @@ public class TestManager {
   public void updateOverallStatus() {
     Result overallResult = Result.kPass; // Assume a pass unless we find test that didn't
 
-    for (TestStatus testStatus : m_testStatuses) {
-      if (testStatus.m_result == Result.kFail) {
+    for(TestStatus testStatus : m_testStatuses) {
+      if(testStatus.m_result == Result.kFail) {
         overallResult = Result.kFail;
         break;
-      } else if (testStatus.m_result == Result.kWarn) {
+      } else if(testStatus.m_result == Result.kWarn) {
         overallResult = Result.kWarn;
       }
     }
@@ -174,7 +174,7 @@ public class TestManager {
   /**
    * Update the result and text for a single test
    * 
-   * @param id     ID of the test as returned from registerNewTest()
+   * @param id ID of the test as returned from registerNewTest()
    * @param result Current result of the test
    * @param status Status text describing the result
    */
@@ -191,19 +191,19 @@ public class TestManager {
    * Utility function that checks if the values provided should yield a pass, warn
    * or fail
    * 
-   * @param actualValue  The value produced by the test
-   * @param targetValue  The value that the test should have produced
-   * @param tolerance    The tolerance + or - around the targetValue that is still
-   *                     considered a pass
+   * @param actualValue The value produced by the test
+   * @param targetValue The value that the test should have produced
+   * @param tolerance The tolerance + or - around the targetValue that is still
+   *        considered a pass
    * @param minimumValue The minimum value that the value can be to produce a warn
    * @return Pass, warn or fail determination
    */
   public Result determineResult(double actualValue, double targetValue, double tolerance, double minimumValue) {
     Result calculatedResult = Result.kFail; // Assume a fail unless proven otherwise
 
-    if (Math.abs(actualValue - targetValue) < tolerance) {
+    if(Math.abs(actualValue - targetValue) < tolerance) {
       calculatedResult = Result.kPass;
-    } else if (actualValue > minimumValue) {
+    } else if(actualValue > minimumValue) {
       calculatedResult = Result.kWarn;
     }
 
@@ -222,7 +222,7 @@ public class TestManager {
     m_nextTestCoordinates.m_x++;
 
     // Make sure we aren't falling off the bottom of the dashboard
-    if (m_nextTestCoordinates.m_x > Constants.Tests.kDashboardRows) {
+    if(m_nextTestCoordinates.m_x > Constants.Tests.kDashboardRows) {
       m_nextTestCoordinates.m_x = 0;
       m_nextTestCoordinates.m_y += 2;
     }

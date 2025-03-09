@@ -20,6 +20,7 @@ public class ClimbRetractCmd extends Command {
     m_climbSub = climbSub;
 
     // Use addRequirements() here to declare subsystem dependencies.
+    addRequirements(climbSub);
   }
 
   // Called when the command is initially scheduled.

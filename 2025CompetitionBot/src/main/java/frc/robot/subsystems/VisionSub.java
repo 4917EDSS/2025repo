@@ -101,7 +101,7 @@ public class VisionSub extends SubsystemBase {
 
   @Override
   public void periodic() {
-    if (m_taL.getDouble(0) > m_taR.getDouble(0)) {
+    if(m_taL.getDouble(0) > m_taR.getDouble(0)) {
       id = m_tidL.getInteger(0);
       t2d = m_t2dL.getDoubleArray(new double[2]);
       tv = m_tvL.getInteger(0);
@@ -164,22 +164,22 @@ public class VisionSub extends SubsystemBase {
   private void updateOdemetry(SwerveDriveState swerveDriveState, String camera) {
     LimelightHelpers.SetRobotOrientation(camera, swerveDriveState.Pose.getRotation().getDegrees(), 0, 0, 0, 0, 0);
     mt2 = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(camera);
-    if (mt2 == null) {
+    if(mt2 == null) {
       return;
     }
     double timestamp = mt2.timestampSeconds;
 
-    if (timestamp > m_previousTimestamp) {
+    if(timestamp > m_previousTimestamp) {
       m_previousTimestamp = timestamp;
       double standardDeviation = 0.7; // 0.7 is a good starting value according to limelight docs.
 
-      if (Math.abs(swerveDriveState.Speeds.omegaRadiansPerSecond) > Math.PI) // if our angular velocity is greater than
-                                                                             // 360 degrees per second, ignore vision
-                                                                             // updates
+      if(Math.abs(swerveDriveState.Speeds.omegaRadiansPerSecond) > Math.PI) // if our angular velocity is greater than
+                                                                            // 360 degrees per second, ignore vision
+                                                                            // updates
       {
         return;
       }
-      if (mt2.tagCount == 0 || mt2.avgTagArea == 0) {
+      if(mt2.tagCount == 0 || mt2.avgTagArea == 0) {
         return;
       }
       standardDeviation = (standardDeviation / mt2.tagCount) / (mt2.avgTagArea * 15.0);

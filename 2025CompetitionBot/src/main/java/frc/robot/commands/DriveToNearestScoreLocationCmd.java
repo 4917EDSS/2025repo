@@ -9,11 +9,6 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import com.pathplanner.lib.auto.AutoBuilder;
-import com.pathplanner.lib.commands.PathfindingCommand;
-import com.pathplanner.lib.path.PathConstraints;
-
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -61,8 +56,8 @@ public class DriveToNearestScoreLocationCmd extends SelectCommand<Translation2d>
    * 270 is "down"
    */
   private static void generateTargetPoses() {
-    for (Translation2d middleOfReef : Arrays.asList(MIDDLE_OF_BLUE_REEF, MIDDLE_OF_RED_REEF)) {
-      for (double degrees = 0; degrees < 360; degrees += 60) {
+    for(Translation2d middleOfReef : Arrays.asList(MIDDLE_OF_BLUE_REEF, MIDDLE_OF_RED_REEF)) {
+      for(double degrees = 0; degrees < 360; degrees += 60) {
         Rotation2d robotsRotation = Rotation2d.fromDegrees(degrees);
         // The scoring face "looks" at the robot. If the robot is scoring with heading 0
         // (facing
@@ -87,7 +82,7 @@ public class DriveToNearestScoreLocationCmd extends SelectCommand<Translation2d>
 
   public static void warmUpMap(DrivetrainSub drivetrainSub) {
     generateTargetPoses();
-    for (Pose2d targetPose : s_targetPoses) {
+    for(Pose2d targetPose : s_targetPoses) {
       s_locationToCommandMap.put(targetPose.getTranslation(), new DriveToPoseCmd(targetPose, drivetrainSub));
     }
     assert s_locationToCommandMap.size() == 2 * 6 * 2; // 2 reefs, 6 faces, 2 scoring locations per
@@ -95,11 +90,11 @@ public class DriveToNearestScoreLocationCmd extends SelectCommand<Translation2d>
 
   private static Translation2d getClosest(Pose2d location) {
     boolean useLeft = RobotState.isLeft();
-    if (RobotState.getAlliance() == Alliance.Red) {
+    if(RobotState.getAlliance() == Alliance.Red) {
       // Swap what "left" means depending on our perspective.
       useLeft = !useLeft;
     }
-    if (useLeft) {
+    if(useLeft) {
       return location.getTranslation().nearest(s_targetTranslationsL);
     } else {
       return location.getTranslation().nearest(s_targetTranslationsR);
