@@ -14,11 +14,13 @@ import frc.robot.Constants;
 import frc.robot.commands.tests.RunTestsGrp;
 
 /**
- * This class holds all of the test results and handles adding them to the Shuffleboard.
+ * This class holds all of the test results and handles adding them to the
+ * Shuffleboard.
  */
 public class TestManager {
   /**
-   * An enumeration type that represents fail/warn/pass internally and associated integers for
+   * An enumeration type that represents fail/warn/pass internally and associated
+   * integers for
    * use with the dashboard.
    */
   public enum Result {
@@ -49,7 +51,8 @@ public class TestManager {
   }
 
   /**
-   * A class to store the current status of individual tests as well as information about their
+   * A class to store the current status of individual tests as well as
+   * information about their
    * dashboard widgets.
    */
   private class TestStatus {
@@ -67,24 +70,25 @@ public class TestManager {
   private Coordinates m_nextTestCoordinates;
 
   /**
-   * Constructor. Need to also call setTestCommand before this class will be usable.
+   * Constructor. Need to also call setTestCommand before this class will be
+   * usable.
    * 
    * @param testsCommand Command that runs all of the tests
    */
   public TestManager() {
-    // Grab the Tests tab on the Shuffleboard.  It should already have been created.
+    // Grab the Tests tab on the Shuffleboard. It should already have been created.
     m_boardTab = Shuffleboard.getTab(Constants.Tests.kTabName);
 
-    // Setup the location where test widgets can be added (below the overall indicators that are
+    // Setup the location where test widgets can be added (below the overall
+    // indicators that are
     // set up later)
     m_testStatuses = new ArrayList<TestStatus>();
     m_nextTestCoordinates = new Coordinates(1, 0);
-
-    System.out.println("Creating Test Manager");
   }
 
   /**
-   * Sets the test command. This needs to be done after the constructor because the test command
+   * Sets the test command. This needs to be done after the constructor because
+   * the test command
    * takes this class as a parameter so it can request new tests.
    * 
    * @param testsCommand Command to use to start all tests
@@ -100,24 +104,21 @@ public class TestManager {
     m_boardTab.add(testsCommand)
         .withSize(1, 1)
         .withPosition(1, 0);
-
-    System.out.println("Setting test command");
   }
 
   /**
-   * Creates a new test entry on the dashboard. Includes test result and status text.
+   * Creates a new test entry on the dashboard. Includes test result and status
+   * text.
    * 
    * @param name Descriptive name for the test
    * @return Test ID. Used to update the test information in the future
    */
   public int registerNewTest(String name) {
-    // Add a new test entry at the next open index.  Use the index as the test ID.
+    // Add a new test entry at the next open index. Use the index as the test ID.
     m_testStatuses.add(m_nextTestStatusIdx, new TestStatus());
 
     // Now add the test result and status test widgets to the dashboard
     Coordinates testLocation = getNextPosition();
-
-    System.out.println("Registering New Test: " + testLocation.m_x + " " + testLocation.m_y);
 
     TestStatus newTest = m_testStatuses.get(m_nextTestStatusIdx);
     newTest.m_result = Result.kFail;
@@ -133,7 +134,8 @@ public class TestManager {
         .withPosition(testLocation.m_y + 1, testLocation.m_x)
         .getEntry();
 
-    // Return the array index (i.e. the ID) of the test and then increment it for the next one
+    // Return the array index (i.e. the ID) of the test and then increment it for
+    // the next one
     return m_nextTestStatusIdx++;
   }
 
@@ -142,7 +144,7 @@ public class TestManager {
    */
   public void resetTestStatuses() {
     // Reset all individual tests
-    for(int id = 0; id < m_testStatuses.size(); id++) {
+    for (int id = 0; id < m_testStatuses.size(); id++) {
       updateTestStatus(id, Result.kFail, "Not Run");
     }
 
@@ -156,11 +158,11 @@ public class TestManager {
   public void updateOverallStatus() {
     Result overallResult = Result.kPass; // Assume a pass unless we find test that didn't
 
-    for(TestStatus testStatus : m_testStatuses) {
-      if(testStatus.m_result == Result.kFail) {
+    for (TestStatus testStatus : m_testStatuses) {
+      if (testStatus.m_result == Result.kFail) {
         overallResult = Result.kFail;
         break;
-      } else if(testStatus.m_result == Result.kWarn) {
+      } else if (testStatus.m_result == Result.kWarn) {
         overallResult = Result.kWarn;
       }
     }
@@ -172,7 +174,7 @@ public class TestManager {
   /**
    * Update the result and text for a single test
    * 
-   * @param id ID of the test as returned from registerNewTest()
+   * @param id     ID of the test as returned from registerNewTest()
    * @param result Current result of the test
    * @param status Status text describing the result
    */
@@ -186,20 +188,22 @@ public class TestManager {
   }
 
   /**
-   * Utility function that checks if the values provided should yield a pass, warn or fail
+   * Utility function that checks if the values provided should yield a pass, warn
+   * or fail
    * 
-   * @param actualValue The value produced by the test
-   * @param targetValue The value that the test should have produced
-   * @param tolerance The tolerance + or - around the targetValue that is still considered a pass
+   * @param actualValue  The value produced by the test
+   * @param targetValue  The value that the test should have produced
+   * @param tolerance    The tolerance + or - around the targetValue that is still
+   *                     considered a pass
    * @param minimumValue The minimum value that the value can be to produce a warn
    * @return Pass, warn or fail determination
    */
   public Result determineResult(double actualValue, double targetValue, double tolerance, double minimumValue) {
     Result calculatedResult = Result.kFail; // Assume a fail unless proven otherwise
 
-    if(Math.abs(actualValue - targetValue) < tolerance) {
+    if (Math.abs(actualValue - targetValue) < tolerance) {
       calculatedResult = Result.kPass;
-    } else if(actualValue > minimumValue) {
+    } else if (actualValue > minimumValue) {
       calculatedResult = Result.kWarn;
     }
 
@@ -218,12 +222,13 @@ public class TestManager {
     m_nextTestCoordinates.m_x++;
 
     // Make sure we aren't falling off the bottom of the dashboard
-    if(m_nextTestCoordinates.m_x > Constants.Tests.kDashboardRows) {
+    if (m_nextTestCoordinates.m_x > Constants.Tests.kDashboardRows) {
       m_nextTestCoordinates.m_x = 0;
       m_nextTestCoordinates.m_y += 2;
     }
 
-    // TODO: Make sure we're not falling off the right side of the dashboard.  If so, create a new tab
+    // TODO: Make sure we're not falling off the right side of the dashboard. If so,
+    // create a new tab
 
     return nextPosition;
   }

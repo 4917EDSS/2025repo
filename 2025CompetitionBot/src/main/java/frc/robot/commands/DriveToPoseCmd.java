@@ -29,19 +29,12 @@ public class DriveToPoseCmd extends Command {
   Pose2d m_targetPose;
   Pose2d m_currentPose;
   Transform2d m_error;
-  Transform2d m_prevError;
-
 
   private final SwerveRequest.FieldCentric backDrive = new SwerveRequest.FieldCentric()
       .withDriveRequestType(DriveRequestType.Velocity).withForwardPerspective(ForwardPerspectiveValue.BlueAlliance);
 
-  Double m_driveP = 5.0; //TODO: Get proper value
-  Double m_driveI = 0.0; //TODO: Get proper value
-  Double m_driveD = 0.00; //TODO: Get proper value
-  Double m_rotP = 0.1; //TODO: Get proper value
-  Double m_rotI = 0.0; //TODO: Get proper value
-  Double m_rotD = 0.00; //TODO: Get proper value
-
+  Double m_driveP = 5.0;
+  Double m_rotP = 0.1;
 
   /** Creates a new DriveToPoseCmd. */
   public DriveToPoseCmd(Pose2d targetPose, DrivetrainSub drivetrainSub) {
@@ -55,46 +48,31 @@ public class DriveToPoseCmd extends Command {
   @Override
   public void initialize() {
     m_error = new Transform2d();
-    m_prevError = new Transform2d();
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-
     m_currentPose = m_drivetrainSub.getPose();
-    m_prevError = m_error;
 
     // Minus and relative seem to do something completely different than expected
     m_error = new Transform2d(m_targetPose.getX() - m_currentPose.getX(), m_targetPose.getY() - m_currentPose.getY(),
         m_targetPose.getRotation().minus(m_currentPose.getRotation()));
-    //P
+    // P
     Translation2d outputDrivePower = m_error.getTranslation().times(m_driveP);
     double outputRotPower = m_error.getRotation().getDegrees() * m_rotP;
 
-    Double driveNormalizationValue = 1.0;
-    Double rotNormalizationValue = 1.0;
-    //D
-    // outputDrivePower = outputDrivePower.plus((m_error.minus(m_prevError)).getTranslation().times(m_driveD / 0.02));//0.02 is the amount of time between periodic calls, which is why it is used as the change in time
-    // outputRotPower += ((m_error.minus(m_prevError)).getRotation().getDegrees()) * m_rotD / 0.02;
-
-    // Double totalSpeed = Math.sqrt(Math.pow(outputDrivePower.getX(), 2) + Math.pow(outputDrivePower.getY(), 2));
-    // if(totalSpeed > MaxSpeed) {
-    //   driveNormalizationValue = MaxSpeed / totalSpeed;
-    // }
-
-    // if(outputRotPower > MaxAngularRate) {
-    //   rotNormalizationValue = MaxAngularRate / outputRotPower;
-    // }
-    if(outputDrivePower.getNorm() < 0.1) {
-      outputDrivePower = outputDrivePower.times((0.1 / outputDrivePower.getNorm()));
-    }
-    if(outputDrivePower.getNorm() > 3.0) {
-      outputDrivePower = outputDrivePower.times((3.0 / outputDrivePower.getNorm()));
+    double normPower = outputDrivePower.getNorm();
+    if (normPower < 0.1) {
+      outputDrivePower = outputDrivePower.times((0.1 / normPower));
+    } else if (normPower > 3.0) {
+      outputDrivePower = outputDrivePower.times((3.0 / normPower));
     }
 
-    if(Math.abs(outputRotPower) < 0.1) {
+    if (Math.abs(outputRotPower) < 0.1) {
       outputRotPower = outputRotPower * ((0.1 / Math.abs(outputRotPower)));
+    } else if (Math.abs(outputRotPower) > 50) {
+      outputRotPower = outputRotPower * ((50 / Math.abs(outputRotPower)));
     }
 
     // I believe setControl is just a less confusing version of applyRequest.
@@ -114,7 +92,7 @@ public class DriveToPoseCmd extends Command {
   public boolean isFinished() {
     double speed = Math.sqrt(((Math.pow(m_drivetrainSub.getRobotRelativeSpeeds().vxMetersPerSecond, 2))
         + (Math.pow(m_drivetrainSub.getRobotRelativeSpeeds().vyMetersPerSecond, 2))));
-    if(m_error.getTranslation().getNorm() < 0.02 && Math.abs(m_error.getRotation().getDegrees()) < 1
+    if (m_error.getTranslation().getNorm() < 0.02 && Math.abs(m_error.getRotation().getDegrees()) < 1
         && Math.abs(m_drivetrainSub.getRobotRelativeSpeeds().omegaRadiansPerSecond) < Math.PI / 30.0 && speed < 0.2) {
       return true;
     }

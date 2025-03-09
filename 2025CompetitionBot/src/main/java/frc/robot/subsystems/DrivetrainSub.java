@@ -26,14 +26,17 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.generated.TunerConstants.TunerSwerveDrivetrain;
+import frc.robot.utils.RobotState;
 
 /**
  * Class that extends the Phoenix 6 SwerveDrivetrain class and implements
  * Subsystem so it can easily be used in command-based projects.
- * If the robot is saying that the storage is low then check if a usb is plugged in to the
+ * If the robot is saying that the storage is low then check if a usb is plugged
+ * in to the
  * robot and restart the robot.
  * 
- * NOTE: This was called CommandSwerveDrivetrain but we renamed it to fit our convention
+ * NOTE: This was called CommandSwerveDrivetrain but we renamed it to fit our
+ * convention
  */
 
 public class DrivetrainSub extends TunerSwerveDrivetrain implements Subsystem {
@@ -51,12 +54,14 @@ public class DrivetrainSub extends TunerSwerveDrivetrain implements Subsystem {
   private boolean m_hasAppliedOperatorPerspective = false;
 
   /* Swerve requests to apply during SysId characterization */
-  private final SwerveRequest.SysIdSwerveTranslation m_translationCharacterization =
-      new SwerveRequest.SysIdSwerveTranslation();
+  private final SwerveRequest.SysIdSwerveTranslation m_translationCharacterization = new SwerveRequest.SysIdSwerveTranslation();
   private final SwerveRequest.SysIdSwerveSteerGains m_steerCharacterization = new SwerveRequest.SysIdSwerveSteerGains();
   private final SwerveRequest.SysIdSwerveRotation m_rotationCharacterization = new SwerveRequest.SysIdSwerveRotation();
 
-  /* SysId routine for characterizing translation. This is used to find PID gains for the drive motors. */
+  /*
+   * SysId routine for characterizing translation. This is used to find PID gains
+   * for the drive motors.
+   */
   private final SysIdRoutine m_sysIdRoutineTranslation = new SysIdRoutine(
       new SysIdRoutine.Config(
           null, // Use default ramp rate (1 V/s)
@@ -69,7 +74,10 @@ public class DrivetrainSub extends TunerSwerveDrivetrain implements Subsystem {
           null,
           this));
 
-  /* SysId routine for characterizing steer. This is used to find PID gains for the steer motors. */
+  /*
+   * SysId routine for characterizing steer. This is used to find PID gains for
+   * the steer motors.
+   */
   private final SysIdRoutine m_sysIdRoutineSteer = new SysIdRoutine(
       new SysIdRoutine.Config(
           null, // Use default ramp rate (1 V/s)
@@ -84,8 +92,10 @@ public class DrivetrainSub extends TunerSwerveDrivetrain implements Subsystem {
 
   /*
    * SysId routine for characterizing rotation.
-   * This is used to find PID gains for the FieldCentricFacingAngle HeadingController.
-   * See the documentation of SwerveRequest.SysIdSwerveRotation for info on importing the log to SysId.
+   * This is used to find PID gains for the FieldCentricFacingAngle
+   * HeadingController.
+   * See the documentation of SwerveRequest.SysIdSwerveRotation for info on
+   * importing the log to SysId.
    */
   private final SysIdRoutine m_sysIdRoutineRotation = new SysIdRoutine(
       new SysIdRoutine.Config(
@@ -112,18 +122,20 @@ public class DrivetrainSub extends TunerSwerveDrivetrain implements Subsystem {
   /**
    * Constructs a CTRE SwerveDrivetrain using the specified constants.
    * <p>
-   * This constructs the underlying hardware devices, so users should not construct
-   * the devices themselves. If they need the devices, they can access them through
+   * This constructs the underlying hardware devices, so users should not
+   * construct
+   * the devices themselves. If they need the devices, they can access them
+   * through
    * getters in the classes.
    *
    * @param drivetrainConstants Drivetrain-wide constants for the swerve drive
-   * @param modules Constants for each specific module
+   * @param modules             Constants for each specific module
    */
   public DrivetrainSub(
       SwerveDrivetrainConstants drivetrainConstants,
       SwerveModuleConstants<?, ?, ?>... modules) {
     super(drivetrainConstants, modules);
-    if(Utils.isSimulation()) {
+    if (Utils.isSimulation()) {
       startSimThread();
     }
 
@@ -140,26 +152,30 @@ public class DrivetrainSub extends TunerSwerveDrivetrain implements Subsystem {
         this::getPose, // Robot pose supplier
         this::resetPose, // Method to reset odometry (will be called if your auto has a starting pose)
         this::getRobotRelativeSpeeds, // ChassisSpeeds supplier. MUST BE ROBOT RELATIVE
-        (speeds, feedforwards) -> driveRobotRelative(speeds), // Method that will drive the robot given ROBOT RELATIVE ChassisSpeeds. Also optionally outputs individual module feedforwards
-        new PPHolonomicDriveController( // PPHolonomicController is the built in path following controller for holonomic drive trains
+        (speeds, feedforwards) -> driveRobotRelative(speeds), // Method that will drive the robot given ROBOT RELATIVE
+                                                              // ChassisSpeeds. Also optionally outputs individual
+                                                              // module feedforwards
+        new PPHolonomicDriveController( // PPHolonomicController is the built in path following controller for holonomic
+                                        // drive trains
             new PIDConstants(5.0, 0.0, 0.0), // Translation PID constants
             new PIDConstants(5.0, 0.0, 0.0) // Rotation PID constants
         ),
-        config, // Currently doesn't work and I do not know which variable is supposed to go there
+        config, // Currently doesn't work and I do not know which variable is supposed to go
+                // there
         () -> {
-          // Boolean supplier that controls when the path will be mirrored for the red alliance
+          // Boolean supplier that controls when the path will be mirrored for the red
+          // alliance
           // This will flip the path being followed to the red side of the field.
           // THE ORIGIN WILL REMAIN ON THE BLUE SIDE
 
           var alliance = DriverStation.getAlliance();
-          if(alliance.isPresent()) {
+          if (alliance.isPresent()) {
             return alliance.get() == DriverStation.Alliance.Red;
           }
           return false;
         },
         this // Reference to this subsystem to set requirements
     );
-
 
     initializeFieldDashboard();
     init();
@@ -169,9 +185,9 @@ public class DrivetrainSub extends TunerSwerveDrivetrain implements Subsystem {
     m_logger.info("Initializing DrivetrainSub Subsystem");
   }
 
-
   /**
-   * Returns a command that applies the specified control request to this swerve drivetrain.
+   * Returns a command that applies the specified control request to this swerve
+   * drivetrain.
    *
    * @param request Function returning the request to apply
    * @return Command to run
@@ -214,18 +230,22 @@ public class DrivetrainSub extends TunerSwerveDrivetrain implements Subsystem {
     setControl(new SwerveRequest.ApplyRobotSpeeds().withSpeeds(speeds));
   }
 
-
   @Override
   public void periodic() {
     /*
      * Periodically try to apply the operator perspective.
-     * If we haven't applied the operator perspective before, then we should apply it regardless of DS state.
-     * This allows us to correct the perspective in case the robot code restarts mid-match.
-     * Otherwise, only check and apply the operator perspective if the DS is disabled.
-     * This ensures driving behavior doesn't change until an explicit disable event occurs during testing.
+     * If we haven't applied the operator perspective before, then we should apply
+     * it regardless of DS state.
+     * This allows us to correct the perspective in case the robot code restarts
+     * mid-match.
+     * Otherwise, only check and apply the operator perspective if the DS is
+     * disabled.
+     * This ensures driving behavior doesn't change until an explicit disable event
+     * occurs during testing.
      */
-    if(!m_hasAppliedOperatorPerspective || DriverStation.isDisabled()) {
+    if (!m_hasAppliedOperatorPerspective || DriverStation.isDisabled()) {
       DriverStation.getAlliance().ifPresent(allianceColor -> {
+        RobotState.setAlliance(allianceColor);
         setOperatorPerspectiveForward(
             allianceColor == Alliance.Red
                 ? kRedAlliancePerspectiveRotation

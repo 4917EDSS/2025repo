@@ -24,7 +24,6 @@ public class BackUpAfterScoringCmd extends DeferredCommand {
 
   private static Command returnAutoBuilder(DrivetrainSub drivetrainSub) {
 
-
     Pose2d backupPose = new Pose2d(
         drivetrainSub.getPose().getTranslation()
             .plus(new Translation2d(0.75, drivetrainSub.getPose().getRotation().minus(Rotation2d.k180deg))),
@@ -34,7 +33,6 @@ public class BackUpAfterScoringCmd extends DeferredCommand {
 
   @Override
   public void end(boolean interrupted) {
-    System.out.println("Back Up Command interrputed:" + interrupted);
     super.end(interrupted);
   }
 

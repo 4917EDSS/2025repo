@@ -22,7 +22,7 @@ public class VisionSub extends SubsystemBase {
   private static Logger m_logger = Logger.getLogger(VisionSub.class.getName());
 
   LimelightHelpers.PoseEstimate mt2;
-  double m_previousTimestamp = 0.0;//Map<String, Double> m_previousTimestamps = Map.of(LEFT, 0.0);//, RIGHT, 0.0);
+  double m_previousTimestamp = 0.0;// Map<String, Double> m_previousTimestamps = Map.of(LEFT, 0.0);//, RIGHT, 0.0);
   DrivetrainSub m_drivetrainSub;
 
   NetworkTable m_networkTableL = NetworkTableInstance.getDefault().getTable(LEFT);
@@ -64,7 +64,6 @@ public class VisionSub extends SubsystemBase {
 
   int m_printPosCounter = 0;
 
-
   /** Creates a new VisionSub. */
   public VisionSub(DrivetrainSub drivetrainSub) {
     // For now, we will just use the left camera for shuffleboard.
@@ -92,7 +91,6 @@ public class VisionSub extends SubsystemBase {
     m_botposeTargetR = m_networkTableR.getEntry("botpose_targetspace");
     m_botposeR = m_networkTableR.getEntry("botpose");
 
-
     m_drivetrainSub = drivetrainSub;
     init();
   }
@@ -103,7 +101,7 @@ public class VisionSub extends SubsystemBase {
 
   @Override
   public void periodic() {
-    if(m_taL.getDouble(0) > m_taR.getDouble(0)) {
+    if (m_taL.getDouble(0) > m_taR.getDouble(0)) {
       id = m_tidL.getInteger(0);
       t2d = m_t2dL.getDoubleArray(new double[2]);
       tv = m_tvL.getInteger(0);
@@ -137,7 +135,7 @@ public class VisionSub extends SubsystemBase {
     SmartDashboard.putNumber("Vi Tag Area", a);
     SmartDashboard.putNumber("Vi Pipeline", pipeline);
     SmartDashboard.putString("Vi Pipetype", pipetype);
-    //SmartDashboard.putString("Main Limelight:", "none");
+    // SmartDashboard.putString("Main Limelight:", "none");
 
     updateOdometry(m_drivetrainSub.getState());
   }
@@ -166,37 +164,34 @@ public class VisionSub extends SubsystemBase {
   private void updateOdemetry(SwerveDriveState swerveDriveState, String camera) {
     LimelightHelpers.SetRobotOrientation(camera, swerveDriveState.Pose.getRotation().getDegrees(), 0, 0, 0, 0, 0);
     mt2 = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(camera);
-    if(mt2 == null) {
+    if (mt2 == null) {
       return;
     }
     double timestamp = mt2.timestampSeconds;
 
-    if(timestamp != m_previousTimestamp) {//m_previousTimestamps.get(camera)) {
-      m_previousTimestamp = timestamp;//m_previousTimestamps.replace(camera, timestamp);
+    if (timestamp > m_previousTimestamp) {
+      m_previousTimestamp = timestamp;
       double standardDeviation = 0.7; // 0.7 is a good starting value according to limelight docs.
 
-      if(Math.abs(swerveDriveState.Speeds.omegaRadiansPerSecond) > Math.PI) // if our angular velocity is greater than 360 degrees per second, ignore vision updates
+      if (Math.abs(swerveDriveState.Speeds.omegaRadiansPerSecond) > Math.PI) // if our angular velocity is greater than
+                                                                             // 360 degrees per second, ignore vision
+                                                                             // updates
       {
         return;
       }
-      if(mt2.tagCount == 0 || mt2.avgTagArea == 0) {
+      if (mt2.tagCount == 0 || mt2.avgTagArea == 0) {
         return;
       }
-      standardDeviation = (standardDeviation / mt2.tagCount) / (mt2.avgTagArea * 20);
+      standardDeviation = (standardDeviation / mt2.tagCount) / (mt2.avgTagArea * 15.0);
 
-      // TODO:
-      // Lower uncertainty (standardDevation) when:
-      //   - we see more tags (the more, the better)
-      //   - we see a big tag (the bigger the better)
-      //   - we are moving slowly (slower is better)
-      // Raise uncertainty (standardDeviation) when the opposites happen
       m_drivetrainSub.addVisionMeasurement(
           mt2.pose,
-          // Always pass 999999 as the last argument, as megatag 2 requires heading as input, so it does not actually calculate heading.
-          // Passing in a very large number to that parameter basically tells the Kalman filter to ignore our calculated heading.
+          // Always pass 999999 as the last argument, as megatag 2 requires heading as
+          // input, so it does not actually calculate heading.
+          // Passing in a very large number to that parameter basically tells the Kalman
+          // filter to ignore our calculated heading.
           com.ctre.phoenix6.Utils.fpgaToCurrentTime(timestamp),
           VecBuilder.fill(standardDeviation, standardDeviation, 9999999));
-
 
     }
 
