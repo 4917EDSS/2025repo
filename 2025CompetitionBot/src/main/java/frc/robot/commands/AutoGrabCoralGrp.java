@@ -4,6 +4,7 @@
 
 package frc.robot.commands;
 
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.Constants;
 import frc.robot.subsystems.ArmSub;
@@ -21,8 +22,11 @@ public class AutoGrabCoralGrp extends SequentialCommandGroup {
     addCommands(
         new MoveElArmGrp(Constants.Elevator.kCoralGrabbableHeight, Constants.Arm.kCoralGrabbableAngle, armSub,
             elevatorSub), //Get ready to grab coral
-        new WaitForCoralPresentCmd(canSub),
+        new InstantCommand(() -> System.out.println("yes")),
+        //new WaitForCoralPresentCmd(canSub),
         new MoveElArmGrp(Constants.Elevator.kCoralLoadedHeight, Constants.Arm.kMinArmAngle, armSub, elevatorSub),
-        new MoveElArmGrp(Constants.Elevator.kCoralGrabbableHeight, Constants.Arm.kMinArmAngle, armSub, elevatorSub));
+        new InstantCommand(() -> System.out.println("yesssssssss")),
+        new MoveElArmGrp(Constants.Elevator.kCoralGrabbableHeight, Constants.Arm.kMinArmAngle, armSub, elevatorSub),
+        new InstantCommand(() -> System.out.println("yesssssssssssssssssssssssssssssssssss")));
   }
 }

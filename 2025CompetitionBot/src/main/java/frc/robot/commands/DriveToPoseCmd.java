@@ -63,15 +63,15 @@ public class DriveToPoseCmd extends Command {
     double outputRotPower = m_error.getRotation().getDegrees() * m_rotP;
 
     double normPower = outputDrivePower.getNorm();
-    if (normPower < 0.1) {
+    if(normPower < 0.1) {
       outputDrivePower = outputDrivePower.times((0.1 / normPower));
-    } else if (normPower > 3.0) {
+    } else if(normPower > 3.0) {
       outputDrivePower = outputDrivePower.times((3.0 / normPower));
     }
 
-    if (Math.abs(outputRotPower) < 0.1) {
+    if(Math.abs(outputRotPower) < 0.1) {
       outputRotPower = outputRotPower * ((0.1 / Math.abs(outputRotPower)));
-    } else if (Math.abs(outputRotPower) > 50) {
+    } else if(Math.abs(outputRotPower) > 50) {
       outputRotPower = outputRotPower * ((50 / Math.abs(outputRotPower)));
     }
 
@@ -92,8 +92,8 @@ public class DriveToPoseCmd extends Command {
   public boolean isFinished() {
     double speed = Math.sqrt(((Math.pow(m_drivetrainSub.getRobotRelativeSpeeds().vxMetersPerSecond, 2))
         + (Math.pow(m_drivetrainSub.getRobotRelativeSpeeds().vyMetersPerSecond, 2))));
-    if (m_error.getTranslation().getNorm() < 0.02 && Math.abs(m_error.getRotation().getDegrees()) < 1
-        && Math.abs(m_drivetrainSub.getRobotRelativeSpeeds().omegaRadiansPerSecond) < Math.PI / 30.0 && speed < 0.2) {
+    if(m_error.getTranslation().getNorm() < 0.25 && Math.abs(m_error.getRotation().getDegrees()) < 15
+        && Math.abs(m_drivetrainSub.getRobotRelativeSpeeds().omegaRadiansPerSecond) < Math.PI / 30.0 && speed < 0.4) {
       return true;
     }
     return false;

@@ -39,7 +39,7 @@ public class ElevatorSub extends TestableSubsystem {
   private double m_kD = 0.0;
   private final ElevatorFeedforward m_feedforward = new ElevatorFeedforward(m_kS, m_kG, m_kV);
   private final PIDController m_elevatorPID = new PIDController(m_kP, m_kI, m_kD);
-  private final PIDController m_negitiveelevatorPID = new PIDController(0.002, 0, 0);
+  private final PIDController m_negitiveelevatorPID = new PIDController(0.01, 0, 0);
 
   private Supplier<Double> m_armAngle;
   private double m_targetHeight = 0.0;
@@ -110,17 +110,17 @@ public class ElevatorSub extends TestableSubsystem {
 
     // If we haven't set the relative encoder's position yet, check if we are at the
     // switch that tells us to do so
-    if (!m_isElevatorEncoderSet) {
+    if(!m_isElevatorEncoderSet) {
       // Adds a counter to the encoder reset switch so that we don't reset position by
       // accident
-      if (encoderResetSwitchHit() && (m_elevatorMotor.get() > 0.0)) {
+      if(encoderResetSwitchHit() && (m_elevatorMotor.get() > 0.0)) {
         m_hitEncoderSwitchCounter++;
       } else {
         m_hitEncoderSwitchCounter = 0;
       }
 
       // If we hit the reset switch twice in a row, reset encoder
-      if (m_hitEncoderSwitchCounter >= 2) {
+      if(m_hitEncoderSwitchCounter >= 2) {
         setPositionMm(Constants.Elevator.kResetHeight);
         m_isElevatorEncoderSet = true;
       }
@@ -135,10 +135,10 @@ public class ElevatorSub extends TestableSubsystem {
 
     // Current power value is sent in setPower()
 
-    boolean tuning = false;
-    if (tuning) {
+    boolean tuning = true;
+    if(tuning) {
       // Lighten the load by only updating these twice a second
-      if (++m_smartDashboardCounter >= 30) {
+      if(++m_smartDashboardCounter >= 30) {
         m_smartDashboardCounter = 0;
         double kP = SmartDashboard.getNumber("El kP", m_kP);
         double kI = SmartDashboard.getNumber("El kI", m_kI);
@@ -171,14 +171,14 @@ public class ElevatorSub extends TestableSubsystem {
     // If we are too close to the upper limit, set max power to a low value
     // Otherwise, set power normally
     double powerValue = power;
-    if (isAtLowerLimit() && power < 0.0) {
+    if(isAtLowerLimit() && power < 0.0) {
       powerValue = 0.0;
-    } else if (isAtUpperLimit() && power > 0.0) {
+    } else if(isAtUpperLimit() && power > 0.0) {
       setTargetHeight(getPositionMm() - 5);
-    } else if ((getPositionMm() < Constants.Elevator.kSlowDownLowerStageHeight)
+    } else if((getPositionMm() < Constants.Elevator.kSlowDownLowerStageHeight)
         && (power < Constants.Elevator.kSlowDownLowerStagePower)) {
       powerValue = Constants.Elevator.kSlowDownLowerStagePower;
-    } else if ((getPositionMm() > Constants.Elevator.kSlowDownUpperStageHeight)
+    } else if((getPositionMm() > Constants.Elevator.kSlowDownUpperStageHeight)
         && (power > Constants.Elevator.kSlowDownUpperStagePower)) {
       powerValue = Constants.Elevator.kSlowDownUpperStagePower;
     }
@@ -226,9 +226,9 @@ public class ElevatorSub extends TestableSubsystem {
    * @param targetHeight target height in mm
    */
   public void setTargetHeight(double targetHeight) {
-    if (targetHeight >= Constants.Elevator.kMaxHeight) {
+    if(targetHeight >= Constants.Elevator.kMaxHeight) {
       targetHeight = Constants.Elevator.kMaxHeight;
-    } else if (targetHeight <= Constants.Elevator.kMinHeight) {
+    } else if(targetHeight <= Constants.Elevator.kMinHeight) {
       targetHeight = Constants.Elevator.kMinHeight;
     }
 
@@ -284,11 +284,11 @@ public class ElevatorSub extends TestableSubsystem {
   private void updateStateMachine() {
 
     // Determine what power the mechanism should use based on the current state
-    switch (m_currentControl.state) {
+    switch(m_currentControl.state) {
       case MOVING:
         SmartDashboard.putBoolean("El Is Blocked", false);
         // If the mechanism is moving, check if it has arrived at it's target.
-        if (isBlocked()) {
+        if(isBlocked()) {
           m_blockedPosition = getPositionMm();
           m_currentControl.state = State.INTERRUPTED;
         }
@@ -297,7 +297,7 @@ public class ElevatorSub extends TestableSubsystem {
       case INTERRUPTED:
         SmartDashboard.putBoolean("El Is Blocked", true);
         // If the mechanism is no longer blocked, transition to MOVING
-        if (!isBlocked()) {
+        if(!isBlocked()) {
           m_currentControl.state = State.MOVING;
           // Otherwise, hold this position
         }
@@ -334,15 +334,15 @@ public class ElevatorSub extends TestableSubsystem {
     double armAngle = m_armAngle.get();
 
     // Going up or going down, check for brace dangerzones.
-    if ((currentHeight > Constants.Elevator.kDangerZoneBraceBottom)
+    if((currentHeight > Constants.Elevator.kDangerZoneBraceBottom)
         && (currentHeight < Constants.Elevator.kDangerZoneBraceTop)
         && (armAngle < Constants.Arm.kDangerZoneBraceAngle)) {
       return true;
     }
 
-    if ((m_targetHeight < currentHeight)) {
+    if((m_targetHeight < currentHeight)) {
       // moving downwards
-      if ((currentHeight < Constants.Elevator.kDangerZoneBottom) && (armAngle > Constants.Arm.kDangerZoneBottomVertical)
+      if((currentHeight < Constants.Elevator.kDangerZoneBottom) && (armAngle > Constants.Arm.kDangerZoneBottomVertical)
           && (armAngle < Constants.Arm.kDangerZoneLowerAngle)) {
         return true;
       }
@@ -356,12 +356,12 @@ public class ElevatorSub extends TestableSubsystem {
    * stay at its target
    * 
    * @param updatePower set to false to update the Feedforward and PID controllers
-   *                    without changing the motor power
+   *        without changing the motor power
    */
   private void runHeightControl(boolean updatePower) {
     double activeTarget = m_targetHeight;
 
-    if (m_currentControl.state == State.INTERRUPTED) {
+    if(m_currentControl.state == State.INTERRUPTED) {
       activeTarget = m_blockedPosition;
     }
 
@@ -369,8 +369,8 @@ public class ElevatorSub extends TestableSubsystem {
     double pidPower = (m_elevatorPID.calculate(getPositionMm(), activeTarget));
     double negitivepidPower = (m_negitiveelevatorPID.calculate(getPositionMm(), activeTarget));
 
-    if (updatePower) {
-      if (activeTarget > getPositionMm()) {
+    if(updatePower) {
+      if(activeTarget > getPositionMm()) {
         setPower(ffPower + pidPower);
       } else {
         setPower(ffPower + negitivepidPower);
@@ -385,7 +385,7 @@ public class ElevatorSub extends TestableSubsystem {
    */
   public boolean isAtTargetHeight() {
     // If we are within tolerance and our velocity is low, we're at our target
-    if ((Math.abs(m_targetHeight - getPositionMm()) < Constants.Elevator.kHeightTolerance)
+    if((Math.abs(m_targetHeight - getPositionMm()) < Constants.Elevator.kHeightTolerance)
         && (getVelocity() < Constants.Elevator.kAtTargetMaxVelocity)) {
       return true;
     } else {
@@ -404,7 +404,7 @@ public class ElevatorSub extends TestableSubsystem {
   @Override
   public void testEnableMotorTestMode(int motorId) {
     // Save the current encoder values because the tests will reset them
-    switch (motorId) {
+    switch(motorId) {
       case 1:
         m_preTestHeight = m_elevatorMotor.getPosition().getValueAsDouble();
         break;
@@ -429,7 +429,7 @@ public class ElevatorSub extends TestableSubsystem {
   public void testDisableMotorTestMode(int motorId) {
     // Set the encoders to their pre-test values plus the change in position from
     // the test
-    switch (motorId) {
+    switch(motorId) {
       case 1:
         m_elevatorMotor.setPosition(m_preTestHeight + m_elevatorMotor.getPosition().getValueAsDouble(), 0.5);
         setTargetHeight(getPositionMm());
@@ -454,7 +454,7 @@ public class ElevatorSub extends TestableSubsystem {
    */
   @Override
   public void testResetMotorPosition(int motorId) {
-    switch (motorId) {
+    switch(motorId) {
       case 1:
         m_elevatorMotor.setPosition(0.0, 0.5); // Set it to 0 and wait up to half a second for it to take effect
         break;
@@ -473,11 +473,11 @@ public class ElevatorSub extends TestableSubsystem {
    * changing the motor power.
    * 
    * @param motorId 1 for the first motor in the subsystem, 2 for the second, etc.
-   * @param power   Desired power -1.0 to 1.0
+   * @param power Desired power -1.0 to 1.0
    */
   @Override
   public void testSetMotorPower(int motorId, double power) {
-    switch (motorId) {
+    switch(motorId) {
       case 1:
         m_elevatorMotor.set(power);
         break;
@@ -505,7 +505,7 @@ public class ElevatorSub extends TestableSubsystem {
   public double testGetMotorPosition(int motorId) {
     double position = 0.0;
 
-    switch (motorId) {
+    switch(motorId) {
       case 1:
         position = m_elevatorMotor.getPosition().getValueAsDouble(); // This position is affected by the conversion
                                                                      // factor
@@ -533,7 +533,7 @@ public class ElevatorSub extends TestableSubsystem {
   public double testGetMotorAmps(int motorId) {
     double current = 0.0;
 
-    switch (motorId) {
+    switch(motorId) {
       case 1:
         current = m_elevatorMotor.getStatorCurrent().getValueAsDouble();
         break;

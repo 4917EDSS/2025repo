@@ -82,30 +82,30 @@ public class RobotState extends Command {
   }
 
   public static double getLastPositionHeight() {
-    if (robotLastReefPosition == ReefPosition.kL2) {
+    if(robotLastReefPosition == ReefPosition.kL2) {
       return Constants.Elevator.kL2PostScoreHeight;
-    } else if (robotLastReefPosition == ReefPosition.kL3) {
+    } else if(robotLastReefPosition == ReefPosition.kL3) {
       return Constants.Elevator.kL3PostScoreHeight;
-    } else if (robotLastReefPosition == ReefPosition.kL4) {
+    } else if(robotLastReefPosition == ReefPosition.kL4) {
       return Constants.Elevator.kL4PostScoreHeight;
-    } else if (robotLastReefPosition == ReefPosition.kL2L3Algae) {
+    } else if(robotLastReefPosition == ReefPosition.kL2L3Algae) {
       return Constants.Elevator.kL2L3AlgaeRemovalPostHeight;
-    } else if (robotLastReefPosition == ReefPosition.kL3L4Algae) {
+    } else if(robotLastReefPosition == ReefPosition.kL3L4Algae) {
       return Constants.Elevator.kL3L4AlgaeRemovalPostHeight;
     }
     return -1;
   }
 
   public static double getLastPositionAngle() {
-    if (robotLastReefPosition == ReefPosition.kL2) {
+    if(robotLastReefPosition == ReefPosition.kL2) {
       return Constants.Arm.kL2PostScoreAngle;
-    } else if (robotLastReefPosition == ReefPosition.kL3) {
+    } else if(robotLastReefPosition == ReefPosition.kL3) {
       return Constants.Arm.kL3PostScoreAngle;
-    } else if (robotLastReefPosition == ReefPosition.kL4) {
+    } else if(robotLastReefPosition == ReefPosition.kL4) {
       return Constants.Arm.kL4PostScoreAngle;
-    } else if (robotLastReefPosition == ReefPosition.kL2L3Algae) {
+    } else if(robotLastReefPosition == ReefPosition.kL2L3Algae) {
       return Constants.Arm.kL2L3AlgaeRemovalPostAngle;
-    } else if (robotLastReefPosition == ReefPosition.kL3L4Algae) {
+    } else if(robotLastReefPosition == ReefPosition.kL3L4Algae) {
       return Constants.Arm.kL3L4AlgaeRemovalPostAngle;
     }
     return 0;

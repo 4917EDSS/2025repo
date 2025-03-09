@@ -46,6 +46,15 @@ public class AutoDriveCmd extends Command {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
+    if(useOffset) {
+      if(RobotState.isLeft()) {
+        offset = 0.22;
+      } else {
+        offset = -0.2;
+      }
+    } else {
+      offset = 0;
+    }
     // Use open-loop control for drive motors
     counter = 0;
   }
@@ -53,15 +62,6 @@ public class AutoDriveCmd extends Command {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    if (useOffset) {
-      if (RobotState.isLeft()) {
-        offset = 0.22;
-      } else {
-        offset = -0.22;
-      }
-    } else {
-      offset = 0;
-    }
     m_apriltagPos = m_visionSub.getTagPose2d();
     // check if angle is positive or negative
     lrDist = m_apriltagPos.getX() + offset;
@@ -70,16 +70,16 @@ public class AutoDriveCmd extends Command {
     double xPower = lrDist / totalDist;
     double yPower = fbDist / totalDist;
     double slowDown;
-    if (fbDist > -1.0) {
-      slowDown = 10;
+    if(fbDist > -1.5) {
+      slowDown = 6;
     } else {
-      slowDown = 4;
+      slowDown = 2;
     }
     m_drivetrainSub.setControl(
-        autoDrive.withVelocityX(-yPower * MaxSpeed / slowDown).withVelocityY(xPower * MaxSpeed / 3)
-            .withRotationalRate(m_visionSub.getRobotRotation() / ((lrDist * 20) + 20) * MaxAngularRate * 0.20));
+        autoDrive.withVelocityX(-yPower * MaxSpeed / slowDown).withVelocityY(xPower * MaxSpeed / 1.5)
+            .withRotationalRate(m_visionSub.getRobotRotation() / ((lrDist * 15) + 15) * MaxAngularRate * 0.20));
 
-    if (m_visionSub.getTv() == 0) {
+    if(m_visionSub.getTv() == 0) {
       counter++;
     } else {
       counter = 0;
@@ -99,12 +99,12 @@ public class AutoDriveCmd extends Command {
   @Override
   public boolean isFinished() {
 
-    if (Math.abs(fbDist) < 0.50 && Math.abs(lrDist) < 0.025) {
+    if(Math.abs(fbDist) < 0.47 && Math.abs(lrDist) < 0.025) {
       System.out.println("Forward/backward dist: " + fbDist);
 
       return true;
     }
-    if (counter >= 25) {
+    if(counter >= 25) {
       System.out.println("counter: " + counter);
       return true;
     }

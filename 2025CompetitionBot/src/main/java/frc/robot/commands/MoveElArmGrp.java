@@ -4,6 +4,8 @@
 
 package frc.robot.commands;
 
+import edu.wpi.first.wpilibj2.command.ConditionalCommand;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import frc.robot.subsystems.ArmSub;
 import frc.robot.subsystems.ElevatorSub;
@@ -18,6 +20,7 @@ public class MoveElArmGrp extends ParallelCommandGroup {
     // Add your commands in the addCommands() call, e.g.
     // addCommands(new FooCommand(), new BarCommand());
     addCommands(
+
         new SetElevatorToHeightCmd(height, elevatorSub),
         new SetArmToPositionCmd(angle, armSub));
   }

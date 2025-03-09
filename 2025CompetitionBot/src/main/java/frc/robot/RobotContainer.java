@@ -171,7 +171,7 @@ public class RobotContainer {
 
     // Square
 
-    m_driverController.square().onTrue(new AutoGrabCoralGrp(m_armSub, m_canSub, m_elevatorSub));//.whileTrue(new AutoDriveCmd(m_visionSub, m_drivetrainSub, true));//
+    m_driverController.square().whileTrue(new AutoDriveCmd(m_visionSub, m_drivetrainSub, true));//.onTrue(new AutoGrabCoralGrp(m_armSub, m_canSub, m_elevatorSub));//
 
 
     // Cross

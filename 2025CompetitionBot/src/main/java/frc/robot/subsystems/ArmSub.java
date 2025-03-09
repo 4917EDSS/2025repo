@@ -18,6 +18,7 @@ import edu.wpi.first.math.controller.ArmFeedforward;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants;
+import frc.robot.RobotContainer;
 import frc.robot.utils.SubControl;
 import frc.robot.utils.SubControl.State;
 import frc.robot.utils.TestableSubsystem;
@@ -33,7 +34,7 @@ public class ArmSub extends TestableSubsystem {
   private double m_kS = 0.0;
   private double m_kG = 0.001;
   private double m_kV = 0.005;
-  private double m_kP = 0.012;
+  private double m_kP = 0.022;
   private double m_kI = 0.0;
   private double m_kD = 0.0;
   private final ArmFeedforward m_armFeedforward = new ArmFeedforward(m_kS, m_kG, m_kV);
@@ -53,8 +54,8 @@ public class ArmSub extends TestableSubsystem {
         .inverted(true) // Set to true to invert the forward motor direction
         .smartCurrentLimit(60) // Current limit in amps // TODO: Determine real current limit
         .idleMode(IdleMode.kBrake).encoder
-        .positionConversionFactor(Constants.Arm.kEncoderPositionConversionFactor)
-        .velocityConversionFactor(Constants.Arm.kEncoderVelocityConversionFactor);
+            .positionConversionFactor(Constants.Arm.kEncoderPositionConversionFactor)
+            .velocityConversionFactor(Constants.Arm.kEncoderVelocityConversionFactor);
 
     AbsoluteEncoderConfig encoderConfig = new AbsoluteEncoderConfig();
     encoderConfig.zeroOffset(Constants.Arm.kAbsoluteEncoderOffset);
@@ -93,10 +94,10 @@ public class ArmSub extends TestableSubsystem {
     // Current power value is sent in setPower()
 
     // for tuning PID and feed forward values only
-    boolean tuning = false;
-    if (tuning) {
+    boolean tuning = true;
+    if(tuning) {
       // Lighten the load by only updating these twice a second
-      if (++m_smartDashboardCounter >= 30) {
+      if(++m_smartDashboardCounter >= 30) {
         m_smartDashboardCounter = 0;
         double kP = SmartDashboard.getNumber("Arm kP", m_kP);
         double kI = SmartDashboard.getNumber("Arm kI", m_kI);
@@ -168,10 +169,10 @@ public class ArmSub extends TestableSubsystem {
    * @param targetAngle target angle in degrees
    */
   public void setTargetAngle(double targetAngle) {
-    if (targetAngle > Constants.Arm.kMaxArmAngle) {
+    if(targetAngle > Constants.Arm.kMaxArmAngle) {
       targetAngle = Constants.Arm.kMaxArmAngle;
     }
-    if (targetAngle < Constants.Arm.kMinArmAngle) {
+    if(targetAngle < Constants.Arm.kMinArmAngle) {
       targetAngle = Constants.Arm.kMinArmAngle;
     }
     m_targetAngle = targetAngle;
@@ -217,12 +218,12 @@ public class ArmSub extends TestableSubsystem {
   private void updateStateMachine() {
 
     // Determine what power the mechanism should use based on the current state
-    switch (m_currentControl.state) {
+    switch(m_currentControl.state) {
 
       case MOVING:
         SmartDashboard.putBoolean("Arm Is Blocked", false);
         // If the mechanism is moving, check if it has arrived at it's target.
-        if (isBlocked()) {
+        if(isBlocked()) {
           m_blockedAngle = (getAngle());
           m_currentControl.state = State.INTERRUPTED;
         }
@@ -231,7 +232,7 @@ public class ArmSub extends TestableSubsystem {
       case INTERRUPTED:
         SmartDashboard.putBoolean("Arm Is Blocked", true);
         // If the mechanism is no longer blocked, transition to MOVING
-        if (!isBlocked()) {
+        if(!isBlocked()) {
           m_currentControl.state = State.MOVING;
           // Otherwise, hold this position
         }
@@ -252,11 +253,11 @@ public class ArmSub extends TestableSubsystem {
     double armAngle = getAngle();
     double elevatorHeight = elevatorPosition.get();
 
-    if ((elevatorHeight <= Constants.Elevator.kDangerZoneBottom) && (armAngle > Constants.Arm.kDangerZoneBottomVertical)
+    if((elevatorHeight <= Constants.Elevator.kDangerZoneBottom) && (armAngle > Constants.Arm.kDangerZoneBottomVertical)
         && (armAngle < Constants.Arm.kDangerZoneLowerAngle)) {
       return true;
     }
-    if ((elevatorHeight > Constants.Elevator.kDangerZoneBraceBottom)
+    if((elevatorHeight > Constants.Elevator.kDangerZoneBraceBottom)
         && (elevatorHeight < Constants.Elevator.kDangerZoneBraceTop) && (m_targetAngle < armAngle)
         && (armAngle < Constants.Arm.kDangerZoneBraceAngle)) {
       return true;
@@ -269,12 +270,12 @@ public class ArmSub extends TestableSubsystem {
    * at its target
    * 
    * @param updatePower set to false to update the Feedforward and PID controllers
-   *                    without changing the motor power
+   *        without changing the motor power
    */
   private void runAngleControl(boolean updatePower) {
     double activeAngle = m_targetAngle;
 
-    if (m_currentControl.state == State.INTERRUPTED) {
+    if(m_currentControl.state == State.INTERRUPTED) {
       activeAngle = m_blockedAngle;
     }
 
@@ -282,10 +283,10 @@ public class ArmSub extends TestableSubsystem {
     double fedPower = m_armFeedforward.calculate(Math.toRadians(getAngle()), 8 * Math.PI / 3); // Feed forward expects 0
                                                                                                // degrees as horizontal
 
-    if (updatePower) {
+    if(updatePower) {
       double realPower = (pidPower + fedPower);
 
-      if (Math.abs(realPower) > Constants.Arm.kMaxPower) {
+      if(Math.abs(realPower) > Constants.Arm.kMaxPower) {
         double sign = (realPower >= 0.0) ? 1.0 : -1.0;
         realPower = Constants.Arm.kMaxPower * sign;
       }
@@ -299,11 +300,11 @@ public class ArmSub extends TestableSubsystem {
       // there's a chance that the mechnism and encoder get out of sync. Of course
       // there's the case when you're in manual control.
 
-      if (!m_automationEnabled) {
+      if(!m_automationEnabled) {
         double currentAngle = getAngle();
-        if ((currentAngle >= Constants.Arm.kSlowDownUpperAngle) && (realPower > Constants.Arm.kSlowDownSpeed)) {
+        if((currentAngle >= Constants.Arm.kSlowDownUpperAngle) && (realPower > Constants.Arm.kSlowDownSpeed)) {
           realPower = Constants.Arm.kSlowDownSpeed;
-        } else if ((currentAngle < Constants.Arm.kSlowDownLowerAngle) && (realPower < -Constants.Arm.kSlowDownSpeed)) {
+        } else if((currentAngle < Constants.Arm.kSlowDownLowerAngle) && (realPower < -Constants.Arm.kSlowDownSpeed)) {
           realPower = -Constants.Arm.kSlowDownSpeed;
         }
       }
@@ -318,7 +319,7 @@ public class ArmSub extends TestableSubsystem {
    */
   public boolean isAtTargetAngle() {
     // If we are within tolerance and our velocity is low, we're at our target
-    if ((Math.abs(m_targetAngle - getAngle()) < Constants.Arm.kAngleTolerance)
+    if((Math.abs(m_targetAngle - getAngle()) < Constants.Arm.kAngleTolerance)
         && (Math.abs(getVelocity()) < Constants.Arm.kAtTargetMaxVelocity)) {
       return true;
     } else {
@@ -357,7 +358,7 @@ public class ArmSub extends TestableSubsystem {
    */
   @Override
   public void testResetMotorPosition(int motorId) {
-    switch (motorId) {
+    switch(motorId) {
       case 1:
         m_armMotor.getEncoder().setPosition(0.0);
         break;
@@ -373,11 +374,11 @@ public class ArmSub extends TestableSubsystem {
    * changing the motor power.
    * 
    * @param motorId 1 for the first motor in the subsystem, 2 for the second, etc.
-   * @param power   Desired power -1.0 to 1.0
+   * @param power Desired power -1.0 to 1.0
    */
   @Override
   public void testSetMotorPower(int motorId, double power) {
-    switch (motorId) {
+    switch(motorId) {
       case 1:
         m_armMotor.set(power);
         break;
@@ -400,7 +401,7 @@ public class ArmSub extends TestableSubsystem {
   public double testGetMotorPosition(int motorId) {
     double position = 0.0;
 
-    switch (motorId) {
+    switch(motorId) {
       case 1:
         position = m_armMotor.getEncoder().getPosition();
         break;
@@ -423,7 +424,7 @@ public class ArmSub extends TestableSubsystem {
   public double testGetMotorAmps(int motorId) {
     double current = 0.0;
 
-    switch (motorId) {
+    switch(motorId) {
       case 1:
         current = m_armMotor.getOutputCurrent(); // SparkMax doesn't support current reading
         break;

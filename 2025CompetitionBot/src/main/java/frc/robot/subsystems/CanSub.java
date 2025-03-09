@@ -44,7 +44,8 @@ public class CanSub extends SubsystemBase {
     // Read sensor(s)
     UpdateCustomSensor();
     SmartDashboard.putNumber("CAN TOF Dist", getTOFDist());
-    SmartDashboard.putNumber("CAN Coral Raw", getAnaglog0());
+    SmartDashboard.putNumber("CAN Coral Raw", getCoralRaw());
+    SmartDashboard.putNumber("???", getAnalog0());
     SmartDashboard.putBoolean("CAN Coral In", isCoralPresent());
     //System.out.println(getTOFDist());
     //updateShuffleboard();
@@ -165,12 +166,16 @@ public class CanSub extends SubsystemBase {
     return m_TOFDist;
   }
 
-  public int getAnaglog0() {
+  public int getCoralRaw() {
+    return m_coralSensor;
+  }
+
+  public int getAnalog0() {
     return m_analog0;
   }
 
   public boolean isCoralPresent() {
-    if(m_coralSensor < 100) {
+    if(m_coralSensor < 930) {
       return true;
     } else
       return false;
