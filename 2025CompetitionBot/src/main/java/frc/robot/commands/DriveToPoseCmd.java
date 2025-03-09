@@ -25,23 +25,41 @@ public class DriveToPoseCmd extends Command {
   private double MaxSpeed = TunerConstants.kSpeedAt12Volts.in(MetersPerSecond);
   private double MaxAngularRate = RotationsPerSecond.of(2.08 / 2.0).in(RadiansPerSecond);
 
-  DrivetrainSub m_drivetrainSub;
-  Pose2d m_targetPose;
-  Pose2d m_currentPose;
-  Transform2d m_error;
+  private DrivetrainSub m_drivetrainSub;
+  private Pose2d m_targetPose;
+  private Pose2d m_currentPose;
+  private Transform2d m_error;
 
   private final SwerveRequest.FieldCentric backDrive = new SwerveRequest.FieldCentric()
       .withDriveRequestType(DriveRequestType.Velocity).withForwardPerspective(ForwardPerspectiveValue.BlueAlliance);
 
-  Double m_driveP = 5.0;
-  Double m_rotP = 0.1;
+  private final double m_driveP = 5.0;
+  private final double m_rotP = 0.1;
+
+  private double m_disTolerance = 0.25; // m
+  private final double PRECISE_DIS_TOLERANCE = 0.02;
+  private double m_speedTolerance = 0.5; // m/s
+  private final double PRECISE_SPEED_TOLERANCE = 0.2;
+  private double m_angTolerance = 15; // degrees
+  private final double PRECISE_ANG_TOLERANCE = 1.0;
+  private double m_angSpeedTolerance = Math.PI / 10.0; // rad/s
+  private final double PRECISE_ANG_SPEED_TOLERANCE = Math.PI / 30.0;
 
   /** Creates a new DriveToPoseCmd. */
   public DriveToPoseCmd(Pose2d targetPose, DrivetrainSub drivetrainSub) {
+    this(targetPose, drivetrainSub, true);
+  }
+
+  public DriveToPoseCmd(Pose2d targetPose, DrivetrainSub drivetrainSub, boolean precise) {
     m_targetPose = targetPose;
     m_drivetrainSub = drivetrainSub;
     addRequirements(m_drivetrainSub);
-    // Use addRequirements() here to declare subsystem.
+    if(precise) {
+      m_disTolerance = PRECISE_DIS_TOLERANCE;
+      m_speedTolerance = PRECISE_SPEED_TOLERANCE;
+      m_angTolerance = PRECISE_ANG_TOLERANCE;
+      m_angSpeedTolerance = PRECISE_ANG_SPEED_TOLERANCE;
+    }
   }
 
   // Called when the command is initially scheduled.
@@ -92,8 +110,10 @@ public class DriveToPoseCmd extends Command {
   public boolean isFinished() {
     double speed = Math.sqrt(((Math.pow(m_drivetrainSub.getRobotRelativeSpeeds().vxMetersPerSecond, 2))
         + (Math.pow(m_drivetrainSub.getRobotRelativeSpeeds().vyMetersPerSecond, 2))));
-    if(m_error.getTranslation().getNorm() < 0.25 && Math.abs(m_error.getRotation().getDegrees()) < 15
-        && Math.abs(m_drivetrainSub.getRobotRelativeSpeeds().omegaRadiansPerSecond) < Math.PI / 30.0 && speed < 0.4) {
+    if(m_error.getTranslation().getNorm() < m_disTolerance
+        && Math.abs(m_error.getRotation().getDegrees()) < m_angTolerance
+        && Math.abs(m_drivetrainSub.getRobotRelativeSpeeds().omegaRadiansPerSecond) < m_angSpeedTolerance
+        && speed < m_speedTolerance) {
       return true;
     }
     return false;

@@ -24,7 +24,7 @@ public class BackUpAfterScoringCmd extends DeferredCommand {
         drivetrainSub.getPose().getTranslation()
             .plus(new Translation2d(0.75, drivetrainSub.getPose().getRotation().minus(Rotation2d.k180deg))),
         drivetrainSub.getPose().getRotation());
-    return new DriveToPoseCmd(backupPose, drivetrainSub);
+    return new DriveToPoseCmd(backupPose, drivetrainSub, false);
   }
 
   @Override
