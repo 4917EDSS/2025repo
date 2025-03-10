@@ -84,8 +84,8 @@ public final class Constants {
     public static final double kL4PostScoreAngle = -3.0;
     public static final double kCoralGrabbableAngle = kMinArmAngle;
 
-    public static final double kL3L4AlgaeRemovalPrepAngle = 25;
-    public static final double kL2L3AlgaeRemovalPrepAngle = 20;
+    public static final double kL3L4AlgaeRemovalPrepAngle = 13;
+    public static final double kL2L3AlgaeRemovalPrepAngle = 8;
     public static final double kL2L3AlgaeRemovalPostAngle = kMaxArmAngle;
     public static final double kL3L4AlgaeRemovalPostAngle = kMaxArmAngle;
   }
@@ -130,8 +130,8 @@ public final class Constants {
     public static final double kL3PostScoreHeight = 933.0;
     public static final double kL4PreScoreHeight = kMaxHeight;
     public static final double kL4PostScoreHeight = 1334;
-    public static final double kL3L4AlgaeRemovalPrepHeight = 949;
-    public static final double kL2L3AlgaeRemovalPrepHeight = 582;
+    public static final double kL3L4AlgaeRemovalPrepHeight = 842;
+    public static final double kL2L3AlgaeRemovalPrepHeight = 560;
     public static final double kL2L3AlgaeRemovalPostHeight = kL2L3AlgaeRemovalPrepHeight;
     public static final double kL3L4AlgaeRemovalPostHeight = kL3L4AlgaeRemovalPrepHeight;
     // public static final double kScoreDropAngle = 30;

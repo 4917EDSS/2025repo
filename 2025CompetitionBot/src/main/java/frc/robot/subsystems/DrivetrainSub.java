@@ -26,7 +26,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.generated.TunerConstants.TunerSwerveDrivetrain;
-import frc.robot.utils.RobotState;
+import frc.robot.utils.RobotStatus;
 
 /**
  * Class that extends the Phoenix 6 SwerveDrivetrain class and implements
@@ -246,7 +246,7 @@ public class DrivetrainSub extends TunerSwerveDrivetrain implements Subsystem {
      */
     if(!m_hasAppliedOperatorPerspective || DriverStation.isDisabled()) {
       DriverStation.getAlliance().ifPresent(allianceColor -> {
-        RobotState.setAlliance(allianceColor);
+        RobotStatus.setAlliance(allianceColor);
         setOperatorPerspectiveForward(
             allianceColor == Alliance.Red
                 ? kRedAlliancePerspectiveRotation

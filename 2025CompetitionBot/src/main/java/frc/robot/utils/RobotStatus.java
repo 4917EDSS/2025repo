@@ -13,7 +13,7 @@ import frc.robot.Constants;
  * You should consider using the more terse Command factories API instead
  * https://docs.wpilib.org/en/stable/docs/software/commandbased/organizing-command-based.html#defining-commands
  */
-public class RobotState extends Command {
+public class RobotStatus extends Command {
   public enum ReefPosition {
     kL2L3Algae(0), kL3L4Algae(1), kL2(2), kL3(3), kL4(4);
 

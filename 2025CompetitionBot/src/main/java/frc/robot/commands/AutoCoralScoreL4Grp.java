@@ -5,7 +5,9 @@
 package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
+import edu.wpi.first.wpilibj2.command.ScheduleCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.Constants;
 import frc.robot.subsystems.ArmSub;
 import frc.robot.subsystems.CanSub;
@@ -28,8 +30,8 @@ public class AutoCoralScoreL4Grp extends SequentialCommandGroup {
             new AutoDriveCmd(visionSub, drivetrainSub, true) //Drive to score location
         ),
         new MoveElArmGrp(Constants.Elevator.kL4PostScoreHeight, Constants.Arm.kL4PostScoreAngle, armSub, elevatorSub), //Move to post score location (score)
-        new BackUpAfterScoringCmd(drivetrainSub) //Back up
-    //new ScheduleCommand(new AutoGrabCoralGrp(armSub, canSub, elevatorSub)) //Grab coral
+        new BackUpAfterScoringCmd(drivetrainSub), //Back up
+        new ScheduleCommand(new AutoGrabCoralGrp(armSub, canSub, elevatorSub)) //Grab coral
 
     );
   }

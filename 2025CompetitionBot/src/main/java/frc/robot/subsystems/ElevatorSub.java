@@ -183,6 +183,9 @@ public class ElevatorSub extends TestableSubsystem {
       powerValue = Constants.Elevator.kSlowDownUpperStagePower;
     }
 
+    if(powerValue > 0.75) {
+      powerValue = 0.75;
+    }
     m_elevatorMotor.set(powerValue);
     SmartDashboard.putNumber("El Power", powerValue);
   }

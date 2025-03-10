@@ -7,6 +7,18 @@
         {
           "type": "path",
           "data": {
+            "pathName": "Back Up"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Forward"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
             "pathName": "Start - 1st Auto"
           }
         },

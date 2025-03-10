@@ -51,7 +51,7 @@ import frc.robot.subsystems.ClimbSub;
 import frc.robot.subsystems.DrivetrainSub;
 import frc.robot.subsystems.ElevatorSub;
 import frc.robot.subsystems.VisionSub;
-import frc.robot.utils.RobotState;
+import frc.robot.utils.RobotStatus;
 import frc.robot.utils.SwerveTelemetry;
 import frc.robot.utils.TestManager;
 
@@ -84,7 +84,7 @@ public class RobotContainer {
   private final DrivetrainSub m_drivetrainSub = TunerConstants.createDrivetrain();
   private final ElevatorSub m_elevatorSub = new ElevatorSub();
   private final VisionSub m_visionSub;
-  private final RobotState m_robotState = new RobotState();
+  private final RobotStatus m_robotState = new RobotStatus();
 
   // Controllers
   private final CommandPS4Controller m_driverController =
@@ -176,22 +176,32 @@ public class RobotContainer {
 
     // Cross
     m_driverController.cross()
-        .onTrue(new AutoCoralScoreL2Grp(m_armSub, m_canSub, m_drivetrainSub, m_elevatorSub, m_visionSub));
+        .onTrue(new ParallelCommandGroup(
+            new AutoCoralScoreL2Grp(m_armSub, m_canSub, m_drivetrainSub, m_elevatorSub, m_visionSub),
+            new InstantCommand(() -> RobotStatus.l2())));
 
     // Circle
     m_driverController.circle()
-        .onTrue(new AutoCoralScoreL3Grp(m_armSub, m_canSub, m_drivetrainSub, m_elevatorSub, m_visionSub));
+        .onTrue(new ParallelCommandGroup(
+            new AutoCoralScoreL3Grp(m_armSub, m_canSub, m_drivetrainSub, m_elevatorSub, m_visionSub),
+            new InstantCommand(() -> RobotStatus.l3())));
 
     // Triangle
     m_driverController.triangle()
-        .onTrue(new AutoCoralScoreL4Grp(m_armSub, m_canSub, m_drivetrainSub, m_elevatorSub, m_visionSub));
+        .onTrue(new ParallelCommandGroup(
+            new AutoCoralScoreL4Grp(m_armSub, m_canSub, m_drivetrainSub, m_elevatorSub, m_visionSub),
+            new InstantCommand(() -> RobotStatus.l4())));
     // L1
     m_driverController.L1()
-        .onTrue(new AutoAlgaeRemovalL2L3Grp(m_armSub, m_canSub, m_drivetrainSub, m_elevatorSub, m_visionSub));
+        .onTrue(new ParallelCommandGroup(
+            new AutoAlgaeRemovalL2L3Grp(m_armSub, m_canSub, m_drivetrainSub, m_elevatorSub, m_visionSub),
+            new InstantCommand(() -> RobotStatus.l2L3Algae())));
 
     // R1
     m_driverController.R1()
-        .onTrue(new AutoAlgaeRemovalL3L4Grp(m_armSub, m_canSub, m_drivetrainSub, m_elevatorSub, m_visionSub));
+        .onTrue(new ParallelCommandGroup(
+            new AutoAlgaeRemovalL3L4Grp(m_armSub, m_canSub, m_drivetrainSub, m_elevatorSub, m_visionSub),
+            new InstantCommand(() -> RobotStatus.l3L4Algae())));
 
     // L2
     m_driverController.L2().onTrue(new InstantCommand(() -> slowDown())).onFalse(new InstantCommand(() -> speedUp()));
@@ -213,10 +223,10 @@ public class RobotContainer {
     // TODO:  Target scoring to pipe to the left of the vision target
 
     // Share
-    m_driverController.share().onTrue(new InstantCommand(() -> RobotState.setLeft()));
+    m_driverController.share().onTrue(new InstantCommand(() -> RobotStatus.setLeft()));
 
     // Options
-    m_driverController.options().onTrue(new InstantCommand(() -> RobotState.setRight()));
+    m_driverController.options().onTrue(new InstantCommand(() -> RobotStatus.setRight()));
     // m_driverController.options().whileTrue(AutoBuilder.pathfindToPose(
     //     new Pose2d(2, 6.5, new Rotation2d(0)),
     //     m_constraints,
@@ -255,31 +265,31 @@ public class RobotContainer {
     // Cross
     m_operatorController.cross().onTrue(new ParallelCommandGroup(
         new MoveElArmGrp(Constants.Elevator.kL2PreScoreHeight, Constants.Arm.kL2PreScoreAngle, m_armSub, m_elevatorSub),
-        new InstantCommand(() -> RobotState.l2())));
+        new InstantCommand(() -> RobotStatus.l2())));
 
     // Circle
     m_operatorController.circle().onTrue(new ParallelCommandGroup(
         new MoveElArmGrp(Constants.Elevator.kL3PreScoreHeight,
             Constants.Arm.kL3PreScoreAngle, m_armSub, m_elevatorSub),
-        new InstantCommand(() -> RobotState.l3())));
+        new InstantCommand(() -> RobotStatus.l3())));
 
     // Triangle
     m_operatorController.triangle()
         .onTrue(new ParallelCommandGroup(new MoveElArmGrp(Constants.Elevator.kL4PreScoreHeight,
             Constants.Arm.kL4PreScoreAngle, m_armSub, m_elevatorSub),
-            new InstantCommand(() -> RobotState.l4())));
+            new InstantCommand(() -> RobotStatus.l4())));
 
     // L1
     m_operatorController.L1()
         .onTrue(new ParallelCommandGroup(new MoveElArmGrp(Constants.Elevator.kL2L3AlgaeRemovalPrepHeight,
             Constants.Arm.kL2L3AlgaeRemovalPrepAngle, m_armSub, m_elevatorSub),
-            new InstantCommand(() -> RobotState.l2L3Algae())));
+            new InstantCommand(() -> RobotStatus.l2L3Algae())));
 
     // R1
     m_operatorController.R1()
         .whileTrue(new ParallelCommandGroup(new MoveElArmGrp(Constants.Elevator.kL3L4AlgaeRemovalPrepHeight,
             Constants.Arm.kL3L4AlgaeRemovalPrepAngle, m_armSub, m_elevatorSub),
-            new InstantCommand(() -> RobotState.l2L3Algae())));
+            new InstantCommand(() -> RobotStatus.l2L3Algae())));
 
     // L2
     // TODO: Remove algae based on which one we are prepped for

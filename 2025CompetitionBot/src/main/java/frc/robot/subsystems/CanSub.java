@@ -175,7 +175,7 @@ public class CanSub extends SubsystemBase {
   }
 
   public boolean isCoralPresent() {
-    if(m_coralSensor < 930) {
+    if(m_coralSensor < 100) {
       return true;
     } else
       return false;

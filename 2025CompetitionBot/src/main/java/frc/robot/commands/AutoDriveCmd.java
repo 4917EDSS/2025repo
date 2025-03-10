@@ -14,7 +14,8 @@ import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.DrivetrainSub;
 import frc.robot.subsystems.VisionSub;
-import frc.robot.utils.RobotState;
+import frc.robot.utils.RobotStatus;
+import frc.robot.utils.RobotStatus.ReefPosition;
 
 /*
  * You should consider using the more terse Command factories API instead
@@ -31,7 +32,9 @@ public class AutoDriveCmd extends Command {
   double lrDist;
   double fbDist;
   int counter;
-  double offset;
+  double lrOffset;
+  double fbOffset;
+  double fbEnd;
   boolean useOffset;
   private final DrivetrainSub m_drivetrainSub;
 
@@ -46,14 +49,23 @@ public class AutoDriveCmd extends Command {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
+    if(RobotStatus.LastReefPosition().equals(ReefPosition.kL2L3Algae)
+        || RobotStatus.LastReefPosition().equals(ReefPosition.kL3L4Algae)) {
+      fbOffset = 0.0;
+      fbEnd = 0.0;
+    } else {
+      fbOffset = 0.15;
+      fbEnd = 0.4;
+    }
+
     if(useOffset) {
-      if(RobotState.isLeft()) {
-        offset = 0.22;
+      if(RobotStatus.isLeft()) {
+        lrOffset = 0.17;
       } else {
-        offset = -0.2;
+        lrOffset = -0.17;
       }
     } else {
-      offset = 0;
+      lrOffset = 0;
     }
     // Use open-loop control for drive motors
     counter = 0;
@@ -64,8 +76,8 @@ public class AutoDriveCmd extends Command {
   public void execute() {
     m_apriltagPos = m_visionSub.getTagPose2d();
     // check if angle is positive or negative
-    lrDist = m_apriltagPos.getX() + offset;
-    fbDist = m_apriltagPos.getY() + 0.15;
+    lrDist = m_apriltagPos.getX() + lrOffset;
+    fbDist = m_apriltagPos.getY() + fbOffset;
     double totalDist = Math.sqrt((lrDist * lrDist) + (fbDist * fbDist));
     double xPower = lrDist / totalDist;
     double yPower = fbDist / totalDist;
@@ -99,7 +111,7 @@ public class AutoDriveCmd extends Command {
   @Override
   public boolean isFinished() {
 
-    if(Math.abs(fbDist) < 0.47 && Math.abs(lrDist) < 0.025) {
+    if(Math.abs(fbDist) < fbEnd && Math.abs(lrDist) < 0.025) {
       System.out.println("Forward/backward dist: " + fbDist);
 
       return true;

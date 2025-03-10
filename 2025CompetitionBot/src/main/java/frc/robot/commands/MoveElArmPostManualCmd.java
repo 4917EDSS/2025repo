@@ -8,7 +8,7 @@ package frc.robot.commands;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.ArmSub;
 import frc.robot.subsystems.ElevatorSub;
-import frc.robot.utils.RobotState;
+import frc.robot.utils.RobotStatus;
 
 
 /*
@@ -32,9 +32,9 @@ public class MoveElArmPostManualCmd extends Command {
   @Override
   public void initialize() {
     m_elevatorSub.enableAutomation();
-    m_elevatorSub.setTargetHeight(RobotState.getLastPositionHeight());
+    m_elevatorSub.setTargetHeight(RobotStatus.getLastPositionHeight());
     m_armSub.enableAutomation();
-    m_armSub.setTargetAngle(RobotState.getLastPositionAngle());
+    m_armSub.setTargetAngle(RobotStatus.getLastPositionAngle());
   }
 
   // Called every time the scheduler runs while the command is scheduled.

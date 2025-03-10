@@ -26,8 +26,7 @@ public class AutoAlgaeRemovalL2L3Grp extends SequentialCommandGroup {
     // Add your commands in the addCommands() call, e.g.
     // addCommands(new FooCommand(), new BarCommand());
     addCommands(
-        new MoveElArmGrp(Constants.Elevator.kL2L3AlgaeRemovalPrepHeight, Constants.Arm.kL2L3AlgaeRemovalPrepAngle,
-            armSub, elevatorSub), // Move elevator and arm to algae removal location
+        new AutoAlgaeRemovalL2L3ArmElGrp(armSub, elevatorSub), // Move elevator and arm to algae removal location
         new AutoDriveCmd(visionSub, drivetrainSub, false), // Drive to vision target
         new MoveElArmGrp(Constants.Elevator.kL2L3AlgaeRemovalPostHeight, Constants.Arm.kL2L3AlgaeRemovalPostAngle,
             armSub, elevatorSub), // Remove algae

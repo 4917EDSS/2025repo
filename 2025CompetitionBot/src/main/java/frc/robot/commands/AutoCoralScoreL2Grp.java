@@ -5,13 +5,16 @@
 package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
+import edu.wpi.first.wpilibj2.command.ScheduleCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.Constants;
 import frc.robot.subsystems.ArmSub;
 import frc.robot.subsystems.CanSub;
 import frc.robot.subsystems.DrivetrainSub;
 import frc.robot.subsystems.ElevatorSub;
 import frc.robot.subsystems.VisionSub;
+import frc.robot.commands.AutoCoralScoreL2ArmElGrp;
 
 // NOTE: Consider using this command inline, rather than writing a subclass. For more
 // information, see:
@@ -25,12 +28,12 @@ public class AutoCoralScoreL2Grp extends SequentialCommandGroup {
     // addCommands(new FooCommand(), new BarCommand());
     addCommands(
         new ParallelCommandGroup(
-            new MoveElArmGrp(Constants.Elevator.kL2PreScoreHeight, Constants.Arm.kL2PreScoreAngle, armSub, elevatorSub), //Move to pre score position
+            new AutoCoralScoreL2ArmElGrp(armSub, elevatorSub), //Move to pre score position
             new AutoDriveCmd(visionSub, drivetrainSub, true) //Drive to score location
         ),
         new MoveElArmGrp(Constants.Elevator.kL2PostScoreHeight, Constants.Arm.kL2PostScoreAngle, armSub, elevatorSub), //Move to post score location (score)
-        new BackUpAfterScoringCmd(drivetrainSub) //Back up
-    //new ScheduleCommand(new AutoGrabCoralGrp(armSub, canSub, elevatorSub)) //Grab coral
+        new BackUpAfterScoringCmd(drivetrainSub), //Back up
+        new ScheduleCommand(new AutoGrabCoralGrp(armSub, canSub, elevatorSub)) //Grab coral
     );
   }
 }

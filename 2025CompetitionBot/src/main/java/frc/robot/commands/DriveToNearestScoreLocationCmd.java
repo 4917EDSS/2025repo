@@ -16,7 +16,7 @@ import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SelectCommand;
 import frc.robot.subsystems.DrivetrainSub;
-import frc.robot.utils.RobotState;
+import frc.robot.utils.RobotStatus;
 
 /*
  * You should consider using the more terse Command factories API instead
@@ -89,8 +89,8 @@ public class DriveToNearestScoreLocationCmd extends SelectCommand<Translation2d>
   }
 
   private static Translation2d getClosest(Pose2d location) {
-    boolean useLeft = RobotState.isLeft();
-    if(RobotState.getAlliance() == Alliance.Red) {
+    boolean useLeft = RobotStatus.isLeft();
+    if(RobotStatus.getAlliance() == Alliance.Red) {
       // Swap what "left" means depending on our perspective.
       useLeft = !useLeft;
     }
