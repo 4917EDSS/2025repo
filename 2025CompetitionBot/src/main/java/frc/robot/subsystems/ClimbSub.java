@@ -29,14 +29,14 @@ public class ClimbSub extends TestableSubsystem {
 
     // This is how you set a current limit inside the motor (vs on the input power supply)
     CurrentLimitsConfigs limitConfigs = new CurrentLimitsConfigs();
-    limitConfigs.StatorCurrentLimit = 40; // Limit in Amps  // TOOD: Determine reasonable limit
+    limitConfigs.StatorCurrentLimit = 120; // Limit in Amps  // TOOD: Determine reasonable limit
     limitConfigs.StatorCurrentLimitEnable = true;
     talonFxConfiguarator.apply(limitConfigs);
 
     // This is how you can set a deadband, invert the motor rotoation and set brake/coast
     MotorOutputConfigs outputConfigs = new MotorOutputConfigs();
     outputConfigs.DutyCycleNeutralDeadband = 0.02; // Ignore values below 2%
-    outputConfigs.Inverted = InvertedValue.CounterClockwise_Positive; // Invert = Clockwise
+    outputConfigs.Inverted = InvertedValue.Clockwise_Positive; // Invert = Clockwise
     outputConfigs.NeutralMode = NeutralModeValue.Brake;
     talonFxConfiguarator.apply(outputConfigs);
 
@@ -52,6 +52,11 @@ public class ClimbSub extends TestableSubsystem {
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
+    if(isAtOutLimit() && (m_climbMotor.get() > 0)) {
+      setPower(0);
+    } else if(isAtInLimit() && (m_climbMotor.get() < 0)) {
+      setPower(0);
+    }
     // Add motor and limit switche(s) to Smartdashboard
     SmartDashboard.putNumber("Cl Angle", getPosition());
     SmartDashboard.putBoolean("Cl In Limit", isAtInLimit());
@@ -60,11 +65,11 @@ public class ClimbSub extends TestableSubsystem {
   }
 
   public boolean isAtInLimit() {
-    return m_climbInLimit.get();
+    return !m_climbInLimit.get();
   }
 
   public boolean isAtOutLimit() {
-    return m_climbOutLimit.get();
+    return !m_climbOutLimit.get();
   }
 
   /**

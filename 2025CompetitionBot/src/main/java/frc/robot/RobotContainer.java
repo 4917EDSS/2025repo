@@ -210,14 +210,14 @@ public class RobotContainer {
     m_driverController.R2().onTrue(new DriveToNearestScoreLocationCmd(m_drivetrainSub));
 
     // POV Up
-    m_driverController.povUp().whileTrue(new ClimbDeployCmd(m_climbSub));
+    m_driverController.povUp().onTrue(new ClimbDeployCmd(m_climbSub));
 
 
     // POV Right
     // TODO:  Target scoring to pipe to the right of the vision target
 
     // POV Down
-    m_driverController.povDown().whileTrue(new ClimbRetractCmd(m_climbSub));
+    m_driverController.povDown().onTrue(new ClimbRetractCmd(m_climbSub));
 
     // POV Left
     // TODO:  Target scoring to pipe to the left of the vision target
