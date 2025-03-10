@@ -31,8 +31,8 @@ public class ArmSub extends TestableSubsystem {
   private final SparkLimitSwitch m_reverseLimitSwitch = m_armMotor.getReverseLimitSwitch();
 
   private double m_kS = 0.0;
-  private double m_kG = 0.001;
-  private double m_kV = 0.005;
+  private double m_kG = 0.01;
+  private double m_kV = 0.05;
   private double m_kP = 0.022;
   private double m_kI = 0.0;
   private double m_kD = 0.0;
@@ -277,10 +277,14 @@ public class ArmSub extends TestableSubsystem {
     if(m_currentControl.state == State.INTERRUPTED) {
       activeAngle = m_blockedAngle;
     }
+    double currAngle = getAngle();
+    // This is a very rough approximation, and is only used to give to feed forward.
+    // Basically, we are always asking for the speed which would get us to our target in 1 second.
+    // Thus, a higher speed when far away and very low speed when closer.
+    double targetVelocityRadPerS = Math.toRadians(activeAngle - currAngle) / 1.0;
 
-    double pidPower = m_armPid.calculate(getAngle(), activeAngle);
-    double fedPower = m_armFeedforward.calculate(Math.toRadians(getAngle()), 8 * Math.PI / 3); // Feed forward expects 0
-                                                                                               // degrees as horizontal
+    double pidPower = m_armPid.calculate(currAngle, activeAngle);
+    double fedPower = m_armFeedforward.calculate(Math.toRadians(currAngle), targetVelocityRadPerS); // Feed forward expects 0 degrees as horizontal
 
     if(updatePower) {
       double realPower = (pidPower + fedPower);
@@ -300,10 +304,9 @@ public class ArmSub extends TestableSubsystem {
       // there's the case when you're in manual control.
 
       if(!m_automationEnabled) {
-        double currentAngle = getAngle();
-        if((currentAngle >= Constants.Arm.kSlowDownUpperAngle) && (realPower > Constants.Arm.kSlowDownSpeed)) {
+        if((currAngle >= Constants.Arm.kSlowDownUpperAngle) && (realPower > Constants.Arm.kSlowDownSpeed)) {
           realPower = Constants.Arm.kSlowDownSpeed;
-        } else if((currentAngle < Constants.Arm.kSlowDownLowerAngle) && (realPower < -Constants.Arm.kSlowDownSpeed)) {
+        } else if((currAngle < Constants.Arm.kSlowDownLowerAngle) && (realPower < -Constants.Arm.kSlowDownSpeed)) {
           realPower = -Constants.Arm.kSlowDownSpeed;
         }
       }

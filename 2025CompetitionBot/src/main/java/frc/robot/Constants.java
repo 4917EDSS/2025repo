@@ -65,7 +65,6 @@ public final class Constants {
     public static final double kEncoderVelocityConversionFactor = 1.00; // From rotations per minute? to degrees per second
     public static final double kAbsoluteEncoderOffset = 0.0; //practice bot 0.65 // From range to 0 - 1
 
-    public static final double kTargetAngleDeadband = 2.0; // In degrees
     public static final double kAngleTolerance = 1.5; // In degrees
     public static final double kAtTargetMaxVelocity = 0.02; // In degrees per second?
 
