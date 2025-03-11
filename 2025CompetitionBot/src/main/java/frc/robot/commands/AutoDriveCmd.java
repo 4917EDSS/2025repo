@@ -51,7 +51,7 @@ public class AutoDriveCmd extends Command {
   public void initialize() {
     if(RobotStatus.LastReefPosition().equals(ReefPosition.kL2L3Algae)
         || RobotStatus.LastReefPosition().equals(ReefPosition.kL3L4Algae)) {
-      fbOffset = 0.0;
+      fbOffset = -0.1;
       fbEnd = 0.0;
     } else {
       fbOffset = 0.15;

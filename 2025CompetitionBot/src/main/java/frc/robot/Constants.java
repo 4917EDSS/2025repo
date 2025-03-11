@@ -77,16 +77,16 @@ public final class Constants {
     public static final double kSlowDownSpeed = 0.15; // 1 = full power
 
     public static final double kL2PreScoreAngle = kMaxArmAngle;
-    public static final double kL2PostScoreAngle = -2.0;
+    public static final double kL2PostScoreAngle = -5.0;
     public static final double kL3PreScoreAngle = kMaxArmAngle;
-    public static final double kL3PostScoreAngle = -3.0;
+    public static final double kL3PostScoreAngle = -10.0;
     public static final double kL4PreScoreAngle = kMaxArmAngle;
-    public static final double kL4PostScoreAngle = -3.0;
-    public static final double kCoralGrabbableAngle = kMinArmAngle;
+    public static final double kL4PostScoreAngle = -10.0;
+    public static final double kCoralGrabbableAngle = -91.0;
 
     public static final double kL3L4AlgaeRemovalPrepAngle = 13;
     public static final double kL2L3AlgaeRemovalPrepAngle = 8;
-    public static final double kL2L3AlgaeRemovalPostAngle = kMaxArmAngle;
+    public static final double kL2L3AlgaeRemovalPostAngle = 10;
     public static final double kL3L4AlgaeRemovalPostAngle = kMaxArmAngle;
     public static final double kArmConversionFactor = 3.1;
   }
@@ -128,13 +128,14 @@ public final class Constants {
     public static final double kL2PreScoreHeight = 693.0;
     public static final double kL2PostScoreHeight = 513.0;
     public static final double kL3PreScoreHeight = 1077.0;
-    public static final double kL3PostScoreHeight = 933.0;
+    public static final double kL3PostScoreHeight = 840.0;
     public static final double kL4PreScoreHeight = kMaxHeight;
     public static final double kL4PostScoreHeight = 1334;
     public static final double kL3L4AlgaeRemovalPrepHeight = 842;
     public static final double kL2L3AlgaeRemovalPrepHeight = 560;
-    public static final double kL2L3AlgaeRemovalPostHeight = kL2L3AlgaeRemovalPrepHeight;
-    public static final double kL3L4AlgaeRemovalPostHeight = kL3L4AlgaeRemovalPrepHeight;
+    public static final double kL2L3AlgaeRemovalPostHeight = kL2L3AlgaeRemovalPrepHeight + 20;
+    public static final double kL3L4AlgaeRemovalPostHeight = kL3L4AlgaeRemovalPrepHeight + 20;
+    public static final double kL2PerpareScoreHeight = 820;
     // public static final double kScoreDropAngle = 30;
     // public static final double kElevatorDropScore = -30;
   }

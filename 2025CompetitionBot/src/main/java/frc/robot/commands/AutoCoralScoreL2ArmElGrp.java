@@ -20,8 +20,7 @@ public class AutoCoralScoreL2ArmElGrp extends SequentialCommandGroup {
     // Add your commands in the addCommands() call, e.g.
     // addCommands(new FooCommand(), new BarCommand());
     addCommands(
-      new MoveElArmGrp(Constants.Elevator.kCoralGrabbableHeight, Constants.Arm.kL2PreScoreAngle, armSub, elevatorSub), //Move to pre score position
-      new MoveElArmGrp(Constants.Elevator.kL2PreScoreHeight, Constants.Arm.kL2PreScoreAngle, armSub, elevatorSub)
-    );
+        new MoveElArmGrp(Constants.Elevator.kL2PerpareScoreHeight, Constants.Arm.kL2PreScoreAngle, armSub, elevatorSub), //Move to pre score position
+        new MoveElArmGrp(Constants.Elevator.kL2PreScoreHeight, Constants.Arm.kL2PreScoreAngle, armSub, elevatorSub));
   }
 }
