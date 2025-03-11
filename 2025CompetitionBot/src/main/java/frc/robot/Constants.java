@@ -47,6 +47,8 @@ public final class Constants {
     public static final int kElevatorEncoderResetSwitch = 2;
     public static final int kClimbInLimitSwitch = 3;
     public static final int kClimbOutLimitSwitch = 4;
+    public static final int kClimbLatchTopSwitch = 5;
+    public static final int kClimbLatchBottomSwitch = 6;
   }
 
   public static final class PwmIds {

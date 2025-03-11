@@ -22,6 +22,8 @@ public class ClimbSub extends TestableSubsystem {
   private final TalonFX m_climbMotor = new TalonFX(Constants.CanIds.kClimbMotor);
   private final DigitalInput m_climbInLimit = new DigitalInput(Constants.DioIds.kClimbInLimitSwitch);
   private final DigitalInput m_climbOutLimit = new DigitalInput(Constants.DioIds.kClimbOutLimitSwitch);
+  private final DigitalInput m_climbLatchTopLimit = new DigitalInput(Constants.DioIds.kClimbLatchTopSwitch);
+  private final DigitalInput m_climbLatchBottomLimit = new DigitalInput(Constants.DioIds.kClimbLatchBottomSwitch);
 
   /** Creates a new ClimbSub. */
   public ClimbSub() {
@@ -56,12 +58,19 @@ public class ClimbSub extends TestableSubsystem {
       setPower(0);
     } else if(isAtInLimit() && (m_climbMotor.get() < 0)) {
       setPower(0);
+    } else if(isTopLatched() && (m_climbMotor.get() < 0)) {
+      setPower(0);
+    } else if(isBottomLatched() && (m_climbMotor.get() < 0)) {
+      setPower(0);
     }
     // Add motor and limit switche(s) to Smartdashboard
     SmartDashboard.putNumber("Cl Angle", getPosition());
     SmartDashboard.putBoolean("Cl In Limit", isAtInLimit());
     SmartDashboard.putBoolean("Cl Out Limit", isAtOutLimit());
+    SmartDashboard.putBoolean("Cl Top Latch", isTopLatched());
+    SmartDashboard.putBoolean("Cl Bot Latch", isBottomLatched());
     SmartDashboard.putNumber("Cl Current", getElectricalCurrent());
+
   }
 
   public boolean isAtInLimit() {
@@ -71,6 +80,15 @@ public class ClimbSub extends TestableSubsystem {
   public boolean isAtOutLimit() {
     return !m_climbOutLimit.get();
   }
+
+  public boolean isTopLatched() {
+    return !m_climbLatchTopLimit.get();
+  }
+
+  public boolean isBottomLatched() {
+    return !m_climbLatchBottomLimit.get();
+  }
+
 
   /**
    * Manually set the power of the climb motor(s).
