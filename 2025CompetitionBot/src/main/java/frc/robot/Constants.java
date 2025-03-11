@@ -88,6 +88,7 @@ public final class Constants {
     public static final double kL2L3AlgaeRemovalPrepAngle = 8;
     public static final double kL2L3AlgaeRemovalPostAngle = kMaxArmAngle;
     public static final double kL3L4AlgaeRemovalPostAngle = kMaxArmAngle;
+    public static final double kArmConversionFactor = 3.1;
   }
 
   public static final class Climb {
