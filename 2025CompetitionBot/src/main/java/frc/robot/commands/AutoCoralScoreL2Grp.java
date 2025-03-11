@@ -27,10 +27,8 @@ public class AutoCoralScoreL2Grp extends SequentialCommandGroup {
     // Add your commands in the addCommands() call, e.g.
     // addCommands(new FooCommand(), new BarCommand());
     addCommands(
-        new ParallelCommandGroup(
-            new AutoCoralScoreL2ArmElGrp(armSub, elevatorSub), //Move to pre score position
-            new AutoDriveCmd(visionSub, drivetrainSub, true) //Drive to score location
-        ),
+        new AutoCoralScoreL2ArmElGrp(armSub, elevatorSub), //Move to pre score position
+        new AutoDriveCmd(visionSub, drivetrainSub, true), //Drive to score location
         new MoveElArmDeadlineGrp(Constants.Elevator.kL2PostScoreHeight, Constants.Arm.kL2PostScoreAngle, armSub,
             elevatorSub), //Move to post score location (score)
         new BackUpAfterScoringCmd(drivetrainSub), //Back up

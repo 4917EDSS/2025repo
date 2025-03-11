@@ -76,11 +76,11 @@ public final class Constants {
     public static final double kSlowDownUpperAngle = kMaxArmAngle - 5; // In degrees
     public static final double kSlowDownSpeed = 0.15; // 1 = full power
 
-    public static final double kL2PreScoreAngle = kMaxArmAngle;
+    public static final double kL2PreScoreAngle = 31;
     public static final double kL2PostScoreAngle = -5.0;
-    public static final double kL3PreScoreAngle = kMaxArmAngle;
+    public static final double kL3PreScoreAngle = 31;
     public static final double kL3PostScoreAngle = -10.0;
-    public static final double kL4PreScoreAngle = kMaxArmAngle;
+    public static final double kL4PreScoreAngle = 31;
     public static final double kL4PostScoreAngle = -10.0;
     public static final double kCoralGrabbableAngle = -91.0;
 

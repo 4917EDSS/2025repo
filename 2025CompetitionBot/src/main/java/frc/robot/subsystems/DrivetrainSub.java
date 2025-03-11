@@ -260,6 +260,8 @@ public class DrivetrainSub extends TunerSwerveDrivetrain implements Subsystem {
     SmartDashboard.putNumber("Dr Speed",
         Math.sqrt(Math.pow(getState().Speeds.vxMetersPerSecond, 2) + Math.pow(getState().Speeds.vyMetersPerSecond, 2)));
     SmartDashboard.putNumber("Dr Heading", getState().Pose.getRotation().getDegrees());
+    SmartDashboard.putBoolean("Left?", RobotStatus.isLeft());
+    SmartDashboard.putBoolean("Right?", !RobotStatus.isLeft());
   }
 
   private void startSimThread() {
