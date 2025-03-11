@@ -190,6 +190,8 @@ public final class Constants {
     public static final double kApriltagOffset = 0.0825; // Apriltag height + bot height (Will need to be changed in the future)
     public static final double kApriltagHeights[] =
         {1.22, 1.22, 1.32, 1.32, 1.22, 1.22, 1.32, 1.32, 1.22, 1.22, 1.24, 1.24, 1.24, 1.24, 1.24, 1.24};
+
+    public static final double kDistanceToCloseToDrive = -2.3;
   }
 
   ////////// Test pass/fail/warn parameters ///////////////////////////////////////////////////////

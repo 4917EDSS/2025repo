@@ -14,6 +14,7 @@ import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants;
 import frc.robot.utils.LimelightHelpers;
 
 public class VisionSub extends SubsystemBase {
@@ -154,6 +155,15 @@ public class VisionSub extends SubsystemBase {
 
   public double getTx() {
     return x;
+  }
+
+  public boolean isFarFromAprilTag() {
+    //y distance is negative
+    if(y < Constants.Vision.kDistanceToCloseToDrive) {
+      return true;
+    } else {
+      return false;
+    }
   }
 
   private void updateOdometry(SwerveDriveState swerveDriveState) {

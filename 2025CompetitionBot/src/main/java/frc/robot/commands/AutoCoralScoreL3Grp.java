@@ -5,6 +5,7 @@
 package frc.robot.commands;
 
 
+import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.ScheduleCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
@@ -26,10 +27,19 @@ public class AutoCoralScoreL3Grp extends SequentialCommandGroup {
     // Add your commands in the addCommands() call, e.g.
     // addCommands(new FooCommand(), new BarCommand());
     addCommands(
-        new ParallelCommandGroup(
-            new MoveElArmGrp(Constants.Elevator.kL3PreScoreHeight, Constants.Arm.kL3PreScoreAngle, armSub, elevatorSub), //Move to pre score position
-            new AutoDriveCmd(visionSub, drivetrainSub, true) //Drive to score location
-        ),
+        new ConditionalCommand(
+            new ParallelCommandGroup(
+                new MoveElArmGrp(Constants.Elevator.kL3PreScoreHeight, Constants.Arm.kL3PreScoreAngle, armSub,
+                    elevatorSub), //Move to pre score position
+                new AutoDriveCmd(visionSub, drivetrainSub, true) //Drive to score location
+            ),
+            // Else
+            new SequentialCommandGroup(
+                new MoveElArmGrp(Constants.Elevator.kL3PreScoreHeight, Constants.Arm.kL3PreScoreAngle, armSub,
+                    elevatorSub), //Move to pre scoreposition
+                new AutoDriveCmd(visionSub, drivetrainSub, true) //Drive to score location
+            ),
+            () -> visionSub.isFarFromAprilTag()),
         new MoveElArmDeadlineGrp(Constants.Elevator.kL3PostScoreHeight, Constants.Arm.kL3PostScoreAngle, armSub,
             elevatorSub), //Move to post score location (score)
         new BackUpAfterScoringCmd(drivetrainSub), //Back up
