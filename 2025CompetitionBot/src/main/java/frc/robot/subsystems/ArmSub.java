@@ -87,6 +87,8 @@ public class ArmSub extends TestableSubsystem {
     // operation can be slow
     m_armMotor.configure(motorConfig, SparkBase.ResetMode.kResetSafeParameters,
         SparkBase.PersistMode.kPersistParameters);
+
+    init();
   }
 
   /**
@@ -94,7 +96,7 @@ public class ArmSub extends TestableSubsystem {
    */
   public void init() {
     m_logger.info("Initializing ArmSub Subsystem");
-    m_relativeEncoder.setPosition(getAngle() / 3.6);
+    m_relativeEncoder.setPosition(getAngle() / Constants.Arm.kArmConversionFactor); // 360 deg / 100 motor rotations per arm rotation
   }
 
   /**
@@ -286,7 +288,9 @@ public class ArmSub extends TestableSubsystem {
         activeAngle = m_targetAngle;
       }
 
-      m_controller.setReference(activeAngle, SparkBase.ControlType.kMAXMotionPositionControl);
+      // Convert from degrees to motor rotation
+      double rotationPosition = activeAngle / Constants.Arm.kArmConversionFactor; // 360 deg / 100 motor rotations per arm rotation
+      m_controller.setReference(rotationPosition, SparkBase.ControlType.kMAXMotionPositionControl);
     }
   }
 
