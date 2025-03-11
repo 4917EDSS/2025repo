@@ -30,7 +30,7 @@ public class SwerveTelemetry {
    */
   public SwerveTelemetry(double maxSpeed) {
     MaxSpeed = maxSpeed;
-    SignalLogger.start();
+    // SignalLogger.start();
   }
 
   /* What to publish over networktables for telemetry */

@@ -103,7 +103,7 @@ public class RobotContainer {
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
     // turn off logging
-    SignalLogger.stop();
+    // SignalLogger.stop();
     m_armSub.setElevatorPositionSupplier(() -> m_elevatorSub.getPositionMm());
     m_elevatorSub.setArmAngleSupplier(() -> m_armSub.getAngle());
 
