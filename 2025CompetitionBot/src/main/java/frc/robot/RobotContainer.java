@@ -131,9 +131,10 @@ public class RobotContainer {
     // Warmup MUST happen before we configure buttons or autos.
     DriveToNearestScoreLocationCmd.warmUpMap(m_drivetrainSub);
 
+    registerNamedCommands();
     configureBindings();
     autoChooserSetup();
-    registerNamedCommands();
+
   }
 
   /* Named commands are essentially commands the pathplanner can access */
@@ -359,8 +360,9 @@ public class RobotContainer {
    * Create a list of auto period action choices
    */
   void autoChooserSetup() {
-    m_Chooser.addOption("Leave", new PathPlannerAuto("Leave Auto"));
+    m_Chooser.setDefaultOption("Leave", new PathPlannerAuto("Leave Auto"));
     m_Chooser.addOption("Do-Nothing", new DoNothingGrp());
+    m_Chooser.addOption("Barge Side Vision With Reef", new PathPlannerAuto("Barge Side Vision With Reef"));
     SmartDashboard.putData("Auto Choices", m_Chooser);
   }
 }
