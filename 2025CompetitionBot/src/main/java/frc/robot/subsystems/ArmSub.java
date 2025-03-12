@@ -117,6 +117,8 @@ public class ArmSub extends TestableSubsystem {
     SmartDashboard.putBoolean("Arm Upper Limit", isAtUpperLimit());
     SmartDashboard.putNumber("Arm Power", m_armMotor.get());
     SmartDashboard.putNumber("Arm Rel Enc", m_relativeEncoder.getPosition());
+    SmartDashboard.putBoolean("Is at Arm limit", isAtTargetAngle());
+    SmartDashboard.putNumber("Target Arm Angle", m_targetAngle);
   }
 
   /**

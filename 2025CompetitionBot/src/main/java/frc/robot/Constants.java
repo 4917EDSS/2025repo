@@ -60,7 +60,7 @@ public final class Constants {
   public static final class Arm {
     // All angles in degrees
     public static final double kMinArmAngle = -90.0;
-    public static final double kMaxArmAngle = 30.0;
+    public static final double kMaxArmAngle = 33.0;
     public static final double kMaxPower = 0.5;
 
     public static final double kEncoderPositionConversionFactor = 0.01; // 1 / 100 * 360; // From rotations to degrees (Gear Ration / 360 deg)
@@ -78,13 +78,13 @@ public final class Constants {
     public static final double kSlowDownUpperAngle = kMaxArmAngle - 5; // In degrees
     public static final double kSlowDownSpeed = 0.15; // 1 = full power
 
-    public static final double kL2PreScoreAngle = 31;
+    public static final double kL2PreScoreAngle = 33;
     public static final double kL2PostScoreAngle = -5.0;
-    public static final double kL3PreScoreAngle = 31;
+    public static final double kL3PreScoreAngle = 33;
     public static final double kL3PostScoreAngle = -10.0;
-    public static final double kL4PreScoreAngle = 31;
+    public static final double kL4PreScoreAngle = 33;
     public static final double kL4PostScoreAngle = -10.0;
-    public static final double kCoralGrabbableAngle = -91.0;
+    public static final double kCoralGrabbableAngle = -90.0;
 
     public static final double kL3L4AlgaeRemovalPrepAngle = 13;
     public static final double kL2L3AlgaeRemovalPrepAngle = 8;
@@ -106,7 +106,7 @@ public final class Constants {
   public static final class Elevator {
     // All heights are in millimeters
     public static final double kMinHeight = 300.0;
-    public static final double kMaxHeight = 1642.0;
+    public static final double kMaxHeight = 1662.0;
 
     public static final double kRotationsToMm = 5 / (0.75 * 25.4 * Math.PI); // Gearing / Spool diameter in inches * mm/in * PI
 
@@ -124,8 +124,8 @@ public final class Constants {
     public static final double kDangerZoneBraceTop = 1405;
 
     public static final double kStartingHeight = 560.0; // Height where elevator starts with coral pre-loaded
-    public static final double kResetHeight = 722.0; // Height where elevator encounters the encoder reset switch 
-    public static final double kCoralLoadedHeight = 710; // This should be some height above the bottom danger zone so arm can swing up
+    public static final double kResetHeight = 728; // Height where elevator encounters the encoder reset switch 
+    public static final double kCoralLoadedHeight = 705; // This should be some height above the bottom danger zone so arm can swing up
     public static final double kCoralGrabbableHeight = 901.0; // Height that coral can still slide in under the arm for the coral to be grabbable
     public static final double kL2PreScoreHeight = 693.0;
     public static final double kL2PostScoreHeight = 513.0;
@@ -194,7 +194,7 @@ public final class Constants {
     public static final double kApriltagHeights[] =
         {1.22, 1.22, 1.32, 1.32, 1.22, 1.22, 1.32, 1.32, 1.22, 1.22, 1.24, 1.24, 1.24, 1.24, 1.24, 1.24};
 
-    public static final double kDistanceToCloseToDrive = -2.3;
+    public static final double kDistanceToCloseToDrive = -1;
   }
 
   ////////// Test pass/fail/warn parameters ///////////////////////////////////////////////////////

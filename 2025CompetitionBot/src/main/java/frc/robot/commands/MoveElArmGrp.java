@@ -4,6 +4,8 @@
 
 package frc.robot.commands;
 
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import frc.robot.subsystems.ArmSub;
 import frc.robot.subsystems.ElevatorSub;
@@ -20,6 +22,7 @@ public class MoveElArmGrp extends ParallelCommandGroup {
     addCommands(
 
         new SetElevatorToHeightCmd(height, elevatorSub),
+        new InstantCommand(() -> SmartDashboard.putBoolean("Step 1", true)),
         new SetArmToPositionCmd(angle, armSub));
   }
 }

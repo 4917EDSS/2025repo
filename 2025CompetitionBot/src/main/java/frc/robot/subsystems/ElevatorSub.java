@@ -108,6 +108,7 @@ public class ElevatorSub extends TestableSubsystem {
     updateStateMachine();
     runHeightControl(m_enableAutomation);
 
+
     // If we haven't set the relative encoder's position yet, check if we are at the
     // switch that tells us to do so
     if(!m_isElevatorEncoderSet) {
@@ -125,13 +126,13 @@ public class ElevatorSub extends TestableSubsystem {
         m_isElevatorEncoderSet = true;
       }
     }
-
     SmartDashboard.putNumber("El Height", getPositionMm()); // Elevator position
     SmartDashboard.putBoolean("El Upper Limit", isAtUpperLimit()); // True if we are at the upper limit
     SmartDashboard.putBoolean("El Calib Switch", encoderResetSwitchHit()); // True if we hit the encoder reset switch
     SmartDashboard.putBoolean("El Height Is Set", m_isElevatorEncoderSet); // True once the encoder is set
     SmartDashboard.putNumber("El Current 1", testGetMotorAmps(1));
     SmartDashboard.putNumber("El Current 2", testGetMotorAmps(2));
+    SmartDashboard.putBoolean("Is at Elivator limit", isAtTargetHeight());
 
     // Current power value is sent in setPower()
 
