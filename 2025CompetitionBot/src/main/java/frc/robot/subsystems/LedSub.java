@@ -13,6 +13,7 @@ import edu.wpi.first.wpilibj.AddressableLED;
 import edu.wpi.first.wpilibj.AddressableLEDBuffer;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.Constants.PwmIds;
 import frc.robot.subsystems.LedSub.LedColour;
 import frc.robot.subsystems.LedSub.LedZones;
@@ -30,8 +31,8 @@ public class LedSub extends SubsystemBase {
   private boolean m_isFlashing; //true if flash is on (game piece gets loaded)
   private long m_time; //time of when the flash starts
   private int m_ledblinktimes = 0; // Number of times the led should blink when flashing
-
-  int m_ARBID = CanSub.createCANId(0x123, 6, 8, 10);
+  int m_ARBID;
+  private int blinkState = 0;
 
 
   public enum LedZones {
@@ -123,11 +124,15 @@ public class LedSub extends SubsystemBase {
 
   /** Creates a new LedSub. */
   public LedSub() {
+    try {
+      m_ARBID = CanSub.createCANId(0x123, 6, 8, 10);
+      init();
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
     // m_ledStrip.setLength(m_ledBuffer.getLength());
     // m_ledStrip.setData(m_ledBuffer);
     // m_ledStrip.start();
-
-    init();
   }
 
   /**
@@ -219,12 +224,91 @@ public class LedSub extends SubsystemBase {
        */
 
   private void sendToArduino(int command) {
+    leftHeadLight(true);
+    rightHeadLight(true);
+  }
 
+  public void setElevatorColor(Byte R, Byte G, Byte B) {
+    m_ARBID = CanSub.createCANId(1, 6, 8, 10);
     ByteBuffer targetedMessageID = ByteBuffer.allocateDirect(4);//Must be direct
     targetedMessageID.order(ByteOrder.LITTLE_ENDIAN); //Set order of bytes
     targetedMessageID.asIntBuffer().put(0, m_ARBID); //Put the arbID into the buffer
     byte[] output_data = new byte[8];
-    output_data[0] = 1;
+    output_data[0] = R;
+    output_data[1] = G;
+    output_data[2] = B;
+    //Send a message back to the same device
+    // Note that NO REPEAT means it will only send the output once. 
+    CANJNI.FRCNetCommCANSessionMuxSendMessage(targetedMessageID.getInt(), output_data,
+        CANJNI.CAN_SEND_PERIOD_NO_REPEAT);
+  }
+
+  public void setClimbColor(Byte R, Byte G, Byte B) {
+    m_ARBID = CanSub.createCANId(1, 7, 8, 10);
+    ByteBuffer targetedMessageID = ByteBuffer.allocateDirect(4);//Must be direct
+    targetedMessageID.order(ByteOrder.LITTLE_ENDIAN); //Set order of bytes
+    targetedMessageID.asIntBuffer().put(0, m_ARBID); //Put the arbID into the buffer
+    byte[] output_data = new byte[8];
+    output_data[0] = R;
+    output_data[1] = G;
+    output_data[2] = B;
+    //Send a message back to the same device
+    // Note that NO REPEAT means it will only send the output once. 
+    CANJNI.FRCNetCommCANSessionMuxSendMessage(targetedMessageID.getInt(), output_data,
+        CANJNI.CAN_SEND_PERIOD_NO_REPEAT);
+  }
+
+  public void blink() {
+    m_ARBID = CanSub.createCANId(2, 6, 8, 10);
+    ByteBuffer targetedMessageID = ByteBuffer.allocateDirect(4);//Must be direct
+    targetedMessageID.order(ByteOrder.LITTLE_ENDIAN); //Set order of bytes
+    targetedMessageID.asIntBuffer().put(0, m_ARBID); //Put the arbID into the buffer
+    byte[] output_data = new byte[8];
+    output_data[0] = 0;
+    output_data[1] = 127;
+    output_data[2] = 0;
+    output_data[3] = 127;
+    output_data[4] = 127;
+    output_data[5] = 127;
+    //Send a message back to the same device
+    // Note that NO REPEAT means it will only send the output once. 
+    CANJNI.FRCNetCommCANSessionMuxSendMessage(targetedMessageID.getInt(), output_data,
+        CANJNI.CAN_SEND_PERIOD_NO_REPEAT);
+  }
+
+
+  public void leftHeadLight(Boolean enable) {
+    byte on = 1;
+    if(enable) {
+      on = 1;
+    } else {
+      on = 0;
+    }
+    m_ARBID = CanSub.createCANId(0, 6, 8, 10);
+    ByteBuffer targetedMessageID = ByteBuffer.allocateDirect(4);//Must be direct
+    targetedMessageID.order(ByteOrder.LITTLE_ENDIAN); //Set order of bytes
+    targetedMessageID.asIntBuffer().put(0, m_ARBID); //Put the arbID into the buffer
+    byte[] output_data = new byte[8];
+    output_data[0] = on;
+    //Send a message back to the same device
+    // Note that NO REPEAT means it will only send the output once. 
+    CANJNI.FRCNetCommCANSessionMuxSendMessage(targetedMessageID.getInt(), output_data,
+        CANJNI.CAN_SEND_PERIOD_NO_REPEAT);
+  }
+
+  public void rightHeadLight(Boolean enable) {
+    byte on = 1;
+    if(enable) {
+      on = 1;
+    } else {
+      on = 0;
+    }
+    m_ARBID = CanSub.createCANId(0, 7, 8, 10);
+    ByteBuffer targetedMessageID = ByteBuffer.allocateDirect(4);//Must be direct
+    targetedMessageID.order(ByteOrder.LITTLE_ENDIAN); //Set order of bytes
+    targetedMessageID.asIntBuffer().put(0, m_ARBID); //Put the arbID into the buffer
+    byte[] output_data = new byte[8];
+    output_data[0] = on;
     //Send a message back to the same device
     // Note that NO REPEAT means it will only send the output once. 
     CANJNI.FRCNetCommCANSessionMuxSendMessage(targetedMessageID.getInt(), output_data,

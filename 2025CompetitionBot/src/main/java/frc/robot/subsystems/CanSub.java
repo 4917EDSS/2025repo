@@ -12,6 +12,8 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.hal.can.CANJNI;
 // import edu.wpi.first.wpilibj.DigitalOutput;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.Subsystem;
+import frc.robot.subsystems.LedSub;
 
 
 public class CanSub extends SubsystemBase {
@@ -25,9 +27,12 @@ public class CanSub extends SubsystemBase {
   static int m_TOFDist;
   static int m_analog0;
   static int m_coralSensor;
+  LedSub m_ledSub;
+  boolean blinLed = true;
 
   /** Creates a new CanSub. */
-  public CanSub(int CustomSensorID) {
+  public CanSub(int CustomSensorID, LedSub ledSub) {
+    m_ledSub = ledSub;
     m_data_buffer = new byte[8];
     /*
      * m_do0 = new DigitalOutput(0);
@@ -176,9 +181,14 @@ public class CanSub extends SubsystemBase {
 
   public boolean isCoralPresent() {
     if(m_coralSensor < 100) {
+      if(blinLed) {
+        m_ledSub.blink();
+        blinLed = false;
+      }
       return true;
     } else
-      return false;
+      blinLed = true;
+    return false;
   }
 
   // public void updateShuffleboard() {

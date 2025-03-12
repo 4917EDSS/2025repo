@@ -77,10 +77,10 @@ public class RobotContainer {
   private final TestManager m_testManager = new TestManager();
 
   // Robot subsystems
-  private final CanSub m_canSub = new CanSub(Constants.CanIds.kElevatorCustomCanBoard);
+  private final LedSub m_ledSub = new LedSub();
+  private final CanSub m_canSub = new CanSub(Constants.CanIds.kElevatorCustomCanBoard, m_ledSub);
   private final ArmSub m_armSub = new ArmSub(m_canSub);
   private final ClimbSub m_climbSub = new ClimbSub();
-  private final LedSub m_ledSub = new LedSub();
   private final DrivetrainSub m_drivetrainSub = TunerConstants.createDrivetrain();
   private final ElevatorSub m_elevatorSub = new ElevatorSub();
   private final VisionSub m_visionSub;
@@ -176,7 +176,7 @@ public class RobotContainer {
 
     // Square
 
-    m_driverController.square().whileTrue(new AutoDriveCmd(m_visionSub, m_drivetrainSub, true));//.onTrue(new AutoGrabCoralGrp(m_armSub, m_canSub, m_elevatorSub));//
+    m_driverController.square().onTrue(new AutoGrabCoralGrp(m_armSub, m_canSub, m_elevatorSub));//.onTrue(new AutoGrabCoralGrp(m_armSub, m_canSub, m_elevatorSub));//
 
 
     // Cross
