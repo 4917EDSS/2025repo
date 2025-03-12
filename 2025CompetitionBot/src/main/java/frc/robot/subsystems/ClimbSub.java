@@ -58,10 +58,6 @@ public class ClimbSub extends TestableSubsystem {
       setPower(0);
     } else if(isAtInLimit() && (m_climbMotor.get() < 0)) {
       setPower(0);
-    } else if(isTopLatched() && (m_climbMotor.get() < 0)) {
-      setPower(0);
-    } else if(isBottomLatched() && (m_climbMotor.get() < 0)) {
-      setPower(0);
     }
     // Add motor and limit switche(s) to Smartdashboard
     SmartDashboard.putNumber("Cl Angle", getPosition());
