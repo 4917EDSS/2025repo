@@ -71,7 +71,7 @@ public final class Constants {
     public static final double kAtTargetMaxVelocity = 0.02; // In degrees per second?
 
     public static final double kDangerZoneBottomVertical = -88.0; // In degrees
-    public static final double kDangerZoonMidVertical = -74.0;
+    public static final double kDangerZoneMidVertical = -74.0;
     public static final double kDangerZoneUpperAngle = -60.0; // In degrees
     public static final double kDangerZoneBraceAngle = -84.0; // In degrees
 
@@ -82,16 +82,16 @@ public final class Constants {
     public static final double kL2PreScoreAngle = 33;
     public static final double kL2PostScoreAngle = -5.0;
     public static final double kL3PreScoreAngle = 33;
-    public static final double kL3PostScoreAngle = -10.0;
+    public static final double kL3PostScoreAngle = -5.0;
     public static final double kL4PreScoreAngle = 33;
-    public static final double kL4PostScoreAngle = -10.0;
+    public static final double kL4PostScoreAngle = -5.0;
     public static final double kCoralGrabbableAngle = -90.0;
 
     public static final double kL3L4AlgaeRemovalPrepAngle = 13;
     public static final double kL2L3AlgaeRemovalPrepAngle = 8;
     public static final double kL2L3AlgaeRemovalPostAngle = 10;
     public static final double kL3L4AlgaeRemovalPostAngle = kMaxArmAngle;
-    public static final double kArmConversionFactor = 3.1;
+    public static final double kArmConversionFactor = 3.6;
   }
 
   public static final class Climb {
@@ -125,7 +125,7 @@ public final class Constants {
     public static final double kDangerZoneBraceTop = 1405;
 
     public static final double kResetHeight = 728; // Height where elevator encounters the encoder reset switch 
-    public static final double kCoralLoadedHeight = 705; // This should be some height above the bottom danger zone so arm can swing up
+    public static final double kCoralLoadedHeight = 700; // This should be some height above the bottom danger zone so arm can swing up
     public static final double kStartingHeight = kCoralLoadedHeight; // Height where elevator starts with coral pre-loaded
     public static final double kCoralGrabbableHeight = 901.0; // Height that coral can still slide in under the arm for the coral to be grabbable
     public static final double kL2PreScoreHeight = 693.0;
@@ -195,7 +195,7 @@ public final class Constants {
     public static final double kApriltagHeights[] =
         {1.22, 1.22, 1.32, 1.32, 1.22, 1.22, 1.32, 1.32, 1.22, 1.22, 1.24, 1.24, 1.24, 1.24, 1.24, 1.24};
 
-    public static final double kDistanceToCloseToDrive = -1;
+    public static final double kDistanceToCloseToDrive = -1.25;
   }
 
   ////////// Test pass/fail/warn parameters ///////////////////////////////////////////////////////

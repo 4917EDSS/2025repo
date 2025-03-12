@@ -16,7 +16,7 @@ public class SubControl {
    * position
    */
   public enum State {
-    MOVING, INTERRUPTED
+    MOVING, INTERRUPTED, HOLDING
   }
 
   public State state = State.INTERRUPTED;

@@ -5,9 +5,22 @@
     "data": {
       "commands": [
         {
-          "type": "path",
+          "type": "deadline",
           "data": {
-            "pathName": "Start - 1st Auto"
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "Start - 1st Auto"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "SetL4ScoringSlow"
+                }
+              }
+            ]
           }
         },
         {
@@ -17,9 +30,22 @@
           }
         },
         {
-          "type": "path",
+          "type": "parallel",
           "data": {
-            "pathName": "1st Score - Pickup"
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "1st Score - Pickup"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "AutoGrabCoralGrp"
+                }
+              }
+            ]
           }
         },
         {

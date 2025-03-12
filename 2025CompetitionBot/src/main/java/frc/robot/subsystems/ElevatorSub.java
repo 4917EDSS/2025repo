@@ -31,8 +31,8 @@ public class ElevatorSub extends TestableSubsystem {
   private final DigitalInput m_elevatorUpperLimit = new DigitalInput(Constants.DioIds.kElevatorUpperLimit);
   private final DigitalInput m_encoderResetSwitch = new DigitalInput(Constants.DioIds.kElevatorEncoderResetSwitch);
 
-  private double m_kS = 0.0;
-  private double m_kG = 0.06;
+  private double m_kS = 0.01;
+  private double m_kG = 0.001;
   private double m_kV = 0.0;
   private double m_kP = 0.01;
   private double m_kI = 0.0;
@@ -46,10 +46,10 @@ public class ElevatorSub extends TestableSubsystem {
   private double m_blockedPosition;
   private boolean m_enableAutomation = false;
   private boolean m_isElevatorEncoderSet = false;
-  private int m_hitEncoderSwitchCounter = 0;
   private double m_preTestHeight = 0;
   private double m_smartDashboardCounter = 0;
   private SubControl m_currentControl = new SubControl(); // Current states of mechanism
+  private boolean m_isSlow = false;
 
   /** Creates a new ElevatorSub. */
   public ElevatorSub() {
@@ -115,16 +115,15 @@ public class ElevatorSub extends TestableSubsystem {
       // Adds a counter to the encoder reset switch so that we don't reset position by
       // accident
       if(encoderResetSwitchHit() && (m_elevatorMotor.get() > 0.0)) {
-        m_hitEncoderSwitchCounter++;
-      } else {
-        m_hitEncoderSwitchCounter = 0;
+        m_isElevatorEncoderSet = true;
+        setPositionMm(Constants.Elevator.kResetHeight);
       }
 
       // If we hit the reset switch twice in a row, reset encoder
-      if(m_hitEncoderSwitchCounter >= 2) {
-        setPositionMm(Constants.Elevator.kResetHeight);
-        m_isElevatorEncoderSet = true;
-      }
+      // if(m_hitEncoderSwitchCounter >= 2) {     //This variable was deleted, if this code is added back, re-add that as well
+
+      //   m_isElevatorEncoderSet = true;
+      // }
     }
     SmartDashboard.putNumber("El Height", getPositionMm()); // Elevator position
     SmartDashboard.putBoolean("El Upper Limit", isAtUpperLimit()); // True if we are at the upper limit
@@ -133,6 +132,7 @@ public class ElevatorSub extends TestableSubsystem {
     SmartDashboard.putNumber("El Current 1", testGetMotorAmps(1));
     SmartDashboard.putNumber("El Current 2", testGetMotorAmps(2));
     SmartDashboard.putBoolean("Is at Elivator limit", isAtTargetHeight());
+    SmartDashboard.putNumber("Elevator Target", m_targetHeight);
 
     // Current power value is sent in setPower()
 
@@ -282,6 +282,12 @@ public class ElevatorSub extends TestableSubsystem {
     return !m_encoderResetSwitch.get();
   }
 
+
+  public void setElevatorSlowMode(boolean isSlow) {
+    m_isSlow = isSlow;
+
+  }
+
   /**
    * Handle the case where the elevator needs to stop due to a potential collision
    */
@@ -372,13 +378,25 @@ public class ElevatorSub extends TestableSubsystem {
     double ffPower = m_feedforward.calculate(getVelocity());
     double pidPower = (m_elevatorPID.calculate(getPositionMm(), activeTarget));
     double negitivepidPower = (m_negitiveelevatorPID.calculate(getPositionMm(), activeTarget));
+    double totalPower = ffPower;
+
+    if(activeTarget > getPositionMm()) {
+      totalPower += pidPower;
+    } else {
+      totalPower += negitivepidPower;
+    }
 
     if(updatePower) {
-      if(activeTarget > getPositionMm()) {
-        setPower(ffPower + pidPower);
-      } else {
-        setPower(ffPower + negitivepidPower);
+
+      if(m_isSlow) {
+        if(totalPower > 0.2) {
+          totalPower = 0.2;
+        } else if(totalPower < -0.2) {
+          totalPower = -0.2;
+        }
       }
+      setPower(totalPower);
+
     }
   }
 
