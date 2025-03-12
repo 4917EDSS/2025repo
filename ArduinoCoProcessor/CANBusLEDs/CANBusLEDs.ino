@@ -16,8 +16,8 @@
 #define CAN_PERIOD_MS 100
 #define CAN_PACKET_SIZE 8
 #define CAN_DEVICE_API 0x123  
-#define CAN_DEVICE_ID 6       // 6 for elevator (left), 7 for climb (right)
-#define NUM_LEDS 79           // Elevator (left) 79, Climb (right) 67
+#define CAN_DEVICE_ID 6       // 6 for elevator (left), 7 for climb (right) !!! UPDATE ME WHEN FLASHING !!! 
+#define NUM_LEDS 79           // Elevator (left) 79, Climb (right) 67 !!!!!! LEAVE AT 79 UNLESS YOU ACTUALLY NEED TO CHANGE THIS!!!! 
 
 
 // LED Stuff
@@ -159,14 +159,6 @@ void loop() {
 
     // Add new LED commands here. Make sure to inform Software when new commands have been added 
 
-    // Update LED Colour
-    for (int i = 0; i < NUM_LEDS; i++) {
-      leds[i] = CRGB(rgb[0], rgb[1], rgb[2]);
-    }
-    // Display the LEDs
-    FastLED.show();
-
-
     // Party mode if all values are 0
     if ((rgb[0] == 0) && (rgb[1] == 0) && (rgb[2] == 0)) {
       for (int i = 0; i < NUM_LEDS; i++) {
@@ -187,7 +179,12 @@ void loop() {
         delay(25);
       }
 
-      // Display LEDs
+    } else { 
+      // Update all of the LED Colours
+      for (int i = 0; i < NUM_LEDS; i++) {
+        leds[i] = CRGB(rgb[0], rgb[1], rgb[2]);
+      }
+      // Display the LEDs
       FastLED.show();
     }
 
