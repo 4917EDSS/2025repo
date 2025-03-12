@@ -71,7 +71,7 @@ public final class Constants {
     public static final double kAtTargetMaxVelocity = 0.02; // In degrees per second?
 
     public static final double kDangerZoneBottomVertical = -88.0; // In degrees
-    public static final double kDangerZoonMidVertical = -74.0;
+    public static final double kDangerZoneMidVertical = -74.0;
     public static final double kDangerZoneUpperAngle = -60.0; // In degrees
     public static final double kDangerZoneBraceAngle = -84.0; // In degrees
 
@@ -91,7 +91,7 @@ public final class Constants {
     public static final double kL2L3AlgaeRemovalPrepAngle = 8;
     public static final double kL2L3AlgaeRemovalPostAngle = 10;
     public static final double kL3L4AlgaeRemovalPostAngle = kMaxArmAngle;
-    public static final double kArmConversionFactor = 3.1;
+    public static final double kArmConversionFactor = 3.6;
   }
 
   public static final class Climb {
@@ -195,7 +195,7 @@ public final class Constants {
     public static final double kApriltagHeights[] =
         {1.22, 1.22, 1.32, 1.32, 1.22, 1.22, 1.32, 1.32, 1.22, 1.22, 1.24, 1.24, 1.24, 1.24, 1.24, 1.24};
 
-    public static final double kDistanceToCloseToDrive = -1;
+    public static final double kDistanceToCloseToDrive = -1.7;
   }
 
   ////////// Test pass/fail/warn parameters ///////////////////////////////////////////////////////

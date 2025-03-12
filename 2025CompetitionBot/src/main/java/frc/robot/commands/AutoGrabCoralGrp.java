@@ -37,7 +37,8 @@ public class AutoGrabCoralGrp extends SequentialCommandGroup {
         new InstantCommand(() -> SmartDashboard.putBoolean("Step 4", true)),
         new MoveElArmGrp(Constants.Elevator.kCoralLoadedHeight, Constants.Arm.kMinArmAngle, armSub, elevatorSub),
         new InstantCommand(() -> SmartDashboard.putBoolean("Step 5", true)),
-        new MoveElArmGrp(Constants.Elevator.kCoralGrabbableHeight, Constants.Arm.kMinArmAngle, armSub, elevatorSub),
+        new MoveElArmGrp(Constants.Elevator.kCoralGrabbableHeight, Constants.Arm.kDangerZoneMidVertical + 5, armSub,
+            elevatorSub),
         new InstantCommand(() -> SmartDashboard.putBoolean("Step 6", true)));
   }
 }

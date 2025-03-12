@@ -116,9 +116,14 @@ public class ArmSub extends TestableSubsystem {
     SmartDashboard.putBoolean("Arm Lower Limit", isAtLowerLimit());
     SmartDashboard.putBoolean("Arm Upper Limit", isAtUpperLimit());
     SmartDashboard.putNumber("Arm Power", m_armMotor.get());
-    SmartDashboard.putNumber("Arm Rel Enc", m_relativeEncoder.getPosition());
+    SmartDashboard.putNumber("Arm Rel Enc 3.1", m_relativeEncoder.getPosition() * 3.1);
     SmartDashboard.putBoolean("Is at Arm limit", isAtTargetAngle());
     SmartDashboard.putNumber("Target Arm Angle", m_targetAngle);
+
+    SmartDashboard.putNumber("Arm Rel Enc 3.6", m_relativeEncoder.getPosition() * 3.6);
+    // if(getVelocity() < 0.5) {
+    //   m_relativeEncoder.setPosition(getAngle() / Constants.Arm.kArmConversionFactor);
+    // }
   }
 
   /**
@@ -252,14 +257,14 @@ public class ArmSub extends TestableSubsystem {
     double armAngle = getAngle();
     double elevatorHeight = elevatorPosition.get();
 
-    if((elevatorHeight <= Constants.Elevator.kDangerZoneBottom) && (armAngle > Constants.Arm.kDangerZoonMidVertical)
+    if((elevatorHeight <= Constants.Elevator.kDangerZoneBottom) && (armAngle > Constants.Arm.kDangerZoneMidVertical)
         && (m_targetAngle < armAngle)
         && (armAngle < Constants.Arm.kDangerZoneUpperAngle)) {
       return true;
     }
     if((elevatorHeight <= Constants.Elevator.kDangerZoneBottom) && (armAngle > Constants.Arm.kDangerZoneBottomVertical)
         && (m_targetAngle > armAngle)
-        && (armAngle < Constants.Arm.kDangerZoonMidVertical)) {
+        && (armAngle < Constants.Arm.kDangerZoneMidVertical)) {
       return true;
     }
     if((elevatorHeight > Constants.Elevator.kDangerZoneBraceBottom)
