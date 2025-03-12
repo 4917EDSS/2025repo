@@ -20,6 +20,7 @@
 #define NUM_LEDS 79           // Elevator (left) 79, Climb (right) 67 !!!!!! LEAVE AT 79 UNLESS YOU ACTUALLY NEED TO CHANGE THIS!!!! 
 
 #define NUM_BLINKS 10 // Number of blinks 
+#define BLINK_DELAY 100 // Period of each blink
 
 
 // LED Stuff
@@ -178,7 +179,7 @@ void loop() {
     // Add new LED commands here. Make sure to inform Software when new commands have been added 
 
     if (blinkCounter > 0) {
-      if ((millis() - lastMillis) > 250) {
+      if ((millis() - lastMillis) > BLINK_DELAY) {
         lastMillis = millis();
         if ((blinkCounter % 2) == 0) {
           // Update all of the LED Colours
