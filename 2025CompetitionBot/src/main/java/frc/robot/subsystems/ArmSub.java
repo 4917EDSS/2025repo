@@ -90,6 +90,11 @@ public class ArmSub extends TestableSubsystem {
     SmartDashboard.putNumber("Arm Angle", getAngle());
     SmartDashboard.putBoolean("Arm Lower Limit", isAtLowerLimit());
     SmartDashboard.putBoolean("Arm Upper Limit", isAtUpperLimit());
+    SmartDashboard.putNumber("Arm Power", m_armMotor.get());
+    //SmartDashboard.putNumber("Arm Rel Enc 3.1", m_relativeEncoder.getPosition() * 3.1);
+    SmartDashboard.putBoolean("Is at Arm limit", isAtTargetAngle());
+    SmartDashboard.putNumber("Target Arm Angle", m_targetAngle);
+
     // Current power value is sent in setPower()
 
     // for tuning PID and feed forward values only
@@ -133,6 +138,7 @@ public class ArmSub extends TestableSubsystem {
   public void setPower(double power) {
     m_armMotor.set(power);
     SmartDashboard.putNumber("Arm Power", power);
+    setMoving();
   }
 
   /**
@@ -184,6 +190,7 @@ public class ArmSub extends TestableSubsystem {
    */
   public void enableAutomation() {
     m_automationEnabled = true;
+    setMoving();
   }
 
   /**
@@ -237,6 +244,12 @@ public class ArmSub extends TestableSubsystem {
         }
         break;
 
+      case HOLDING:
+        SmartDashboard.putBoolean("Arm Holding", true);
+
+        break;
+
+
       default:
         m_currentControl.state = State.INTERRUPTED;
         break;
@@ -252,14 +265,14 @@ public class ArmSub extends TestableSubsystem {
     double armAngle = getAngle();
     double elevatorHeight = elevatorPosition.get();
 
-    if((elevatorHeight <= Constants.Elevator.kDangerZoneBottom) && (armAngle > Constants.Arm.kDangerZoonMidVertical)
+    if((elevatorHeight <= Constants.Elevator.kDangerZoneBottom) && (armAngle > Constants.Arm.kDangerZoneMidVertical)
         && (m_targetAngle < armAngle)
         && (armAngle < Constants.Arm.kDangerZoneUpperAngle)) {
       return true;
     }
     if((elevatorHeight <= Constants.Elevator.kDangerZoneBottom) && (armAngle > Constants.Arm.kDangerZoneBottomVertical)
         && (m_targetAngle > armAngle)
-        && (armAngle < Constants.Arm.kDangerZoonMidVertical)) {
+        && (armAngle < Constants.Arm.kDangerZoneMidVertical)) {
       return true;
     }
     if((elevatorHeight > Constants.Elevator.kDangerZoneBraceBottom)
@@ -283,6 +296,11 @@ public class ArmSub extends TestableSubsystem {
     if(m_currentControl.state == State.INTERRUPTED) {
       activeAngle = m_blockedAngle;
     }
+    if(m_currentControl.state == State.HOLDING) {
+      setPower(0);
+      return;
+    }
+
     double currAngle = getAngle();
     // This is a very rough approximation, and is only used to give to feed forward.
     // Basically, we are always asking for the speed which would get us to our target in 1 second.
@@ -324,10 +342,19 @@ public class ArmSub extends TestableSubsystem {
    * 
    * @return true when we are within tolerance of our target height
    */
+
+  public void setHolding() {
+    m_currentControl.state = State.HOLDING;
+  }
+
+  public void setMoving() {
+    m_currentControl.state = State.MOVING;
+  }
+
   public boolean isAtTargetAngle() {
     // If we are within tolerance and our velocity is low, we're at our target
-    if((Math.abs(m_targetAngle - getAngle()) < Constants.Arm.kAngleTolerance)
-        && (Math.abs(getVelocity()) < Constants.Arm.kAtTargetMaxVelocity)) {
+    if(Math.abs(m_targetAngle - getAngle()) < Constants.Arm.kAngleTolerance) {
+      //&& (Math.abs(getVelocity()) < Constants.Arm.kAtTargetMaxVelocity)) {
       return true;
     } else {
       return false;

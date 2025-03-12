@@ -206,10 +206,10 @@ public class RobotContainer {
             new InstantCommand(() -> RobotStatus.l3L4Algae())));
 
     // L2
-    m_driverController.L2().onTrue(new InstantCommand(() -> slowDown())).onFalse(new InstantCommand(() -> speedUp()));
+    m_driverController.L2().onTrue(new InstantCommand(() -> RobotStatus.setLeft()));
 
     // R2
-    //m_driverController.R2().onTrue(new DriveToNearestScoreLocationCmd(m_drivetrainSub));
+    m_driverController.R2().onTrue(new InstantCommand(() -> RobotStatus.setRight()));//.onTrue(new DriveToNearestScoreLocationCmd(m_drivetrainSub));
 
     // POV Up
     m_driverController.povUp().onTrue(new ClimbDeployCmd(m_climbSub));
@@ -225,10 +225,11 @@ public class RobotContainer {
     // TODO:  Target scoring to pipe to the left of the vision target
 
     // Share
-    m_driverController.share().onTrue(new InstantCommand(() -> RobotStatus.setLeft()));
+    m_driverController.share();
 
     // Options
-    m_driverController.options().onTrue(new InstantCommand(() -> RobotStatus.setRight()));
+    m_driverController.options().onTrue(new InstantCommand(() -> slowDown()))
+        .onFalse(new InstantCommand(() -> speedUp()));;
     // m_driverController.options().whileTrue(AutoBuilder.pathfindToPose(
     //     new Pose2d(2, 6.5, new Rotation2d(0)),
     //     m_constraints,

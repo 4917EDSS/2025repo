@@ -159,7 +159,7 @@ public class VisionSub extends SubsystemBase {
 
   public boolean isFarFromAprilTag() {
     //y distance is negative
-    if(y < Constants.Vision.kDistanceToCloseToDrive) {
+    if(botposeTarget[2] < Constants.Vision.kDistanceToCloseToDrive) {
       return true;
     } else {
       return false;
