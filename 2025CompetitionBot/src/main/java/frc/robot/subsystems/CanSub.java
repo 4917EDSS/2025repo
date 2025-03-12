@@ -57,7 +57,7 @@ public class CanSub extends SubsystemBase {
   }
 
   // A helper function to assemble a full arbitration ID.
-  public int createCANId(int apiId, int deviceId, int manufacturer, int deviceType) {
+  public static int createCANId(int apiId, int deviceId, int manufacturer, int deviceType) {
     return ((int) (deviceType) & 0x1F) << 24 | ((int) (manufacturer) & 0xFF) << 16 | (apiId & 0x3FF) << 6
         | (deviceId & 0x3F);
   }

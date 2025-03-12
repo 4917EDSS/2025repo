@@ -82,9 +82,9 @@ public final class Constants {
     public static final double kL2PreScoreAngle = 33;
     public static final double kL2PostScoreAngle = -5.0;
     public static final double kL3PreScoreAngle = 33;
-    public static final double kL3PostScoreAngle = -10.0;
+    public static final double kL3PostScoreAngle = -5.0;
     public static final double kL4PreScoreAngle = 33;
-    public static final double kL4PostScoreAngle = -10.0;
+    public static final double kL4PostScoreAngle = -5.0;
     public static final double kCoralGrabbableAngle = -90.0;
 
     public static final double kL3L4AlgaeRemovalPrepAngle = 13;
@@ -125,7 +125,7 @@ public final class Constants {
     public static final double kDangerZoneBraceTop = 1405;
 
     public static final double kResetHeight = 728; // Height where elevator encounters the encoder reset switch 
-    public static final double kCoralLoadedHeight = 705; // This should be some height above the bottom danger zone so arm can swing up
+    public static final double kCoralLoadedHeight = 700; // This should be some height above the bottom danger zone so arm can swing up
     public static final double kStartingHeight = kCoralLoadedHeight; // Height where elevator starts with coral pre-loaded
     public static final double kCoralGrabbableHeight = 901.0; // Height that coral can still slide in under the arm for the coral to be grabbable
     public static final double kL2PreScoreHeight = 693.0;
@@ -195,7 +195,7 @@ public final class Constants {
     public static final double kApriltagHeights[] =
         {1.22, 1.22, 1.32, 1.32, 1.22, 1.22, 1.32, 1.32, 1.22, 1.22, 1.24, 1.24, 1.24, 1.24, 1.24, 1.24};
 
-    public static final double kDistanceToCloseToDrive = -1.7;
+    public static final double kDistanceToCloseToDrive = -2.0;
   }
 
   ////////// Test pass/fail/warn parameters ///////////////////////////////////////////////////////

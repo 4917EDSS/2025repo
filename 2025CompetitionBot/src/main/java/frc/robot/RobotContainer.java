@@ -49,6 +49,7 @@ import frc.robot.subsystems.ClimbSub;
 import frc.robot.subsystems.DrivetrainSub;
 import frc.robot.subsystems.ElevatorSub;
 import frc.robot.subsystems.VisionSub;
+import frc.robot.subsystems.LedSub;
 import frc.robot.utils.RobotStatus;
 import frc.robot.utils.SwerveTelemetry;
 import frc.robot.utils.TestManager;
@@ -79,6 +80,7 @@ public class RobotContainer {
   private final CanSub m_canSub = new CanSub(Constants.CanIds.kElevatorCustomCanBoard);
   private final ArmSub m_armSub = new ArmSub(m_canSub);
   private final ClimbSub m_climbSub = new ClimbSub();
+  private final LedSub m_ledSub = new LedSub();
   private final DrivetrainSub m_drivetrainSub = TunerConstants.createDrivetrain();
   private final ElevatorSub m_elevatorSub = new ElevatorSub();
   private final VisionSub m_visionSub;
@@ -207,10 +209,10 @@ public class RobotContainer {
             new InstantCommand(() -> RobotStatus.l3L4Algae())));
 
     // L2
-    m_driverController.L2().onTrue(new InstantCommand(() -> slowDown())).onFalse(new InstantCommand(() -> speedUp()));
+    m_driverController.L2().onTrue(new InstantCommand(() -> RobotStatus.setLeft()));
 
     // R2
-    m_driverController.R2().onTrue(new DriveToNearestScoreLocationCmd(m_drivetrainSub));
+    m_driverController.R2().onTrue(new InstantCommand(() -> RobotStatus.setRight()));
 
     // POV Up
     m_driverController.povUp().onTrue(new ClimbDeployCmd(m_climbSub));
@@ -226,10 +228,11 @@ public class RobotContainer {
     // TODO:  Target scoring to pipe to the left of the vision target
 
     // Share
-    m_driverController.share().onTrue(new InstantCommand(() -> RobotStatus.setLeft()));
+    m_driverController.share();
 
     // Options
-    m_driverController.options().onTrue(new InstantCommand(() -> RobotStatus.setRight()));
+    m_driverController.options().onTrue(new InstantCommand(() -> slowDown()))
+        .onFalse(new InstantCommand(() -> speedUp()));;
     // m_driverController.options().whileTrue(AutoBuilder.pathfindToPose(
     //     new Pose2d(2, 6.5, new Rotation2d(0)),
     //     m_constraints,

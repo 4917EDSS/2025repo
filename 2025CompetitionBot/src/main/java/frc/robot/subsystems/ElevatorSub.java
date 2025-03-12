@@ -31,8 +31,8 @@ public class ElevatorSub extends TestableSubsystem {
   private final DigitalInput m_elevatorUpperLimit = new DigitalInput(Constants.DioIds.kElevatorUpperLimit);
   private final DigitalInput m_encoderResetSwitch = new DigitalInput(Constants.DioIds.kElevatorEncoderResetSwitch);
 
-  private double m_kS = 0.0;
-  private double m_kG = 0.06;
+  private double m_kS = 0.01;
+  private double m_kG = 0.001;
   private double m_kV = 0.0;
   private double m_kP = 0.01;
   private double m_kI = 0.0;
@@ -132,6 +132,7 @@ public class ElevatorSub extends TestableSubsystem {
     SmartDashboard.putNumber("El Current 1", testGetMotorAmps(1));
     SmartDashboard.putNumber("El Current 2", testGetMotorAmps(2));
     SmartDashboard.putBoolean("Is at Elivator limit", isAtTargetHeight());
+    SmartDashboard.putNumber("Elevator Target", m_targetHeight);
 
     // Current power value is sent in setPower()
 

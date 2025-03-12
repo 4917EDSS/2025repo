@@ -4,13 +4,18 @@
 
 package frc.robot.subsystems;
 
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 import java.util.logging.Logger;
+import edu.wpi.first.hal.can.CANJNI;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj.AddressableLED;
 import edu.wpi.first.wpilibj.AddressableLEDBuffer;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.PwmIds;
+import frc.robot.subsystems.LedSub.LedColour;
+import frc.robot.subsystems.LedSub.LedZones;
 
 
 public class LedSub extends SubsystemBase {
@@ -25,6 +30,9 @@ public class LedSub extends SubsystemBase {
   private boolean m_isFlashing; //true if flash is on (game piece gets loaded)
   private long m_time; //time of when the flash starts
   private int m_ledblinktimes = 0; // Number of times the led should blink when flashing
+
+  int m_ARBID = CanSub.createCANId(0x123, 6, 8, 10);
+
 
   public enum LedZones {
     // The LED string start at the top left and is split up in a big U shape as follows:
@@ -110,14 +118,14 @@ public class LedSub extends SubsystemBase {
 
   // Hardware setup.
   // WARNING!!! We can only have one LED strip.  roboRIO does not support two AddressableLED objects.
-  AddressableLED m_ledStrip = new AddressableLED(PwmIds.kLedStripPwmPort);
-  AddressableLEDBuffer m_ledBuffer = new AddressableLEDBuffer(kLedStripLength);
+  //AddressableLED m_ledStrip = new AddressableLED(PwmIds.kLedStripPwmPort);
+  // AddressableLEDBuffer m_ledBuffer = new AddressableLEDBuffer(kLedStripLength);
 
   /** Creates a new LedSub. */
   public LedSub() {
-    m_ledStrip.setLength(m_ledBuffer.getLength());
-    m_ledStrip.setData(m_ledBuffer);
-    m_ledStrip.start();
+    // m_ledStrip.setLength(m_ledBuffer.getLength());
+    // m_ledStrip.setData(m_ledBuffer);
+    // m_ledStrip.start();
 
     init();
   }
@@ -127,103 +135,123 @@ public class LedSub extends SubsystemBase {
    */
   public void init() {
     m_logger.info("Initializing LedSub Subsystem");
-    setZoneColour(LedZones.ALL, LedColour.START_GREEN);
+    //setZoneColour(LedZones.ALL, LedColour.START_GREEN);
+
+    sendToArduino(1234);
   }
 
   @Override
   public void periodic() {
-    if(m_newColoursAvailable) {
-      m_ledStrip.setData(m_ledBuffer);
-      m_newColoursAvailable = false;
-    }
+    sendToArduino(1234);
+  }/*
+    * if(m_newColoursAvailable) {
+    * m_ledStrip.setData(m_ledBuffer);
+    * m_newColoursAvailable = false;
+    * }
+    * 
+    * if(m_isFlashing) {
+    * long timeSinceIntakeLoaded = RobotController.getFPGATime() - m_time;
+    * 
+    * if(timeSinceIntakeLoaded < 250000) { // Led ON time
+    * setZoneColour(LedZones.ALL, LedColour.PURPLE);
+    * }
+    * if(250000 <= timeSinceIntakeLoaded && timeSinceIntakeLoaded <= 500000) {
+    * setZoneColour(LedZones.ALL, LedColour.WHITE);
+    * }
+    * if(timeSinceIntakeLoaded > 500000) {
+    * m_time = RobotController.getFPGATime();
+    * m_ledblinktimes++;
+    * }
+    * if(m_ledblinktimes >= 3) {//when it is done flashing
+    * m_isFlashing = false;
+    * m_ledblinktimes = 0;
+    * setZoneColour(LedZones.GAME_PIECE, LedColour.PURPLE);
+    * }
+    * }
+    * }
+    * 
+    * // This method will be called once per scheduler run
+    * public void flashLEDs() {
+    * m_isFlashing = true;
+    * m_time = RobotController.getFPGATime(); // The time when the flashing will begin
+    * }
+    * 
+    * /**
+    * Set all the LEDS in the specified zone to the specified colour. Define more colours if needed.
+    *//*
+       * public void setZoneColour(LedZones zone, LedColour ledColour) {
+       * setZoneRGB(zone, ledColour.red, ledColour.green, ledColour.blue);
+       * //adding local colors because led colors set here are final. Maybe they shouldn't be?
+       * int r = ledColour.red;
+       * int g = ledColour.green;
+       * int b = ledColour.blue;
+       * 
+       * if(zone == LedZones.ALL) {
+       * if(ledColour.red + ledColour.blue + ledColour.blue > 510) { //might already be divided in arduino sub
+       * r = ledColour.red / 2; //divide them by 2 because it draws too much voltage from my understanding
+       * g = ledColour.green / 2;
+       * b = ledColour.blue / 2;
+       * }
+       * //m_arduinoSub.updateLED(r, g, b); // TODO: Send message to custom CAN board
+       * }
+       * 
+       * // TODO: If zone is ALL, also set the Arduino board LEDs to this colour (but don't let the R + G + B value
+       * exceed 510)
+       * // Something like
+       * // if(sum-of-LED-colours > 510) {
+       * // Divide each colour value by two
+       * // }
+       * // And then
+       * // m_arduinoSub.updateLED(ledColour.red, ledColour.green, ledColour.blue);
+       * }
+       * 
+       * private void setBuffer(int position, int r, int g, int b) {
+       * if(m_ledColourBuffer[position][0] == r && m_ledColourBuffer[position][1] == g
+       * && m_ledColourBuffer[position][2] == b) {
+       * return;
+       * }
+       * m_ledBuffer.setRGB(position, r, b, g); // String takes values in this order
+       * m_ledColourBuffer[position][0] = r;
+       * m_ledColourBuffer[position][1] = g;
+       * m_ledColourBuffer[position][2] = b;
+       * m_newColoursAvailable = true;
+       * }
+       */
 
-    if(m_isFlashing) {
-      long timeSinceIntakeLoaded = RobotController.getFPGATime() - m_time;
+  private void sendToArduino(int command) {
 
-      if(timeSinceIntakeLoaded < 250000) { // Led ON time
-        setZoneColour(LedZones.ALL, LedColour.PURPLE);
-      }
-      if(250000 <= timeSinceIntakeLoaded && timeSinceIntakeLoaded <= 500000) {
-        setZoneColour(LedZones.ALL, LedColour.WHITE);
-      }
-      if(timeSinceIntakeLoaded > 500000) {
-        m_time = RobotController.getFPGATime();
-        m_ledblinktimes++;
-      }
-      if(m_ledblinktimes >= 3) {//when it is done flashing
-        m_isFlashing = false;
-        m_ledblinktimes = 0;
-        setZoneColour(LedZones.GAME_PIECE, LedColour.PURPLE);
-      }
-    }
-  }
-
-  // This method will be called once per scheduler run
-  public void flashLEDs() {
-    m_isFlashing = true;
-    m_time = RobotController.getFPGATime(); // The time when the flashing will begin
-  }
-
-  /**
-   * Set all the LEDS in the specified zone to the specified colour. Define more colours if needed.
-   */
-  public void setZoneColour(LedZones zone, LedColour ledColour) {
-    setZoneRGB(zone, ledColour.red, ledColour.green, ledColour.blue);
-    //adding local colors because led colors set here are final. Maybe they shouldn't be?
-    int r = ledColour.red;
-    int g = ledColour.green;
-    int b = ledColour.blue;
-
-    if(zone == LedZones.ALL) {
-      if(ledColour.red + ledColour.blue + ledColour.blue > 510) { //might already be divided in arduino sub
-        r = ledColour.red / 2; //divide them by 2 because it draws too much voltage from my understanding
-        g = ledColour.green / 2;
-        b = ledColour.blue / 2;
-      }
-      //m_arduinoSub.updateLED(r, g, b); // TODO:  Send message to custom CAN board
-    }
-
-    // TODO: If zone is ALL, also set the Arduino board LEDs to this colour (but don't let the R + G + B value exceed 510)
-    // Something like 
-    // if(sum-of-LED-colours > 510) {
-    //   Divide each colour value by two
-    // }
-    // And then
-    // m_arduinoSub.updateLED(ledColour.red, ledColour.green, ledColour.blue);
-  }
-
-  private void setBuffer(int position, int r, int g, int b) {
-    if(m_ledColourBuffer[position][0] == r && m_ledColourBuffer[position][1] == g
-        && m_ledColourBuffer[position][2] == b) {
-      return;
-    }
-    m_ledBuffer.setRGB(position, r, b, g); // String takes values in this order
-    m_ledColourBuffer[position][0] = r;
-    m_ledColourBuffer[position][1] = g;
-    m_ledColourBuffer[position][2] = b;
-    m_newColoursAvailable = true;
+    ByteBuffer targetedMessageID = ByteBuffer.allocateDirect(4);//Must be direct
+    targetedMessageID.order(ByteOrder.LITTLE_ENDIAN); //Set order of bytes
+    targetedMessageID.asIntBuffer().put(0, m_ARBID); //Put the arbID into the buffer
+    byte[] output_data = new byte[8];
+    output_data[0] = 1;
+    //Send a message back to the same device
+    // Note that NO REPEAT means it will only send the output once. 
+    CANJNI.FRCNetCommCANSessionMuxSendMessage(targetedMessageID.getInt(), output_data,
+        CANJNI.CAN_SEND_PERIOD_NO_REPEAT);
   }
 
   /**
    * Set all the LEDs in the specified zone to the specified RGB value. Recomment that you use setZoneColour instead.
-   */
-  public void setZoneRGB(LedZones zone, int r, int g, int b) {
-    r = MathUtil.clamp(r, 0, 255);
-    g = MathUtil.clamp(g, 0, 255);
-    b = MathUtil.clamp(b, 0, 255);
-
-    for(int i = zone.start; i <= zone.end; i++) {
-      setBuffer(i, r, b, g);
-    }
-
-    if(zone.mirror) {
-      // Set the same LEDs on the other half of the string (count from the end instead of the start)
-      int start = kLedStripLength - zone.end - 1;
-      int end = kLedStripLength - zone.start - 1;
-      for(int i = start; i <= end; i++) {
-        setBuffer(i, r, b, g);
-      }
-    }
-
-  }
+   *//*
+      * public void setZoneRGB(LedZones zone, int r, int g, int b) {
+      * r = MathUtil.clamp(r, 0, 255);
+      * g = MathUtil.clamp(g, 0, 255);
+      * b = MathUtil.clamp(b, 0, 255);
+      * 
+      * for(int i = zone.start; i <= zone.end; i++) {
+      * setBuffer(i, r, b, g);
+      * }
+      * 
+      * if(zone.mirror) {
+      * // Set the same LEDs on the other half of the string (count from the end instead of the start)
+      * int start = kLedStripLength - zone.end - 1;
+      * int end = kLedStripLength - zone.start - 1;
+      * for(int i = start; i <= end; i++) {
+      * setBuffer(i, r, b, g);
+      * }
+      * }
+      * 
+      * }
+      */
 }
