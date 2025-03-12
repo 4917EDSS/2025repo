@@ -195,7 +195,7 @@ public final class Constants {
     public static final double kApriltagHeights[] =
         {1.22, 1.22, 1.32, 1.32, 1.22, 1.22, 1.32, 1.32, 1.22, 1.22, 1.24, 1.24, 1.24, 1.24, 1.24, 1.24};
 
-    public static final double kDistanceToCloseToDrive = -2.0;
+    public static final double kDistanceToCloseToDrive = -1.25;
   }
 
   ////////// Test pass/fail/warn parameters ///////////////////////////////////////////////////////
