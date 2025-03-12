@@ -172,8 +172,7 @@ public class RobotContainer {
 
     // Square
 
-    m_driverController.square().whileTrue(new AutoDriveCmd(m_visionSub, m_drivetrainSub, true));//.onTrue(new AutoGrabCoralGrp(m_armSub, m_canSub, m_elevatorSub));//
-
+    m_driverController.square().onTrue(new AutoGrabCoralGrp(m_armSub, m_canSub, m_elevatorSub));//.whileTrue(new AutoDriveCmd(m_visionSub, m_drivetrainSub, true));//
 
     // Cross
     m_driverController.cross()
@@ -208,7 +207,7 @@ public class RobotContainer {
     m_driverController.L2().onTrue(new InstantCommand(() -> slowDown())).onFalse(new InstantCommand(() -> speedUp()));
 
     // R2
-    m_driverController.R2().onTrue(new DriveToNearestScoreLocationCmd(m_drivetrainSub));
+    //m_driverController.R2().onTrue(new DriveToNearestScoreLocationCmd(m_drivetrainSub));
 
     // POV Up
     m_driverController.povUp().onTrue(new ClimbDeployCmd(m_climbSub));

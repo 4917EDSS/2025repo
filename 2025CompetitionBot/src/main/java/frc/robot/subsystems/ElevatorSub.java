@@ -347,7 +347,7 @@ public class ElevatorSub extends TestableSubsystem {
     if((m_targetHeight < currentHeight)) {
       // moving downwards
       if((currentHeight < Constants.Elevator.kDangerZoneBottom) && (armAngle > Constants.Arm.kDangerZoneBottomVertical)
-          && (armAngle < Constants.Arm.kDangerZoneLowerAngle)) {
+          && (armAngle < Constants.Arm.kDangerZoneUpperAngle)) {
         return true;
       }
     }
