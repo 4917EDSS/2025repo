@@ -71,7 +71,8 @@ public final class Constants {
     public static final double kAtTargetMaxVelocity = 0.02; // In degrees per second?
 
     public static final double kDangerZoneBottomVertical = -88.0; // In degrees
-    public static final double kDangerZoneLowerAngle = -60.0; // In degrees
+    public static final double kDangerZoonMidVertical = -74.0;
+    public static final double kDangerZoneUpperAngle = -60.0; // In degrees
     public static final double kDangerZoneBraceAngle = -84.0; // In degrees
 
     public static final double kSlowDownLowerAngle = kMinArmAngle + 5; // In degrees
@@ -123,9 +124,9 @@ public final class Constants {
     public static final double kDangerZoneBraceBottom = 1203;
     public static final double kDangerZoneBraceTop = 1405;
 
-    public static final double kStartingHeight = 560.0; // Height where elevator starts with coral pre-loaded
     public static final double kResetHeight = 728; // Height where elevator encounters the encoder reset switch 
     public static final double kCoralLoadedHeight = 705; // This should be some height above the bottom danger zone so arm can swing up
+    public static final double kStartingHeight = kCoralLoadedHeight; // Height where elevator starts with coral pre-loaded
     public static final double kCoralGrabbableHeight = 901.0; // Height that coral can still slide in under the arm for the coral to be grabbable
     public static final double kL2PreScoreHeight = 693.0;
     public static final double kL2PostScoreHeight = 513.0;

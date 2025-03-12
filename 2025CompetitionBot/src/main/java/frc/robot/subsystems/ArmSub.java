@@ -252,8 +252,14 @@ public class ArmSub extends TestableSubsystem {
     double armAngle = getAngle();
     double elevatorHeight = elevatorPosition.get();
 
+    if((elevatorHeight <= Constants.Elevator.kDangerZoneBottom) && (armAngle > Constants.Arm.kDangerZoonMidVertical)
+        && (m_targetAngle < armAngle)
+        && (armAngle < Constants.Arm.kDangerZoneUpperAngle)) {
+      return true;
+    }
     if((elevatorHeight <= Constants.Elevator.kDangerZoneBottom) && (armAngle > Constants.Arm.kDangerZoneBottomVertical)
-        && (armAngle < Constants.Arm.kDangerZoneLowerAngle)) {
+        && (m_targetAngle > armAngle)
+        && (armAngle < Constants.Arm.kDangerZoonMidVertical)) {
       return true;
     }
     if((elevatorHeight > Constants.Elevator.kDangerZoneBraceBottom)
