@@ -153,6 +153,10 @@ void loop() {
     int16_t distance;
     int16_t analog0;
     uint8_t data[CAN_PACKET_SIZE];
+    static int partyState = 0;
+    static unsigned long lastMillis = 0;
+    static int i = 0;
+    
 
     // Update must be called every loop in order to receive messages
     frc::CAN::Update();
@@ -161,22 +165,51 @@ void loop() {
 
     // Party mode if all values are 0
     if ((rgb[0] == 0) && (rgb[1] == 0) && (rgb[2] == 0)) {
-      for (int i = 0; i < NUM_LEDS; i++) {
-        leds[i] = CRGB(0, 255, 0);
-        FastLED.show();
-        delay(25);
-      }
+      if ((millis() - lastMillis) > 25) {
+        lastMillis = millis();
 
-      for (int i = 0; i < NUM_LEDS; i++) {
-        leds[i] = CRGB(255, 0, 0);
-        FastLED.show();
-        delay(25);
-      }
+        switch (partyState) {
+          case 0:
 
-      for (int i = 0; i < NUM_LEDS; i++) {
-        leds[i] = CRGB(0, 0, 255);
-        FastLED.show();
-        delay(25);
+            leds[i] = CRGB(0, 255, 0);
+            FastLED.show();
+            i++;
+            
+            if (i == NUM_LEDS) {
+              partyState = 1;
+              i = 0;
+            }
+            break;
+
+          case 1:
+          
+            leds[i] = CRGB(255, 0, 0);
+            FastLED.show();
+            i++;
+            
+            if (i == NUM_LEDS) {
+              partyState = 2;
+              i = 0;
+            }
+            
+            break;
+
+          case 2:
+
+
+            leds[i] = CRGB(0, 0, 255);
+            FastLED.show();
+            i++;
+
+            if (i == NUM_LEDS) {
+              partyState = 0;
+              i = 0;
+            }
+            break;
+
+          default:
+            partyState = 0;
+        }
       }
 
     } else { 
