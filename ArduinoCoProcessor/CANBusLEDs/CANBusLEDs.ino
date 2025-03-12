@@ -31,7 +31,7 @@ CRGB leds[NUM_LEDS];
 
 // Global variables
 unsigned long long lastSendMs = 0; // track how long since we last sent a CAN packet
-unsigned int lastCommand = 0; // Define the last command that was set by the CANbus communications
+unsigned int rgb[] = {0,0,0}; // Define the last command that was set by the CANbus communications
 
 // Create an MCP2515 device. Only need to create 1 of these
 frc::MCP2515 mcp2515{CAN_CS};
@@ -64,14 +64,27 @@ void CANCallback(frc::CAN* can, int apiId, bool rtr, const frc::CANData& data) {
 
     Serial.print("\n");*/
 
+  if (apiId == 0) {
+    if (data.data[0] == 0) {
+      digitalWrite(headlights, LOW);
 
-  // Print the first data element 
-  Serial.println(data.data[0], HEX);
-  // Define the last command with this new data
-  lastCommand = data.data[0];
+    } else {
+      digitalWrite(headlights, HIGH);
+    }
+
+  } else if (apiId == 1) {
+    // Print the first data element 
+    Serial.println(data.data[0], HEX);
+    // Define the last command with this new data
+    //lastCommand = data.data[0];
+
+    rgb[0] = data.data[0];
+    rgb[1] = data.data[1];
+    rgb[2] = data.data[2];
+  }
 
   // Show that the message has been received 
-  digitalWrite(headlights, HIGH);
+  //digitalWrite(headlights, HIGH);
 }
 
 // Callback function for any messages not matching a known device.
@@ -146,6 +159,39 @@ void loop() {
 
     // Add new LED commands here. Make sure to inform Software when new commands have been added 
 
+    // Update LED Colour
+    for (int i = 0; i < NUM_LEDS; i++) {
+      leds[i] = CRGB(rgb[0], rgb[1], rgb[2]);
+    }
+    // Display the LEDs
+    FastLED.show();
+
+
+    // Party mode if all values are 0
+    if ((rgb[0] == 0) && (rgb[1] == 0) && (rgb[2] == 0)) {
+      for (int i = 0; i < NUM_LEDS; i++) {
+        leds[i] = CRGB(0, 255, 0);
+        FastLED.show();
+        delay(25);
+      }
+
+      for (int i = 0; i < NUM_LEDS; i++) {
+        leds[i] = CRGB(255, 0, 0);
+        FastLED.show();
+        delay(25);
+      }
+
+      for (int i = 0; i < NUM_LEDS; i++) {
+        leds[i] = CRGB(0, 0, 255);
+        FastLED.show();
+        delay(25);
+      }
+
+      // Display LEDs
+      FastLED.show();
+    }
+
+/*
     if (lastCommand == 0) {                     // Set all LEDs to RGB (default)
       for (int i = 0; i < NUM_LEDS; i++) {
         leds[i] = CRGB(0, 255, 0);
@@ -190,7 +236,7 @@ void loop() {
       // Display LEDs
       FastLED.show();
 
-    } else if (lastCommand == 4) {              // LEDs Blue
+    } else if (lastCommand == 5) {              // LEDs Blue
       for (int i = 0; i < NUM_LEDS; i ++) {
         leds[i] = CRGB(0, 0, 255);
       }
@@ -198,7 +244,7 @@ void loop() {
       // Display LEDs
       FastLED.show();
 
-    } else if (lastCommand == 4) {              // LEDs Yellow
+    } else if (lastCommand == 6) {              // LEDs Yellow
       for (int i = 0; i < NUM_LEDS; i ++) {
         leds[i] = CRGB(255, 255, 0);
       }
@@ -206,7 +252,7 @@ void loop() {
       // Display LEDs
       FastLED.show();
 
-    } else if (lastCommand == 4) {              // LEDs Aqua 
+    } else if (lastCommand == 7) {              // LEDs Aqua 
       for (int i = 0; i < NUM_LEDS; i ++) {
         leds[i] = CRGB(0, 255, 255);
       }
@@ -214,7 +260,7 @@ void loop() {
       // Display LEDs
       FastLED.show();
 
-    } else if (lastCommand == 4) {              // LEDs Purple 
+    } else if (lastCommand == 8) {              // LEDs Purple 
       for (int i = 0; i < NUM_LEDS; i ++) {
         leds[i] = CRGB(255, 0, 255);
       }
@@ -222,7 +268,7 @@ void loop() {
       // Display LEDs
       FastLED.show();
 
-    } else if (lastCommand == 4) {              // LEDs OFF 
+    } else if (lastCommand == 9) {              // LEDs OFF 
       for (int i = 0; i < NUM_LEDS; i ++) {
         leds[i] = CRGB(0, 0, 0);
       }
@@ -230,6 +276,7 @@ void loop() {
       // Display LEDs
       FastLED.show();
     }
+*/
 
 
 
