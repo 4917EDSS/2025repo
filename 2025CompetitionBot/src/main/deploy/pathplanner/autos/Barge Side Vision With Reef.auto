@@ -43,13 +43,13 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Pickup - 2nd Auto"
+            "pathName": "Pickup - 3rd Auto"
           }
         },
         {
           "type": "named",
           "data": {
-            "name": "AutoCoralScoreL3Grp"
+            "name": "AutoCoralScoreL4Grp"
           }
         },
         {
