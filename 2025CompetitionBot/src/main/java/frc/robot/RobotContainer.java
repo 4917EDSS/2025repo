@@ -51,6 +51,7 @@ import frc.robot.subsystems.ClimbSub;
 import frc.robot.subsystems.DrivetrainSub;
 import frc.robot.subsystems.ElevatorSub;
 import frc.robot.subsystems.VisionSub;
+import frc.robot.subsystems.LedSub;
 import frc.robot.utils.RobotStatus;
 import frc.robot.utils.SwerveTelemetry;
 import frc.robot.utils.TestManager;
@@ -81,6 +82,7 @@ public class RobotContainer {
   private final CanSub m_canSub = new CanSub(Constants.CanIds.kElevatorCustomCanBoard);
   private final ArmSub m_armSub = new ArmSub(m_canSub);
   private final ClimbSub m_climbSub = new ClimbSub();
+  private final LedSub m_ledSub = new LedSub();
   private final DrivetrainSub m_drivetrainSub = TunerConstants.createDrivetrain();
   private final ElevatorSub m_elevatorSub = new ElevatorSub();
   private final VisionSub m_visionSub;
