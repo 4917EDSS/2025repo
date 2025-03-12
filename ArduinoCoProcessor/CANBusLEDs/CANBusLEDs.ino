@@ -19,6 +19,8 @@
 #define CAN_DEVICE_ID 6       // 6 for elevator (left), 7 for climb (right) !!! UPDATE ME WHEN FLASHING !!! 
 #define NUM_LEDS 79           // Elevator (left) 79, Climb (right) 67 !!!!!! LEAVE AT 79 UNLESS YOU ACTUALLY NEED TO CHANGE THIS!!!! 
 
+#define NUM_BLINKS 10 // Number of blinks 
+
 
 // LED Stuff
 #define LED_PIN 3 // Using D3
@@ -32,6 +34,8 @@ CRGB leds[NUM_LEDS];
 // Global variables
 unsigned long long lastSendMs = 0; // track how long since we last sent a CAN packet
 unsigned int rgb[] = {0,0,0}; // Define the last command that was set by the CANbus communications
+unsigned int rgbBlink[] = {0,0,0,0,0,0}; // Blink on and off rgb values
+int blinkCounter = 0; // Number of blinks 
 
 // Create an MCP2515 device. Only need to create 1 of these
 frc::MCP2515 mcp2515{CAN_CS};
@@ -74,13 +78,23 @@ void CANCallback(frc::CAN* can, int apiId, bool rtr, const frc::CANData& data) {
 
   } else if (apiId == 1) {
     // Print the first data element 
-    Serial.println(data.data[0], HEX);
+    //Serial.println(data.data[0], HEX);
     // Define the last command with this new data
     //lastCommand = data.data[0];
 
     rgb[0] = data.data[0];
     rgb[1] = data.data[1];
     rgb[2] = data.data[2];
+
+  } else if (apiId == 2) {
+    rgbBlink[0] = data.data[0];
+    rgbBlink[1] = data.data[1];
+    rgbBlink[2] = data.data[2];
+    rgbBlink[3] = data.data[3];
+    rgbBlink[4] = data.data[4];
+    rgbBlink[5] = data.data[5];
+
+    blinkCounter = NUM_BLINKS;
   }
 
   // Show that the message has been received 
@@ -163,8 +177,29 @@ void loop() {
 
     // Add new LED commands here. Make sure to inform Software when new commands have been added 
 
-    // Party mode if all values are 0
-    if ((rgb[0] == 0) && (rgb[1] == 0) && (rgb[2] == 0)) {
+    if (blinkCounter > 0) {
+      if ((millis() - lastMillis) > 250) {
+        lastMillis = millis();
+        if ((blinkCounter % 2) == 0) {
+          // Update all of the LED Colours
+          for (int i = 0; i < NUM_LEDS; i++) {
+            leds[i] = CRGB(rgbBlink[0], rgbBlink[1], rgbBlink[2]);
+          }
+          
+        } else {
+          // Update all of the LED Colours
+          for (int i = 0; i < NUM_LEDS; i++) {
+            leds[i] = CRGB(rgbBlink[3], rgbBlink[4], rgbBlink[5]);
+          }
+        }
+        
+        // Display the LEDs
+        FastLED.show();
+
+        blinkCounter--;      
+      }
+
+    } else if ((rgb[0] == 0) && (rgb[1] == 0) && (rgb[2] == 0)) { // Party mode if all values are 0
       if ((millis() - lastMillis) > 25) {
         lastMillis = millis();
 
@@ -220,136 +255,4 @@ void loop() {
       // Display the LEDs
       FastLED.show();
     }
-
-/*
-    if (lastCommand == 0) {                     // Set all LEDs to RGB (default)
-      for (int i = 0; i < NUM_LEDS; i++) {
-        leds[i] = CRGB(0, 255, 0);
-        FastLED.show();
-        delay(25);
-      }
-
-      for (int i = 0; i < NUM_LEDS; i++) {
-        leds[i] = CRGB(255, 0, 0);
-        FastLED.show();
-        delay(25);
-      }
-
-      for (int i = 0; i < NUM_LEDS; i++) {
-        leds[i] = CRGB(0, 0, 255);
-        FastLED.show();
-        delay(25);
-      }
-
-      // Display LEDs
-      FastLED.show();
-
-    } else if (lastCommand == 1) {              // Headlights ON
-      digitalWrite(headlights, HIGH);
-
-    } else if (lastCommand == 2) {              // Headlights OFF
-      digitalWrite(headlights, LOW);
-
-    } else if (lastCommand == 3) {              // LEDs Red
-      for (int i = 0; i < NUM_LEDS; i ++) {     
-        leds[i] = CRGB(255, 0, 0);
-      }
-
-      // Display LEDs
-      FastLED.show();
-
-    } else if (lastCommand == 4) {              // LEDs Green
-      for (int i = 0; i < NUM_LEDS; i ++) {
-        leds[i] = CRGB(0, 255, 0);
-      }
-
-      // Display LEDs
-      FastLED.show();
-
-    } else if (lastCommand == 5) {              // LEDs Blue
-      for (int i = 0; i < NUM_LEDS; i ++) {
-        leds[i] = CRGB(0, 0, 255);
-      }
-
-      // Display LEDs
-      FastLED.show();
-
-    } else if (lastCommand == 6) {              // LEDs Yellow
-      for (int i = 0; i < NUM_LEDS; i ++) {
-        leds[i] = CRGB(255, 255, 0);
-      }
-
-      // Display LEDs
-      FastLED.show();
-
-    } else if (lastCommand == 7) {              // LEDs Aqua 
-      for (int i = 0; i < NUM_LEDS; i ++) {
-        leds[i] = CRGB(0, 255, 255);
-      }
-
-      // Display LEDs
-      FastLED.show();
-
-    } else if (lastCommand == 8) {              // LEDs Purple 
-      for (int i = 0; i < NUM_LEDS; i ++) {
-        leds[i] = CRGB(255, 0, 255);
-      }
-
-      // Display LEDs
-      FastLED.show();
-
-    } else if (lastCommand == 9) {              // LEDs OFF 
-      for (int i = 0; i < NUM_LEDS; i ++) {
-        leds[i] = CRGB(0, 0, 0);
-      }
-
-      // Display LEDs
-      FastLED.show();
-    }
-*/
-
-
-
-    // Update all sensors as frequently as possible. This could also include
-    // filtering, debounce, or more complex latching logic so the RIO doesn't
-    // miss an input if it is reading at a slower rate.data
-
-
-    /*
-    // Update distance on every loop
-    if (range_sensor.isRangeComplete()) {
-      // Get the intager range value in mm
-      distance = range_sensor.readRange();
-    }
-
-    // Read the analog IR sensor
-    analog0 = analogRead(A0);
-
-    // Writes can happen any time if you want to create a device that is more
-    // interrupt driven.  Alternatively you can use a periodic send as shown
-    // here.
-    auto now = millis();
-    if (now - lastSendMs > CAN_PERIOD_MS) {
-        lastSendMs += CAN_PERIOD_MS;
-
-        // zero memory buffer (this isn't strictly required, but did it for
-        // debugging)
-        memset(data, 0, CAN_PACKET_SIZE);
-
-        // Distance sensor MSB, LSB
-        data[0] = distance >> 8;
-        data[1] = distance & 0xFF;
-
-        // Analog 0 sensor MSB, LSB
-        data[2] = analog0 >> 8;
-        data[3] = analog0 & 0xFF;
-
-
-        // Send bytes. The API command is any 10 bit value specific to the device though
-        // typically used for commands and configuration. Each packet is limited to up
-        // to 8 bytes so you can use multiple API numbers to send larger packets. The
-        // API number is arbitrary, but must match what is read on the RIO side.
-        frcCANDevice.WritePacket(data, CAN_PACKET_SIZE, CAN_DEVICE_API);
-    }
-    */
 }
