@@ -11,8 +11,6 @@ import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.commands.PathPlannerAuto;
-import com.pathplanner.lib.path.PathConstraints;
-import edu.wpi.first.math.util.Units;
 import edu.wpi.first.net.WebServer;
 import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
@@ -48,10 +46,9 @@ import frc.robot.subsystems.CanSub;
 import frc.robot.subsystems.ClimbSub;
 import frc.robot.subsystems.DrivetrainSub;
 import frc.robot.subsystems.ElevatorSub;
-import frc.robot.subsystems.VisionSub;
 import frc.robot.subsystems.LedSub;
+import frc.robot.subsystems.VisionSub;
 import frc.robot.utils.RobotStatus;
-import frc.robot.utils.SwerveTelemetry;
 import frc.robot.utils.TestManager;
 
 
@@ -69,9 +66,6 @@ public class RobotContainer {
   private final SwerveRequest.FieldCentric drive = new SwerveRequest.FieldCentric()
       .withDeadband(MaxSpeed * 0.01).withRotationalDeadband(MaxAngularRate * 0.01) // Add a 1% deadband
       .withDriveRequestType(DriveRequestType.Velocity);
-  private final SwerveRequest.SwerveDriveBrake brake = new SwerveRequest.SwerveDriveBrake();
-  private final SwerveRequest.PointWheelsAt point = new SwerveRequest.PointWheelsAt();
-  private final SwerveTelemetry swerveLogger = new SwerveTelemetry(MaxSpeed);
 
   // RobotContainer constants
   private final TestManager m_testManager = new TestManager();
@@ -84,7 +78,8 @@ public class RobotContainer {
   private final DrivetrainSub m_drivetrainSub = TunerConstants.createDrivetrain();
   private final ElevatorSub m_elevatorSub = new ElevatorSub();
   private final VisionSub m_visionSub;
-  private final RobotStatus m_robotState = new RobotStatus();
+  @SuppressWarnings("unused")
+  private final RobotStatus m_robotStatus = new RobotStatus();
 
   // Controllers
   private final CommandPS4Controller m_driverController =
@@ -95,10 +90,6 @@ public class RobotContainer {
   // RobotContainer member variables
   public static boolean disableShuffleboardPrint = false;
   private SendableChooser<Command> m_Chooser = new SendableChooser<>();
-  private final PathConstraints m_constraints = new PathConstraints(
-      6.21, 3.0,
-      Units.degreesToRadians(360), Units.degreesToRadians(720));
-
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {

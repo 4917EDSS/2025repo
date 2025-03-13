@@ -8,15 +8,7 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.util.logging.Logger;
 import edu.wpi.first.hal.can.CANJNI;
-import edu.wpi.first.math.MathUtil;
-import edu.wpi.first.wpilibj.AddressableLED;
-import edu.wpi.first.wpilibj.AddressableLEDBuffer;
-import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import edu.wpi.first.wpilibj2.command.WaitCommand;
-import frc.robot.Constants.PwmIds;
-import frc.robot.subsystems.LedSub.LedColour;
-import frc.robot.subsystems.LedSub.LedZones;
 
 
 public class LedSub extends SubsystemBase {
@@ -26,13 +18,13 @@ public class LedSub extends SubsystemBase {
   private final static int kLedStripLength = 33;
   //private final ShuffleboardTab m_shuffleboardTab = Shuffleboard.getTab("LedSubTab");
 
-  private static int[][] m_ledColourBuffer = new int[kLedStripLength][3];
-  private boolean m_newColoursAvailable = false;
-  private boolean m_isFlashing; //true if flash is on (game piece gets loaded)
-  private long m_time; //time of when the flash starts
-  private int m_ledblinktimes = 0; // Number of times the led should blink when flashing
+  // private static int[][] m_ledColourBuffer = new int[kLedStripLength][3];
+  // private boolean m_newColoursAvailable = false;
+  // private boolean m_isFlashing; //true if flash is on (game piece gets loaded)
+  // private long m_time; //time of when the flash starts
+  // private int m_ledblinktimes = 0; // Number of times the led should blink when flashing
+  // private int blinkState = 0;
   int m_ARBID;
-  private int blinkState = 0;
 
 
   public enum LedZones {

@@ -4,17 +4,13 @@
 
 package frc.robot.commands;
 
-import static edu.wpi.first.units.Units.MetersPerSecond;
-import static edu.wpi.first.units.Units.RadiansPerSecond;
-import static edu.wpi.first.units.Units.RotationsPerSecond;
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
-import com.ctre.phoenix6.swerve.SwerveRequest.ForwardPerspectiveValue;
 import com.ctre.phoenix6.swerve.SwerveRequest;
+import com.ctre.phoenix6.swerve.SwerveRequest.ForwardPerspectiveValue;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.DrivetrainSub;
 
 /*
@@ -22,9 +18,6 @@ import frc.robot.subsystems.DrivetrainSub;
  * https://docs.wpilib.org/en/stable/docs/software/commandbased/organizing-command-based.html#defining-commands
  */
 public class DriveToPoseCmd extends Command {
-  private double MaxSpeed = TunerConstants.kSpeedAt12Volts.in(MetersPerSecond);
-  private double MaxAngularRate = RotationsPerSecond.of(2.08 / 2.0).in(RadiansPerSecond);
-
   private DrivetrainSub m_drivetrainSub;
   private Pose2d m_targetPose;
   private Pose2d m_currentPose;
