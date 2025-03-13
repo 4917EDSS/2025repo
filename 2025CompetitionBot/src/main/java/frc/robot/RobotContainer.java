@@ -208,15 +208,12 @@ public class RobotContainer {
     // POV Up
     m_driverController.povUp().onTrue(new ClimbDeployCmd(m_climbSub));
 
-
     // POV Right
-    // TODO:  Target scoring to pipe to the right of the vision target
 
     // POV Down
     m_driverController.povDown().onTrue(new ClimbRetractCmd(m_climbSub));
 
     // POV Left
-    // TODO:  Target scoring to pipe to the left of the vision target
 
     // Share
     m_driverController.share();
@@ -289,10 +286,8 @@ public class RobotContainer {
             new InstantCommand(() -> RobotStatus.l2L3Algae())));
 
     // L2
-    // TODO: Remove algae based on which one we are prepped for
 
     // R2
-    // TODO: Score coral based on which one we are prepped for
     m_operatorController.R2().onTrue(new MoveElArmPostManualCmd(m_armSub, m_elevatorSub));
 
     // POV Up

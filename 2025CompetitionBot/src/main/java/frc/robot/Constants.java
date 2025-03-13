@@ -95,13 +95,7 @@ public final class Constants {
   }
 
   public static final class Climb {
-    public static final double kGrabCageAngle = 45; // TODO
-    public static final double kClimbedAngle = 0; // TODO
-    public static final double kClimbMotorPower = 1; //TODO
-  }
-
-  public static final class DriveTrain {
-    public static final double kPathingConfig = 1.0; // TODO: this is temporary, please change this once it is being used, i have no clue if this works properly
+    public static final double kClimbMotorPower = 1;
   }
 
   public static final class Elevator {

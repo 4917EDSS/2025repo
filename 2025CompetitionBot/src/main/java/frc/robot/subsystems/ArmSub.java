@@ -51,7 +51,7 @@ public class ArmSub extends TestableSubsystem {
     SparkMaxConfig motorConfig = new SparkMaxConfig();
     motorConfig
         .inverted(true) // Set to true to invert the forward motor direction
-        .smartCurrentLimit(60) // Current limit in amps // TODO: Determine real current limit
+        .smartCurrentLimit(60) // Current limit in amps
         .idleMode(IdleMode.kBrake).encoder
             .positionConversionFactor(Constants.Arm.kEncoderPositionConversionFactor)
             .velocityConversionFactor(Constants.Arm.kEncoderVelocityConversionFactor);
@@ -316,15 +316,8 @@ public class ArmSub extends TestableSubsystem {
         double sign = (realPower >= 0.0) ? 1.0 : -1.0;
         realPower = Constants.Arm.kMaxPower * sign;
       }
+
       // If arm is close to limit switches, limit power to avoid smashing into them
-
-      // TODO: Check this logic before enabling, especially the negative power case at
-      // the lower angle.
-      // Also, this may not be necessary since the encoder is absolute and this kind
-      // of guard is usually only necessary when
-      // there's a chance that the mechnism and encoder get out of sync. Of course
-      // there's the case when you're in manual control.
-
       if(!m_automationEnabled) {
         if((currAngle >= Constants.Arm.kSlowDownUpperAngle) && (realPower > Constants.Arm.kSlowDownSpeed)) {
           realPower = Constants.Arm.kSlowDownSpeed;

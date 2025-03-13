@@ -227,8 +227,7 @@ public class TestManager {
       m_nextTestCoordinates.m_y += 2;
     }
 
-    // TODO: Make sure we're not falling off the right side of the dashboard. If so,
-    // create a new tab
+    // If we anticipate having many entries, make sure we're not falling off the right side of the dashboard. If so, create a new tab
 
     return nextPosition;
   }

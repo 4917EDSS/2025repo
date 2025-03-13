@@ -189,10 +189,10 @@ public class LedSub extends SubsystemBase {
        * g = ledColour.green / 2;
        * b = ledColour.blue / 2;
        * }
-       * //m_arduinoSub.updateLED(r, g, b); // TODO: Send message to custom CAN board
+       * //m_arduinoSub.updateLED(r, g, b);
        * }
        * 
-       * // TODO: If zone is ALL, also set the Arduino board LEDs to this colour (but don't let the R + G + B value
+       * 
        * exceed 510)
        * // Something like
        * // if(sum-of-LED-colours > 510) {
