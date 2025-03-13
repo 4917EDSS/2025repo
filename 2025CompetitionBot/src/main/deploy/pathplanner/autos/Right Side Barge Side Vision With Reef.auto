@@ -17,7 +17,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "Start - 1st Auto"
+                  "pathName": "Right Side Start - 1st Auto"
                 }
               },
               {
@@ -42,7 +42,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "1st Score - Pickup"
+                  "pathName": "Right Side 1st Score - Pickup"
                 }
               },
               {
@@ -52,12 +52,6 @@
                 }
               }
             ]
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "Pickup - 2nd Auto"
           }
         },
         {
@@ -73,7 +67,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "2nd Score - Pickup"
+                  "pathName": "Right Side 2nd Score - Pickup"
                 }
               },
               {
@@ -92,12 +86,6 @@
           }
         },
         {
-          "type": "path",
-          "data": {
-            "pathName": "Pickup - 3rd Auto"
-          }
-        },
-        {
           "type": "named",
           "data": {
             "name": "AutoCoralScoreL4Grp"
@@ -110,7 +98,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "3rd Score - Pickup"
+                  "pathName": "Right Side 3rd Score - Pickup"
                 }
               },
               {

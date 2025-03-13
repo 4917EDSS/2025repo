@@ -24,15 +24,29 @@ public class LedSub extends SubsystemBase {
 
   /** Creates a new LedSub. */
   public LedSub() {
-    turnOnHeadlights();
+    byte R = 8;
+    byte G = 52;
+    byte B = 39;
+    setElevatorColor(R, G, B);
+    work(R, G, B);
   }
 
   @Override
   public void periodic() {}
 
+  private void work(Byte R, Byte G, Byte B) {
+    setClimbColor(R, G, B);
+    System.out.println("works");
+  }
+
   private void turnOnHeadlights() {
     leftHeadLight(true);
     rightHeadLight(true);
+  }
+
+  private void turnOffHeadlights() {
+    leftHeadLight(false);
+    rightHeadLight(false);
   }
 
   public void setElevatorColor(Byte R, Byte G, Byte B) {

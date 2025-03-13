@@ -28,6 +28,7 @@ import frc.robot.commands.AutoCoralScoreL2Grp;
 import frc.robot.commands.AutoCoralScoreL3Grp;
 import frc.robot.commands.AutoCoralScoreL4Grp;
 import frc.robot.commands.AutoDriveCmd;
+import frc.robot.commands.AutoGrabCoralAutoGrp;
 import frc.robot.commands.AutoGrabCoralGrp;
 import frc.robot.commands.ClimbDeployCmd;
 import frc.robot.commands.ClimbRetractCmd;
@@ -151,12 +152,23 @@ public class RobotContainer {
     NamedCommands.registerCommand("AutoGrabCoralGrp",
         new AutoGrabCoralGrp(m_armSub, m_canSub, m_elevatorSub));
 
+    NamedCommands.registerCommand("AutoGrabCoralAutoGrp",
+        new AutoGrabCoralAutoGrp(m_armSub, m_canSub, m_elevatorSub));
+
     NamedCommands.registerCommand("AutoDriveCmd",
         new AutoDriveCmd(m_visionSub, m_drivetrainSub, true));
 
     NamedCommands.registerCommand("SetL4ScoringSlow",
         new MoveElArmGrp(Constants.Elevator.kL4PreScoreHeight, Constants.Arm.kL4PreScoreAngle, m_armSub,
             m_elevatorSub)); //Move to pre score position
+
+    NamedCommands.registerCommand("Slowdown", new InstantCommand(() -> slowDown()));
+
+    NamedCommands.registerCommand("Speed Up", new InstantCommand(() -> speedUp()));
+
+    NamedCommands.registerCommand("Set Left", (new InstantCommand(() -> RobotStatus.setLeft())));
+
+    NamedCommands.registerCommand("Set Right", (new InstantCommand(() -> RobotStatus.setRight())));
   }
 
   /**

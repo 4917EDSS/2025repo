@@ -32,7 +32,7 @@ public class ElevatorSub extends TestableSubsystem {
   private final DigitalInput m_encoderResetSwitch = new DigitalInput(Constants.DioIds.kElevatorEncoderResetSwitch);
 
   private double m_kS = 0.01;
-  private double m_kG = 0.001;
+  private double m_kG = 0.05;
   private double m_kV = 0.0;
   private double m_kP = 0.01;
   private double m_kI = 0.0;

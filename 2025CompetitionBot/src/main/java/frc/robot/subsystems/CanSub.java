@@ -176,14 +176,15 @@ public class CanSub extends SubsystemBase {
 
   public boolean isCoralPresent() {
     if(m_coralSensor < 100) {
-      if(blinLed) {
-        m_ledSub.blink();
-        blinLed = false;
-      }
+      // if(blinLed) {
+      //   m_ledSub.blink();
+      //   blinLed = false;
+      // }
       return true;
-    } else
-      blinLed = true;
-    return false;
+    } else {
+      // blinLed = true;
+      return false;
+    }
   }
 
   // public void updateShuffleboard() {
