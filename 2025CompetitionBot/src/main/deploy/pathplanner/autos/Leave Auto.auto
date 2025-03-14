@@ -9,12 +9,6 @@
           "data": {
             "pathName": "Leave"
           }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "AutoCoralScoreL3Grp"
-          }
         }
       ]
     }
