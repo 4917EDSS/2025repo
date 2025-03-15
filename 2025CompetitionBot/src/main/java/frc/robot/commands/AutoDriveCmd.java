@@ -35,7 +35,6 @@ public class AutoDriveCmd extends Command {
   int counter;
   double lrOffset;
   double fbOffset;
-  double fbEnd;
   boolean useOffset;
   private final DrivetrainSub m_drivetrainSub;
 
@@ -52,13 +51,11 @@ public class AutoDriveCmd extends Command {
   public void initialize() {
     if(RobotStatus.LastReefPosition().equals(ReefPosition.kL2L3Algae)
         || RobotStatus.LastReefPosition().equals(ReefPosition.kL3L4Algae)) {
-      fbOffset = -0.1;
-      fbEnd = 0.0;
+      fbOffset = 0.457;
     } else {
-      fbOffset = 0.15;
-      fbEnd = 0.49;
+      fbOffset = 0.49;
       if(RobotStatus.LastReefPosition().equals(RobotStatus.ReefPosition.kL4)) {
-        fbEnd += 0.0127; //This is half an inch in meters
+        fbOffset += 0.0127; //This is half an inch in meters
       }
     }
 
@@ -86,7 +83,7 @@ public class AutoDriveCmd extends Command {
     double xPower = lrDist / totalDist;
     double yPower = fbDist / totalDist;
     double slowDown;
-    if(fbDist > -1.5) {
+    if(fbDist > -1.84) {
       slowDown = 6;
     } else {
       slowDown = 2;
@@ -115,7 +112,7 @@ public class AutoDriveCmd extends Command {
   @Override
   public boolean isFinished() {
 
-    if(Math.abs(fbDist) < fbEnd && Math.abs(lrDist) < 0.025) {
+    if(Math.abs(m_apriltagPos.getY()) < fbOffset && Math.abs(lrDist) < 0.025) {
       System.out.println("Forward/backward dist: " + fbDist);
 
       return true;
