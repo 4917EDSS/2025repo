@@ -31,7 +31,7 @@ public class ClimbSub extends TestableSubsystem {
 
     // This is how you set a current limit inside the motor (vs on the input power supply)
     CurrentLimitsConfigs limitConfigs = new CurrentLimitsConfigs();
-    limitConfigs.StatorCurrentLimit = 120; // Limit in Amps  // TOOD: Determine reasonable limit
+    limitConfigs.StatorCurrentLimit = 60; // Limit in Amps  // TOOD: Determine reasonable limit
     limitConfigs.StatorCurrentLimitEnable = true;
     talonFxConfiguarator.apply(limitConfigs);
 
