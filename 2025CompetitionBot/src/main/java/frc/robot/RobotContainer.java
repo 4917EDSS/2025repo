@@ -221,6 +221,7 @@ public class RobotContainer {
     m_driverController.povUp().onTrue(new ClimbDeployCmd(m_climbSub));
 
     // POV Right
+    m_driverController.povRight().whileTrue(new AutoDriveCmd(m_visionSub, m_drivetrainSub, true));
 
     // POV Down
     m_driverController.povDown().onTrue(new ClimbRetractCmd(m_climbSub));

@@ -40,40 +40,28 @@
           "data": {
             "commands": [
               {
-                "type": "path",
+                "type": "sequential",
                 "data": {
-                  "pathName": "1st Score - Pickup"
-                }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "AutoGrabCoralAutoGrp"
-                }
-              }
-            ]
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "Pickup - 2nd Auto"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "AutoCoralScoreL4Grp"
-          }
-        },
-        {
-          "type": "parallel",
-          "data": {
-            "commands": [
-              {
-                "type": "path",
-                "data": {
-                  "pathName": "2nd Score - Pickup"
+                  "commands": [
+                    {
+                      "type": "path",
+                      "data": {
+                        "pathName": "1st Score - Pickup"
+                      }
+                    },
+                    {
+                      "type": "wait",
+                      "data": {
+                        "waitTime": 1.0
+                      }
+                    },
+                    {
+                      "type": "path",
+                      "data": {
+                        "pathName": "Pickup - 2nd Auto"
+                      }
+                    }
+                  ]
                 }
               },
               {
@@ -88,13 +76,51 @@
         {
           "type": "named",
           "data": {
-            "name": "Set Right"
+            "name": "AutoCoralScoreL4Grp"
           }
         },
         {
-          "type": "path",
+          "type": "parallel",
           "data": {
-            "pathName": "Pickup - 3rd Auto"
+            "commands": [
+              {
+                "type": "sequential",
+                "data": {
+                  "commands": [
+                    {
+                      "type": "path",
+                      "data": {
+                        "pathName": "2nd Score - Pickup"
+                      }
+                    },
+                    {
+                      "type": "wait",
+                      "data": {
+                        "waitTime": 1.0
+                      }
+                    },
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "Set Right"
+                      }
+                    },
+                    {
+                      "type": "path",
+                      "data": {
+                        "pathName": "Pickup - 3rd Auto"
+                      }
+                    }
+                  ]
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "AutoGrabCoralAutoGrp"
+                }
+              }
+            ]
           }
         },
         {

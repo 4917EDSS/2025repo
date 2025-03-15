@@ -31,8 +31,8 @@ public class ElevatorSub extends TestableSubsystem {
   private final DigitalInput m_elevatorUpperLimit = new DigitalInput(Constants.DioIds.kElevatorUpperLimit);
   private final DigitalInput m_encoderResetSwitch = new DigitalInput(Constants.DioIds.kElevatorEncoderResetSwitch);
 
-  private double m_kS = 0.01;
-  private double m_kG = 0.05;
+  private double m_kS = 0.005;//0.01
+  private double m_kG = 0.02;//0.05
   private double m_kV = 0.0;
   private double m_kP = 0.01;
   private double m_kI = 0.0;
@@ -136,7 +136,7 @@ public class ElevatorSub extends TestableSubsystem {
 
     // Current power value is sent in setPower()
 
-    boolean tuning = true;
+    boolean tuning = false;
     if(tuning) {
       // Lighten the load by only updating these twice a second
       if(++m_smartDashboardCounter >= 30) {
@@ -186,6 +186,8 @@ public class ElevatorSub extends TestableSubsystem {
 
     if(powerValue > 0.75) {
       powerValue = 0.75;
+    } else if(powerValue < -0.5) {
+      powerValue = -0.5;
     }
     m_elevatorMotor.set(powerValue);
     SmartDashboard.putNumber("El Power", powerValue);
@@ -376,6 +378,10 @@ public class ElevatorSub extends TestableSubsystem {
     }
 
     double ffPower = m_feedforward.calculate(getVelocity());
+    //CONSTAN FORCE SPRING COMING IN
+    if(getPositionMm() >= 1100) {
+      ffPower += 0.03;
+    }
     double pidPower = (m_elevatorPID.calculate(getPositionMm(), activeTarget));
     double negitivepidPower = (m_negitiveelevatorPID.calculate(getPositionMm(), activeTarget));
     double totalPower = ffPower;
