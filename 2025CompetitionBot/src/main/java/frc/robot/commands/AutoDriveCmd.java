@@ -55,7 +55,7 @@ public class AutoDriveCmd extends Command {
       fbEnd = 0.0;
     } else {
       fbOffset = 0.15;
-      fbEnd = 0.48;
+      fbEnd = 0.49;
     }
 
     if(useOffset) {
