@@ -29,7 +29,7 @@ public class RobotStatus extends Command {
   }
 
   private static boolean aimingLeft = true;
-  private static ReefPosition robotLastReefPosition = ReefPosition.kL2;
+  private static ReefPosition robotLastReefPosition = ReefPosition.kL4;
   private static Alliance alliance;
 
   public static void l2() {

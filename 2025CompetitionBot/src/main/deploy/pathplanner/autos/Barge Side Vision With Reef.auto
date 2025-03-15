@@ -7,7 +7,7 @@
         {
           "type": "named",
           "data": {
-            "name": "Set Left"
+            "name": "Set Right"
           }
         },
         {
@@ -33,6 +33,12 @@
           "type": "named",
           "data": {
             "name": "AutoCoralScoreL4Grp"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Set Left"
           }
         },
         {

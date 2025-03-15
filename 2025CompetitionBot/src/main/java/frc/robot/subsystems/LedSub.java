@@ -24,9 +24,9 @@ public class LedSub extends SubsystemBase {
 
   /** Creates a new LedSub. */
   public LedSub() {
-    byte R = 8;
-    byte G = 52;
-    byte B = 39;
+    byte R = 0;
+    byte G = 127;
+    byte B = 0;
     setElevatorColor(R, G, B);
     work(R, G, B);
   }
