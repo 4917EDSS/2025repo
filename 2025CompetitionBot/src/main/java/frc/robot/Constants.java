@@ -119,10 +119,10 @@ public final class Constants {
     public static final double kDangerZoneBraceTop = 1405;
 
     public static final double kResetHeight = 728; // Height where elevator encounters the encoder reset switch 
-    public static final double kCoralLoadedHeight = 700; // This should be some height above the bottom danger zone so arm can swing up
+    public static final double kCoralLoadedHeight = 705; // This should be some height above the bottom danger zone so arm can swing up
     public static final double kStartingHeight = kCoralLoadedHeight; // Height where elevator starts with coral pre-loaded
     public static final double kCoralGrabbableHeight = 901.0; // Height that coral can still slide in under the arm for the coral to be grabbable
-    public static final double kL2PreScoreHeight = 693.0;
+    public static final double kL2PreScoreHeight = 730.0;
     public static final double kL2PostScoreHeight = 513.0;
     public static final double kL3PreScoreHeight = 1077.0;
     public static final double kL3PostScoreHeight = 840.0;
