@@ -101,7 +101,7 @@ public final class Constants {
   public static final class Elevator {
     // All heights are in millimeters
     public static final double kMinHeight = 300.0;
-    public static final double kMaxHeight = 1662.0;
+    public static final double kMaxHeight = 1657.0;
 
     public static final double kRotationsToMm = 5 / (0.75 * 25.4 * Math.PI); // Gearing / Spool diameter in inches * mm/in * PI
 

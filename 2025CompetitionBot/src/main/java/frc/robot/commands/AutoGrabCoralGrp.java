@@ -5,6 +5,7 @@
 package frc.robot.commands;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
@@ -22,23 +23,17 @@ public class AutoGrabCoralGrp extends SequentialCommandGroup {
     // Add your commands in the addCommands() call, e.g.
     // addCommands(new FooCommand(), new BarCommand());
     addCommands(
-        new InstantCommand(() -> SmartDashboard.putBoolean("Step 1", false)),
-        new InstantCommand(() -> SmartDashboard.putBoolean("Step 2", false)),
-        new InstantCommand(() -> SmartDashboard.putBoolean("Step 3", false)),
-        new InstantCommand(() -> SmartDashboard.putBoolean("Step 4", false)),
-        new InstantCommand(() -> SmartDashboard.putBoolean("Step 5", false)),
-        new InstantCommand(() -> SmartDashboard.putBoolean("Step 6", false)),
         new MoveElArmGrp(Constants.Elevator.kCoralGrabbableHeight, Constants.Arm.kCoralGrabbableAngle, armSub,
             elevatorSub), //Get ready to grab coral
-        new InstantCommand(() -> SmartDashboard.putBoolean("Step 2", true)),
         new WaitForCoralPresentCmd(canSub),
-        new InstantCommand(() -> SmartDashboard.putBoolean("Step 3", true)),
         new WaitCommand(0.1),
-        new InstantCommand(() -> SmartDashboard.putBoolean("Step 4", true)),
         new MoveElArmGrp(Constants.Elevator.kCoralLoadedHeight, Constants.Arm.kMinArmAngle, armSub, elevatorSub),
-        new InstantCommand(() -> SmartDashboard.putBoolean("Step 5", true)),
+        new WaitCommand(0.1),
+        new MoveElArmGrp(Constants.Elevator.kDangerZoneBottom, Constants.Arm.kMinArmAngle, armSub, elevatorSub),
+        new ConditionalCommand(
+            new MoveElArmGrp(Constants.Elevator.kCoralLoadedHeight, Constants.Arm.kMinArmAngle, armSub, elevatorSub),
+            new InstantCommand(), () -> canSub.isCoralPresent()),
         new MoveElArmGrp(Constants.Elevator.kCoralGrabbableHeight, Constants.Arm.kMaxArmAngle, armSub,
-            elevatorSub),
-        new InstantCommand(() -> SmartDashboard.putBoolean("Step 6", true)));
+            elevatorSub));
   }
 }
