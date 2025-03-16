@@ -82,14 +82,23 @@ public class AutoDriveCmd extends Command {
     double totalDist = Math.sqrt((lrDist * lrDist) + (fbDist * fbDist));
     double xPower = lrDist / totalDist;
     double yPower = fbDist / totalDist;
-    double slowDown;
-    if(fbDist > -1.84) {
-      slowDown = 6;
+    double fbSlowDown;
+    double lrSlowDown;
+
+    if(fbDist > -1.16) {
+      fbSlowDown = 6;
     } else {
-      slowDown = 2;
+      fbSlowDown = 2;
     }
+
+    if(Math.abs(lrDist) < 0.5) {
+      lrSlowDown = 6;
+    } else {
+      lrSlowDown = 2;
+    }
+
     m_drivetrainSub.setControl(
-        autoDrive.withVelocityX(-yPower * MaxSpeed / slowDown).withVelocityY(xPower * MaxSpeed / 1.5)
+        autoDrive.withVelocityX(-yPower * MaxSpeed / fbSlowDown).withVelocityY(xPower * MaxSpeed / lrSlowDown)
             .withRotationalRate(m_visionSub.getRobotRotation() / ((lrDist * 15) + 15) * MaxAngularRate * 0.20));
 
     if(m_visionSub.getTv() == 0) {
