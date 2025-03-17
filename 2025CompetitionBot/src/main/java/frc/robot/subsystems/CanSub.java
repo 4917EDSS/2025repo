@@ -47,8 +47,6 @@ public class CanSub extends SubsystemBase {
     SmartDashboard.putNumber("CAN Coral Raw", getCoralRaw());
     SmartDashboard.putNumber("???", getAnalog0());
     SmartDashboard.putBoolean("CAN Coral In", isCoralPresent());
-    //System.out.println(getTOFDist());
-    //updateShuffleboard();
   }
 
 

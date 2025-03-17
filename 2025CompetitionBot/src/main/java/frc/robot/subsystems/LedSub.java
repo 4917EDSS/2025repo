@@ -36,7 +36,6 @@ public class LedSub extends SubsystemBase {
 
   private void work(Byte R, Byte G, Byte B) {
     setClimbColor(R, G, B);
-    System.out.println("works");
   }
 
   private void turnOnHeadlights() {

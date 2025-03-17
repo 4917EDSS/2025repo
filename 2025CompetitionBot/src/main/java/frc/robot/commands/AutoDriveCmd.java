@@ -106,7 +106,6 @@ public class AutoDriveCmd extends Command {
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    System.out.println("end");
     m_drivetrainSub.applyRequest(() -> brake);
     m_drivetrainSub.setControl(autoDrive.withVelocityX(0).withVelocityY(0).withRotationalRate(0));
   }
@@ -116,12 +115,10 @@ public class AutoDriveCmd extends Command {
   public boolean isFinished() {
 
     if(Math.abs(fbDist) < fbEnd && Math.abs(lrDist) < 0.025) {
-      System.out.println("Forward/backward dist: " + fbDist);
 
       return true;
     }
     if(counter >= 25) {
-      System.out.println("counter: " + counter);
       return true;
     }
     return false;
