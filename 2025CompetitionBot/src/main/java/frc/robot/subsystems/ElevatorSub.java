@@ -14,6 +14,12 @@ import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
+import com.revrobotics.spark.SparkBase;
+import com.revrobotics.spark.SparkLowLevel.MotorType;
+import com.revrobotics.spark.SparkMax;
+import com.revrobotics.spark.config.AbsoluteEncoderConfig;
+import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
+import com.revrobotics.spark.config.SparkMaxConfig;
 import edu.wpi.first.math.controller.ElevatorFeedforward;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.DigitalInput;
@@ -28,6 +34,7 @@ public class ElevatorSub extends TestableSubsystem {
 
   private final TalonFX m_elevatorMotor = new TalonFX(Constants.CanIds.kElevatorMotor);
   private final TalonFX m_elevatorMotor2 = new TalonFX(Constants.CanIds.kElevatorMotor2);
+  private final SparkMax m_intakeMotor = new SparkMax(Constants.CanIds.kIntakeMotor, MotorType.kBrushless);
   private final DigitalInput m_elevatorUpperLimit = new DigitalInput(Constants.DioIds.kElevatorUpperLimit);
   private final DigitalInput m_encoderResetSwitch = new DigitalInput(Constants.DioIds.kElevatorEncoderResetSwitch);
 
@@ -74,6 +81,20 @@ public class ElevatorSub extends TestableSubsystem {
     outputConfigs.Inverted = InvertedValue.Clockwise_Positive;
     talonFxConfiguarator2.apply(outputConfigs);
 
+
+    SparkMaxConfig motorConfig = new SparkMaxConfig();
+    motorConfig
+        .inverted(false) // Set to true to invert the forward motor direction
+        .smartCurrentLimit(60) // Current limit in amps
+        .idleMode(IdleMode.kBrake);
+
+    AbsoluteEncoderConfig encoderConfig = new AbsoluteEncoderConfig();
+    encoderConfig.zeroOffset(0);
+    motorConfig.apply(encoderConfig);
+
+    m_intakeMotor.configure(motorConfig, SparkBase.ResetMode.kResetSafeParameters,
+        SparkBase.PersistMode.kPersistParameters);
+
     m_elevatorMotor2.setControl(new Follower(m_elevatorMotor.getDeviceID(), false));
 
     // Set the encoder conversion factor
@@ -90,7 +111,6 @@ public class ElevatorSub extends TestableSubsystem {
    */
   public void init() {
     m_logger.info("Initializing ElevatorSub Subsystem");
-
     m_isElevatorEncoderSet = false;
     m_elevatorMotor.setPosition(Constants.Elevator.kStartingHeight);
     setPositionMm(Constants.Elevator.kStartingHeight);
@@ -241,6 +261,10 @@ public class ElevatorSub extends TestableSubsystem {
     m_targetHeight = targetHeight;
     enableAutomation();
     runHeightControl(false);
+  }
+
+  public void setIntakeMotors(double power) {
+    m_intakeMotor.set(power);
   }
 
   /**
