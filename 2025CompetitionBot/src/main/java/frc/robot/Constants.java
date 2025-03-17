@@ -71,7 +71,7 @@ public final class Constants {
     public static final double kAtTargetMaxVelocity = 0.02; // In degrees per second?
 
     public static final double kDangerZoneBottomVertical = -88.0; // In degrees
-    public static final double kDangerZoonMidVertical = -74.0;
+    public static final double kDangerZoneMidVertical = -74.0;
     public static final double kDangerZoneUpperAngle = -60.0; // In degrees
     public static final double kDangerZoneBraceAngle = -84.0; // In degrees
 
@@ -82,32 +82,26 @@ public final class Constants {
     public static final double kL2PreScoreAngle = 33;
     public static final double kL2PostScoreAngle = -5.0;
     public static final double kL3PreScoreAngle = 33;
-    public static final double kL3PostScoreAngle = -10.0;
+    public static final double kL3PostScoreAngle = -5.0;
     public static final double kL4PreScoreAngle = 33;
-    public static final double kL4PostScoreAngle = -10.0;
+    public static final double kL4PostScoreAngle = -2.0;
     public static final double kCoralGrabbableAngle = -90.0;
 
     public static final double kL3L4AlgaeRemovalPrepAngle = 13;
     public static final double kL2L3AlgaeRemovalPrepAngle = 8;
     public static final double kL2L3AlgaeRemovalPostAngle = 10;
     public static final double kL3L4AlgaeRemovalPostAngle = kMaxArmAngle;
-    public static final double kArmConversionFactor = 3.1;
+    public static final double kArmConversionFactor = 3.6;
   }
 
   public static final class Climb {
-    public static final double kGrabCageAngle = 45; // TODO
-    public static final double kClimbedAngle = 0; // TODO
-    public static final double kClimbMotorPower = 1; //TODO
-  }
-
-  public static final class DriveTrain {
-    public static final double kPathingConfig = 1.0; // TODO: this is temporary, please change this once it is being used, i have no clue if this works properly
+    public static final double kClimbMotorPower = 1;
   }
 
   public static final class Elevator {
     // All heights are in millimeters
     public static final double kMinHeight = 300.0;
-    public static final double kMaxHeight = 1662.0;
+    public static final double kMaxHeight = 1657.0;
 
     public static final double kRotationsToMm = 5 / (0.75 * 25.4 * Math.PI); // Gearing / Spool diameter in inches * mm/in * PI
 
@@ -125,15 +119,15 @@ public final class Constants {
     public static final double kDangerZoneBraceTop = 1405;
 
     public static final double kResetHeight = 728; // Height where elevator encounters the encoder reset switch 
-    public static final double kCoralLoadedHeight = 705; // This should be some height above the bottom danger zone so arm can swing up
+    public static final double kCoralLoadedHeight = 690; // This should be some height above the bottom danger zone so arm can swing up
     public static final double kStartingHeight = kCoralLoadedHeight; // Height where elevator starts with coral pre-loaded
     public static final double kCoralGrabbableHeight = 901.0; // Height that coral can still slide in under the arm for the coral to be grabbable
-    public static final double kL2PreScoreHeight = 693.0;
-    public static final double kL2PostScoreHeight = 513.0;
+    public static final double kL2PreScoreHeight = 730.0;
+    public static final double kL2PostScoreHeight = 550.0;
     public static final double kL3PreScoreHeight = 1077.0;
-    public static final double kL3PostScoreHeight = 840.0;
+    public static final double kL3PostScoreHeight = 900.0;
     public static final double kL4PreScoreHeight = kMaxHeight;
-    public static final double kL4PostScoreHeight = 1334;
+    public static final double kL4PostScoreHeight = 1450;
     public static final double kL3L4AlgaeRemovalPrepHeight = 842;
     public static final double kL2L3AlgaeRemovalPrepHeight = 560;
     public static final double kL2L3AlgaeRemovalPostHeight = kL2L3AlgaeRemovalPrepHeight + 20;
@@ -195,7 +189,7 @@ public final class Constants {
     public static final double kApriltagHeights[] =
         {1.22, 1.22, 1.32, 1.32, 1.22, 1.22, 1.32, 1.32, 1.22, 1.22, 1.24, 1.24, 1.24, 1.24, 1.24, 1.24};
 
-    public static final double kDistanceToCloseToDrive = -1;
+    public static final double kDistanceToCloseToDrive = -1.25;
   }
 
   ////////// Test pass/fail/warn parameters ///////////////////////////////////////////////////////

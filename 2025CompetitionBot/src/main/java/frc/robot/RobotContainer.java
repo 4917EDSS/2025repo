@@ -7,13 +7,10 @@ package frc.robot;
 import static edu.wpi.first.units.Units.MetersPerSecond;
 import static edu.wpi.first.units.Units.RadiansPerSecond;
 import static edu.wpi.first.units.Units.RotationsPerSecond;
-import com.ctre.phoenix6.SignalLogger;
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.commands.PathPlannerAuto;
-import com.pathplanner.lib.path.PathConstraints;
-import edu.wpi.first.math.util.Units;
 import edu.wpi.first.net.WebServer;
 import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
@@ -31,8 +28,8 @@ import frc.robot.commands.AutoCoralScoreL2Grp;
 import frc.robot.commands.AutoCoralScoreL3Grp;
 import frc.robot.commands.AutoCoralScoreL4Grp;
 import frc.robot.commands.AutoDriveCmd;
+import frc.robot.commands.AutoGrabCoralAutoGrp;
 import frc.robot.commands.AutoGrabCoralGrp;
-import frc.robot.commands.BackUpAfterScoringCmd;
 import frc.robot.commands.ClimbDeployCmd;
 import frc.robot.commands.ClimbRetractCmd;
 import frc.robot.commands.DoNothingGrp;
@@ -50,9 +47,9 @@ import frc.robot.subsystems.CanSub;
 import frc.robot.subsystems.ClimbSub;
 import frc.robot.subsystems.DrivetrainSub;
 import frc.robot.subsystems.ElevatorSub;
+import frc.robot.subsystems.LedSub;
 import frc.robot.subsystems.VisionSub;
 import frc.robot.utils.RobotStatus;
-import frc.robot.utils.SwerveTelemetry;
 import frc.robot.utils.TestManager;
 
 
@@ -70,21 +67,20 @@ public class RobotContainer {
   private final SwerveRequest.FieldCentric drive = new SwerveRequest.FieldCentric()
       .withDeadband(MaxSpeed * 0.01).withRotationalDeadband(MaxAngularRate * 0.01) // Add a 1% deadband
       .withDriveRequestType(DriveRequestType.Velocity);
-  private final SwerveRequest.SwerveDriveBrake brake = new SwerveRequest.SwerveDriveBrake();
-  private final SwerveRequest.PointWheelsAt point = new SwerveRequest.PointWheelsAt();
-  private final SwerveTelemetry swerveLogger = new SwerveTelemetry(MaxSpeed);
 
   // RobotContainer constants
   private final TestManager m_testManager = new TestManager();
 
   // Robot subsystems
-  private final CanSub m_canSub = new CanSub(Constants.CanIds.kElevatorCustomCanBoard);
+  private final LedSub m_ledSub = new LedSub();
+  private final CanSub m_canSub = new CanSub(Constants.CanIds.kElevatorCustomCanBoard, m_ledSub);
   private final ArmSub m_armSub = new ArmSub(m_canSub);
   private final ClimbSub m_climbSub = new ClimbSub();
   private final DrivetrainSub m_drivetrainSub = TunerConstants.createDrivetrain();
   private final ElevatorSub m_elevatorSub = new ElevatorSub();
   private final VisionSub m_visionSub;
-  private final RobotStatus m_robotState = new RobotStatus();
+  @SuppressWarnings("unused")
+  private final RobotStatus m_robotStatus = new RobotStatus();
 
   // Controllers
   private final CommandPS4Controller m_driverController =
@@ -95,10 +91,6 @@ public class RobotContainer {
   // RobotContainer member variables
   public static boolean disableShuffleboardPrint = false;
   private SendableChooser<Command> m_Chooser = new SendableChooser<>();
-  private final PathConstraints m_constraints = new PathConstraints(
-      6.21, 3.0,
-      Units.degreesToRadians(360), Units.degreesToRadians(720));
-
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
@@ -149,19 +141,34 @@ public class RobotContainer {
     //     new BackUpAfterScoringCmd(m_drivetrainSub));
 
     NamedCommands.registerCommand("AutoCoralScoreL2Grp",
-        new AutoCoralScoreL2Grp(m_armSub, m_canSub, m_drivetrainSub, m_elevatorSub, m_visionSub)); // TODO: Carson is implementing a fix for this
+        new AutoCoralScoreL2Grp(m_armSub, m_canSub, m_drivetrainSub, m_elevatorSub, m_visionSub));
 
     NamedCommands.registerCommand("AutoCoralScoreL3Grp",
-        new AutoCoralScoreL3Grp(m_armSub, m_canSub, m_drivetrainSub, m_elevatorSub, m_visionSub)); // TODO: Carson is implementing a fix for this
+        new AutoCoralScoreL3Grp(m_armSub, m_canSub, m_drivetrainSub, m_elevatorSub, m_visionSub));
 
     NamedCommands.registerCommand("AutoCoralScoreL4Grp",
-        new AutoCoralScoreL4Grp(m_armSub, m_canSub, m_drivetrainSub, m_elevatorSub, m_visionSub));// TODO: Carson is implementing a fix for this
+        new AutoCoralScoreL4Grp(m_armSub, m_canSub, m_drivetrainSub, m_elevatorSub, m_visionSub, true));
 
     NamedCommands.registerCommand("AutoGrabCoralGrp",
         new AutoGrabCoralGrp(m_armSub, m_canSub, m_elevatorSub));
 
+    NamedCommands.registerCommand("AutoGrabCoralAutoGrp",
+        new AutoGrabCoralAutoGrp(m_armSub, m_canSub, m_elevatorSub));
+
     NamedCommands.registerCommand("AutoDriveCmd",
-        new AutoDriveCmd(m_visionSub, m_drivetrainSub, true)); // TODO: Carson is implementing a fix for this
+        new AutoDriveCmd(m_visionSub, m_drivetrainSub, true));
+
+    NamedCommands.registerCommand("SetL4ScoringSlow",
+        new MoveElArmGrp(Constants.Elevator.kL4PreScoreHeight, Constants.Arm.kL4PreScoreAngle, m_armSub,
+            m_elevatorSub)); //Move to pre score position
+
+    NamedCommands.registerCommand("Slowdown", new InstantCommand(() -> slowDown()));
+
+    NamedCommands.registerCommand("Speed Up", new InstantCommand(() -> speedUp()));
+
+    NamedCommands.registerCommand("Set Left", (new InstantCommand(() -> RobotStatus.setLeft())));
+
+    NamedCommands.registerCommand("Set Right", (new InstantCommand(() -> RobotStatus.setRight())));
   }
 
   /**
@@ -172,7 +179,8 @@ public class RobotContainer {
 
     // Square
 
-    m_driverController.square().onTrue(new AutoGrabCoralGrp(m_armSub, m_canSub, m_elevatorSub));//.whileTrue(new AutoDriveCmd(m_visionSub, m_drivetrainSub, true));//
+    m_driverController.square().onTrue(new AutoGrabCoralGrp(m_armSub, m_canSub, m_elevatorSub));//.onTrue(new AutoGrabCoralGrp(m_armSub, m_canSub, m_elevatorSub));//
+
 
     // Cross
     m_driverController.cross()
@@ -204,29 +212,28 @@ public class RobotContainer {
             new InstantCommand(() -> RobotStatus.l3L4Algae())));
 
     // L2
-    m_driverController.L2().onTrue(new InstantCommand(() -> slowDown())).onFalse(new InstantCommand(() -> speedUp()));
+    m_driverController.L2().onTrue(new InstantCommand(() -> RobotStatus.setLeft()));
 
     // R2
-    //m_driverController.R2().onTrue(new DriveToNearestScoreLocationCmd(m_drivetrainSub));
+    m_driverController.R2().onTrue(new InstantCommand(() -> RobotStatus.setRight()));
 
     // POV Up
     m_driverController.povUp().onTrue(new ClimbDeployCmd(m_climbSub));
 
-
     // POV Right
-    // TODO:  Target scoring to pipe to the right of the vision target
+    m_driverController.povRight().whileTrue(new AutoDriveCmd(m_visionSub, m_drivetrainSub, true));
 
     // POV Down
     m_driverController.povDown().onTrue(new ClimbRetractCmd(m_climbSub));
 
     // POV Left
-    // TODO:  Target scoring to pipe to the left of the vision target
 
     // Share
-    m_driverController.share().onTrue(new InstantCommand(() -> RobotStatus.setLeft()));
+    m_driverController.share();
 
     // Options
-    m_driverController.options().onTrue(new InstantCommand(() -> RobotStatus.setRight()));
+    m_driverController.options().onTrue(new InstantCommand(() -> slowDown()))
+        .onFalse(new InstantCommand(() -> speedUp()));;
     // m_driverController.options().whileTrue(AutoBuilder.pathfindToPose(
     //     new Pose2d(2, 6.5, new Rotation2d(0)),
     //     m_constraints,
@@ -292,10 +299,8 @@ public class RobotContainer {
             new InstantCommand(() -> RobotStatus.l2L3Algae())));
 
     // L2
-    // TODO: Remove algae based on which one we are prepped for
 
     // R2
-    // TODO: Score coral based on which one we are prepped for
     m_operatorController.R2().onTrue(new MoveElArmPostManualCmd(m_armSub, m_elevatorSub));
 
     // POV Up
@@ -362,6 +367,8 @@ public class RobotContainer {
     m_Chooser.setDefaultOption("Leave", new PathPlannerAuto("Leave Auto"));
     m_Chooser.addOption("Do-Nothing", new DoNothingGrp());
     m_Chooser.addOption("Barge Side Vision With Reef", new PathPlannerAuto("Barge Side Vision With Reef"));
+    m_Chooser.addOption("Right Side Barge Side Vision With Reef",
+        new PathPlannerAuto("Right Side Barge Side Vision With Reef"));
     SmartDashboard.putData("Auto Choices", m_Chooser);
   }
 }

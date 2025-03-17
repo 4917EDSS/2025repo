@@ -1,0 +1,67 @@
+{
+  "version": "2025.0",
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Red Alliance Start 1st Auto"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "AutoCoralScoreL4Grp"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Red Alliance 1st Score - Pickup"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Red Alliance Pickup - 2nd Auto"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "AutoCoralScoreL4Grp"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Red Alliance 2nd Score - Pickup"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Red Alliance Pickup - 3rd Auto"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "AutoCoralScoreL4Grp"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Red Alliance 3rd Score - Pickup"
+          }
+        }
+      ]
+    }
+  },
+  "resetOdom": true,
+  "folder": null,
+  "choreoAuto": false
+}

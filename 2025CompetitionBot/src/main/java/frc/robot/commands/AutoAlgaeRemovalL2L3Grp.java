@@ -7,6 +7,7 @@ package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.ScheduleCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.Constants;
 import frc.robot.subsystems.ArmSub;
 import frc.robot.subsystems.CanSub;
@@ -27,6 +28,7 @@ public class AutoAlgaeRemovalL2L3Grp extends SequentialCommandGroup {
     // addCommands(new FooCommand(), new BarCommand());
     addCommands(
         new AutoAlgaeRemovalL2L3ArmElGrp(armSub, elevatorSub), // Move elevator and arm to algae removal location
+        new WaitCommand(1.0),
         new AutoDriveCmd(visionSub, drivetrainSub, false), // Drive to vision target
         new MoveElArmGrp(Constants.Elevator.kL2L3AlgaeRemovalPostHeight, Constants.Arm.kL2L3AlgaeRemovalPostAngle,
             armSub, elevatorSub), // Remove algae

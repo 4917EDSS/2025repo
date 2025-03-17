@@ -6,11 +6,8 @@ package frc.robot.subsystems;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
-// import java.nio.IntBuffer;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-
 import edu.wpi.first.hal.can.CANJNI;
-// import edu.wpi.first.wpilibj.DigitalOutput;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 
@@ -25,9 +22,12 @@ public class CanSub extends SubsystemBase {
   static int m_TOFDist;
   static int m_analog0;
   static int m_coralSensor;
+  LedSub m_ledSub;
+  boolean blinLed = true;
 
   /** Creates a new CanSub. */
-  public CanSub(int CustomSensorID) {
+  public CanSub(int CustomSensorID, LedSub ledSub) {
+    m_ledSub = ledSub;
     m_data_buffer = new byte[8];
     /*
      * m_do0 = new DigitalOutput(0);
@@ -57,7 +57,7 @@ public class CanSub extends SubsystemBase {
   }
 
   // A helper function to assemble a full arbitration ID.
-  public int createCANId(int apiId, int deviceId, int manufacturer, int deviceType) {
+  public static int createCANId(int apiId, int deviceId, int manufacturer, int deviceType) {
     return ((int) (deviceType) & 0x1F) << 24 | ((int) (manufacturer) & 0xFF) << 16 | (apiId & 0x3FF) << 6
         | (deviceId & 0x3F);
   }
@@ -176,9 +176,15 @@ public class CanSub extends SubsystemBase {
 
   public boolean isCoralPresent() {
     if(m_coralSensor < 100) {
+      // if(blinLed) {
+      //   m_ledSub.blink();
+      //   blinLed = false;
+      // }
       return true;
-    } else
+    } else {
+      // blinLed = true;
       return false;
+    }
   }
 
   // public void updateShuffleboard() {

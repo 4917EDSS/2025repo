@@ -36,7 +36,9 @@ public class SetArmToPositionCmd extends Command {
 
   // Called once the command ends or is interrupted.
   @Override
-  public void end(boolean interrupted) {}
+  public void end(boolean interrupted) {
+    m_armSub.setHolding();
+  }
 
   // Returns true when the command should end (arm is at correct position)
   @Override

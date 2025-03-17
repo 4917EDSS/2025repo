@@ -67,9 +67,6 @@ public class VisionSub extends SubsystemBase {
 
   /** Creates a new VisionSub. */
   public VisionSub(DrivetrainSub drivetrainSub) {
-    // For now, we will just use the left camera for shuffleboard.
-    // TODO - add the right camera in here.
-
     m_t2dL = m_networkTableL.getEntry("t2d");
     m_tidL = m_networkTableL.getEntry("tid");
     m_tvL = m_networkTableL.getEntry("tv");
@@ -159,7 +156,7 @@ public class VisionSub extends SubsystemBase {
 
   public boolean isFarFromAprilTag() {
     //y distance is negative
-    if(y < Constants.Vision.kDistanceToCloseToDrive) {
+    if(botposeTarget[2] < Constants.Vision.kDistanceToCloseToDrive) {
       return true;
     } else {
       return false;

@@ -11,6 +11,7 @@ import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj2.command.Command;
+import frc.robot.Robot;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.DrivetrainSub;
 import frc.robot.subsystems.VisionSub;
@@ -55,7 +56,10 @@ public class AutoDriveCmd extends Command {
       fbEnd = 0.0;
     } else {
       fbOffset = 0.15;
-      fbEnd = 0.51;
+      fbEnd = 0.49;
+      if(RobotStatus.LastReefPosition().equals(RobotStatus.ReefPosition.kL4)) {
+        fbEnd += 0.0127; //This is half an inch in meters
+      }
     }
 
     if(useOffset) {

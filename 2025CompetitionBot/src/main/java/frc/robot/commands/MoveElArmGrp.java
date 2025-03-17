@@ -14,15 +14,21 @@ import frc.robot.subsystems.ElevatorSub;
 // information, see:
 // https://docs.wpilib.org/en/stable/docs/software/commandbased/convenience-features.html
 public class MoveElArmGrp extends ParallelCommandGroup {
+  public MoveElArmGrp(double height, double angle, ArmSub armSub, ElevatorSub elevatorSub) {
+    this(height, angle, armSub, elevatorSub, false);
+  }
+
   /** Creates a new MoveElArmGrp. */
 
-  public MoveElArmGrp(double height, double angle, ArmSub armSub, ElevatorSub elevatorSub) {
+  public MoveElArmGrp(double height, double angle, ArmSub armSub, ElevatorSub elevatorSub, boolean isSlow) {
     // Add your commands in the addCommands() call, e.g.
     // addCommands(new FooCommand(), new BarCommand());
+
     addCommands(
 
-        new SetElevatorToHeightCmd(height, elevatorSub),
+        new SetElevatorToHeightCmd(height, elevatorSub, isSlow),
         new InstantCommand(() -> SmartDashboard.putBoolean("Step 1", true)),
         new SetArmToPositionCmd(angle, armSub));
+
   }
 }

@@ -14,11 +14,17 @@ import frc.robot.subsystems.ElevatorSub;
 public class SetElevatorToHeightCmd extends Command {
   private double m_targetHeight;
   private ElevatorSub m_elevatorSub;
+  private boolean m_isSlow;
+
+  public SetElevatorToHeightCmd(double targetHeight, ElevatorSub elevatorSub) {
+    this(targetHeight, elevatorSub, false);
+  }
 
   /** Creates a new SetElevatorToHeightCmd. */
-  public SetElevatorToHeightCmd(double targetHeight, ElevatorSub elevatorSub) {
+  public SetElevatorToHeightCmd(double targetHeight, ElevatorSub elevatorSub, boolean isSlow) {
     m_elevatorSub = elevatorSub;
     m_targetHeight = targetHeight;
+    m_isSlow = isSlow;
 
     addRequirements(m_elevatorSub);
   }
@@ -28,6 +34,7 @@ public class SetElevatorToHeightCmd extends Command {
   public void initialize() {
     m_elevatorSub.enableAutomation();
     m_elevatorSub.setTargetHeight(m_targetHeight);
+    m_elevatorSub.setElevatorSlowMode((m_isSlow));
   }
 
   // Called every time the scheduler runs while the command is scheduled.
@@ -36,7 +43,9 @@ public class SetElevatorToHeightCmd extends Command {
 
   // Called once the command ends or is interrupted.
   @Override
-  public void end(boolean interrupted) {}
+  public void end(boolean interrupted) {
+    m_elevatorSub.setElevatorSlowMode((false));
+  }
 
   // Returns true when the command should end.
   @Override

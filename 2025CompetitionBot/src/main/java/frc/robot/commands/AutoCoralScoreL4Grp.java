@@ -19,32 +19,49 @@ import frc.robot.subsystems.VisionSub;
 // information, see:
 // https://docs.wpilib.org/en/stable/docs/software/commandbased/convenience-features.html
 public class AutoCoralScoreL4Grp extends SequentialCommandGroup {
-  /** Creates a new AutoCoralScoreL4Grp. */
   public AutoCoralScoreL4Grp(ArmSub armSub, CanSub canSub, DrivetrainSub drivetrainSub,
       ElevatorSub elevatorSub, VisionSub visionSub) {
+    this(armSub, canSub, drivetrainSub, elevatorSub, visionSub, false);
+  }
+
+  /** Creates a new AutoCoralScoreL4Grp. */
+  public AutoCoralScoreL4Grp(ArmSub armSub, CanSub canSub, DrivetrainSub drivetrainSub,
+      ElevatorSub elevatorSub, VisionSub visionSub, boolean forauto) {
     // Add your commands in the addCommands() call, e.g.
     // addCommands(new FooCommand(), new BarCommand());
-    addCommands(
-        // If further away
-        new ConditionalCommand(
-            new ParallelCommandGroup(
-                new MoveElArmGrp(Constants.Elevator.kL4PreScoreHeight, Constants.Arm.kL4PreScoreAngle, armSub,
-                    elevatorSub), //Move to pre score position
-                new AutoDriveCmd(visionSub, drivetrainSub, true) //Drive to score location
-            ),
-            // Else
-            new SequentialCommandGroup(
-                new MoveElArmGrp(Constants.Elevator.kL4PreScoreHeight, Constants.Arm.kL4PreScoreAngle, armSub,
-                    elevatorSub), //Move to pre score position
-                new AutoDriveCmd(visionSub, drivetrainSub, true) //Drive to score location
-            ),
-            () -> visionSub.isFarFromAprilTag()),
+    if(forauto) {
+      addCommands(
+          new ParallelCommandGroup(
+              new MoveElArmGrp(Constants.Elevator.kL4PreScoreHeight, Constants.Arm.kL4PreScoreAngle, armSub,
+                  elevatorSub), //Move to pre score position
+              new AutoDriveCmd(visionSub, drivetrainSub, true) //Drive to score location
+          ),
+          new MoveElArmDeadlineGrp(Constants.Elevator.kL4PostScoreHeight, Constants.Arm.kL4PostScoreAngle, armSub,
+              elevatorSub) //Move to post score location (score)
+      );
+    } else {
+      addCommands(
+          // If further away
+          new ConditionalCommand(
+              new ParallelCommandGroup(
+                  new MoveElArmGrp(Constants.Elevator.kL4PreScoreHeight, Constants.Arm.kL4PreScoreAngle, armSub,
+                      elevatorSub), //Move to pre score position
+                  new AutoDriveCmd(visionSub, drivetrainSub, true) //Drive to score location
+              ),
+              // Else
+              new SequentialCommandGroup(
+                  new MoveElArmGrp(Constants.Elevator.kL4PreScoreHeight, Constants.Arm.kL4PreScoreAngle, armSub,
+                      elevatorSub), //Move to pre score position
+                  new AutoDriveCmd(visionSub, drivetrainSub, true) //Drive to score location
+              ),
+              () -> visionSub.isFarFromAprilTag()),
 
-        new MoveElArmDeadlineGrp(Constants.Elevator.kL4PostScoreHeight, Constants.Arm.kL4PostScoreAngle, armSub,
-            elevatorSub), //Move to post score location (score)
-        new BackUpAfterScoringCmd(drivetrainSub), //Back up
-        new ScheduleCommand(new AutoGrabCoralGrp(armSub, canSub, elevatorSub)) //Grab coral
+          new MoveElArmDeadlineGrp(Constants.Elevator.kL4PostScoreHeight, Constants.Arm.kL4PostScoreAngle, armSub,
+              elevatorSub), //Move to post score location (score)
+          new BackUpAfterScoringCmd(drivetrainSub), //Back up
+          new ScheduleCommand(new AutoGrabCoralGrp(armSub, canSub, elevatorSub)) //Grab coral
 
-    );
+      );
+    }
   }
 }

@@ -7,7 +7,13 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Leave"
+            "pathName": "Red Alliance Leave"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "AutoCoralScoreL3Grp"
           }
         }
       ]

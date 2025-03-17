@@ -6,17 +6,16 @@ package frc.robot.subsystems;
 
 import java.util.function.Supplier;
 import java.util.logging.Logger;
-import com.revrobotics.RelativeEncoder;
 import com.revrobotics.spark.SparkAbsoluteEncoder;
 import com.revrobotics.spark.SparkBase;
-import com.revrobotics.spark.SparkClosedLoopController;
 import com.revrobotics.spark.SparkLimitSwitch;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.config.AbsoluteEncoderConfig;
-import com.revrobotics.spark.config.ClosedLoopConfig.FeedbackSensor;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.SparkMaxConfig;
+import edu.wpi.first.math.controller.ArmFeedforward;
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants;
 import frc.robot.utils.SubControl;
@@ -28,34 +27,23 @@ public class ArmSub extends TestableSubsystem {
 
   private final SparkMax m_armMotor = new SparkMax(Constants.CanIds.kArmMotor, MotorType.kBrushless);
   private final SparkAbsoluteEncoder m_absoluteEncoder = m_armMotor.getAbsoluteEncoder();
-  private final RelativeEncoder m_relativeEncoder = m_armMotor.getEncoder();
   private final SparkLimitSwitch m_forwardLimitSwitch = m_armMotor.getForwardLimitSwitch();
   private final SparkLimitSwitch m_reverseLimitSwitch = m_armMotor.getReverseLimitSwitch();
 
-  // private double m_kS = 0.0;
-  // private double m_kG = 0.01;
-  // private double m_kV = 0.05;
-  // private double m_kP = 0.022;
-  // private double m_kI = 0.0;
-  // private double m_kD = 0.0;
-  // private final ArmFeedforward m_armFeedforward = new ArmFeedforward(m_kS, m_kG, m_kV);
-  // private final PIDController m_armPid = new PIDController(m_kP, m_kI, m_kD);
-
-  private final SparkClosedLoopController m_controller = m_armMotor.getClosedLoopController();
-
-  private double m_kMinOutput = -0.5; // -1.0 to 1.0
-  private double m_kMaxOutput = 0.5; // -1.0 to 1.0
-  private double m_kMaxVel = 3000; // RPM
-  private double m_kMaxAccel = 6000; // RPM/s
-  private double m_kP = 2.0;
+  private double m_kS = 0.0;
+  private double m_kG = 0.01;
+  private double m_kV = 0.05;
+  private double m_kP = 0.022;
   private double m_kI = 0.0;
   private double m_kD = 0.0;
-  private double m_kAllowedError = 0.1; // at-position tolerance, in revolutions
+  private final ArmFeedforward m_armFeedforward = new ArmFeedforward(m_kS, m_kG, m_kV);
+  private final PIDController m_armPid = new PIDController(m_kP, m_kI, m_kD);
 
   private Supplier<Double> elevatorPosition;
   private double m_targetAngle = 0;
   private double m_blockedAngle;
   private boolean m_automationEnabled = false;
+  private double m_smartDashboardCounter = 0;
   private SubControl m_currentControl = new SubControl(); // Current states of mechanism
 
   /** Creates a new ArmSub. */
@@ -63,20 +51,10 @@ public class ArmSub extends TestableSubsystem {
     SparkMaxConfig motorConfig = new SparkMaxConfig();
     motorConfig
         .inverted(true) // Set to true to invert the forward motor direction
-        .smartCurrentLimit(60) // Current limit in amps // TODO: Determine real current limit
-        .idleMode(IdleMode.kBrake)
-            // Set PID gains
-            .closedLoop
-                .feedbackSensor(FeedbackSensor.kPrimaryEncoder)
-                .p(m_kP)
-                .i(m_kI)
-                .d(m_kD)
-                .outputRange(m_kMinOutput, m_kMaxOutput)
-                    // Set MAXMotion parameters
-                    .maxMotion
-                        .maxVelocity(m_kMaxVel)
-                        .maxAcceleration(m_kMaxAccel)
-                        .allowedClosedLoopError(m_kAllowedError);
+        .smartCurrentLimit(60) // Current limit in amps
+        .idleMode(IdleMode.kBrake).encoder
+            .positionConversionFactor(Constants.Arm.kEncoderPositionConversionFactor)
+            .velocityConversionFactor(Constants.Arm.kEncoderVelocityConversionFactor);
 
     AbsoluteEncoderConfig encoderConfig = new AbsoluteEncoderConfig();
     encoderConfig.zeroOffset(Constants.Arm.kAbsoluteEncoderOffset);
@@ -87,8 +65,6 @@ public class ArmSub extends TestableSubsystem {
     // operation can be slow
     m_armMotor.configure(motorConfig, SparkBase.ResetMode.kResetSafeParameters,
         SparkBase.PersistMode.kPersistParameters);
-
-    init();
   }
 
   /**
@@ -96,7 +72,6 @@ public class ArmSub extends TestableSubsystem {
    */
   public void init() {
     m_logger.info("Initializing ArmSub Subsystem");
-    m_relativeEncoder.setPosition(getAngle() / Constants.Arm.kArmConversionFactor); // 360 deg / 100 motor rotations per arm rotation
   }
 
   /**
@@ -109,16 +84,49 @@ public class ArmSub extends TestableSubsystem {
   @Override
   public void periodic() {
     updateStateMachine();
-    runAngleControl();
+    runAngleControl(m_automationEnabled);
 
     SmartDashboard.putNumber("Arm Raw Enc", getPosition());
     SmartDashboard.putNumber("Arm Angle", getAngle());
     SmartDashboard.putBoolean("Arm Lower Limit", isAtLowerLimit());
     SmartDashboard.putBoolean("Arm Upper Limit", isAtUpperLimit());
     SmartDashboard.putNumber("Arm Power", m_armMotor.get());
-    SmartDashboard.putNumber("Arm Rel Enc", m_relativeEncoder.getPosition());
     SmartDashboard.putBoolean("Is at Arm limit", isAtTargetAngle());
     SmartDashboard.putNumber("Target Arm Angle", m_targetAngle);
+
+    // Current power value is sent in setPower()
+
+    // for tuning PID and feed forward values only
+    boolean tuning = true;
+    if(tuning) {
+      // Lighten the load by only updating these twice a second
+      if(++m_smartDashboardCounter >= 30) {
+        m_smartDashboardCounter = 0;
+        double kP = SmartDashboard.getNumber("Arm kP", m_kP);
+        double kI = SmartDashboard.getNumber("Arm kI", m_kI);
+        double kD = SmartDashboard.getNumber("Arm kD", m_kD);
+
+        double kS = SmartDashboard.getNumber("Arm kS", m_kS);
+        double kG = SmartDashboard.getNumber("Arm kG", m_kG);
+        double kV = SmartDashboard.getNumber("Arm kV", m_kV);
+
+        m_armFeedforward.setKs(kS);
+        m_armFeedforward.setKg(kG);
+        m_armFeedforward.setKv(kV);
+
+        m_armPid.setP(kP);
+        m_armPid.setI(kI);
+        m_armPid.setD(kD);
+
+        SmartDashboard.putNumber("Arm kP", kP);
+        SmartDashboard.putNumber("Arm kI", kI);
+        SmartDashboard.putNumber("Arm kD", kD);
+
+        SmartDashboard.putNumber("Arm kS", kS);
+        SmartDashboard.putNumber("Arm kG", kG);
+        SmartDashboard.putNumber("Arm kV", kV);
+      }
+    }
   }
 
   /**
@@ -127,13 +135,9 @@ public class ArmSub extends TestableSubsystem {
    * @param power power value -1.0 to 1.0
    */
   public void setPower(double power) {
-    if(power > 1.0) {
-      power = 1.0;
-    } else if(power < -1.0) {
-      power = -1.0;
-    }
-
     m_armMotor.set(power);
+    SmartDashboard.putNumber("Arm Power", power);
+    setMoving();
   }
 
   /**
@@ -177,6 +181,7 @@ public class ArmSub extends TestableSubsystem {
     }
     m_targetAngle = targetAngle;
     enableAutomation();
+    runAngleControl(true);
   }
 
   /**
@@ -184,6 +189,7 @@ public class ArmSub extends TestableSubsystem {
    */
   public void enableAutomation() {
     m_automationEnabled = true;
+    setMoving();
   }
 
   /**
@@ -237,6 +243,12 @@ public class ArmSub extends TestableSubsystem {
         }
         break;
 
+      case HOLDING:
+        SmartDashboard.putBoolean("Arm Holding", true);
+
+        break;
+
+
       default:
         m_currentControl.state = State.INTERRUPTED;
         break;
@@ -252,14 +264,14 @@ public class ArmSub extends TestableSubsystem {
     double armAngle = getAngle();
     double elevatorHeight = elevatorPosition.get();
 
-    if((elevatorHeight <= Constants.Elevator.kDangerZoneBottom) && (armAngle > Constants.Arm.kDangerZoonMidVertical)
+    if((elevatorHeight <= Constants.Elevator.kDangerZoneBottom) && (armAngle > Constants.Arm.kDangerZoneMidVertical)
         && (m_targetAngle < armAngle)
         && (armAngle < Constants.Arm.kDangerZoneUpperAngle)) {
       return true;
     }
     if((elevatorHeight <= Constants.Elevator.kDangerZoneBottom) && (armAngle > Constants.Arm.kDangerZoneBottomVertical)
         && (m_targetAngle > armAngle)
-        && (armAngle < Constants.Arm.kDangerZoonMidVertical)) {
+        && (armAngle < Constants.Arm.kDangerZoneMidVertical)) {
       return true;
     }
     if((elevatorHeight > Constants.Elevator.kDangerZoneBraceBottom)
@@ -271,34 +283,49 @@ public class ArmSub extends TestableSubsystem {
   }
 
   /**
-   * Calculates and sets the current power to apply to the arm to get to or stay at its target
+   * Calculates and sets the current power to apply to the arm to get to or stay
+   * at its target
+   * 
+   * @param updatePower set to false to update the Feedforward and PID controllers
+   *        without changing the motor power
    */
-  private void runAngleControl() {
+  private void runAngleControl(boolean updatePower) {
+    double activeAngle = m_targetAngle;
+
+    if(m_currentControl.state == State.INTERRUPTED) {
+      activeAngle = m_blockedAngle;
+    }
+    if(m_currentControl.state == State.HOLDING) {
+      setPower(0);
+      return;
+    }
+
     double currAngle = getAngle();
+    // This is a very rough approximation, and is only used to give to feed forward.
+    // Basically, we are always asking for the speed which would get us to our target in 1 second.
+    // Thus, a higher speed when far away and very low speed when closer.
+    double targetVelocityRadPerS = Math.toRadians(activeAngle - currAngle) / 1.0;
 
-    if(!m_automationEnabled) {
-      // Manual control
-      double currentPower = m_armMotor.get();
-      if((currAngle >= Constants.Arm.kSlowDownUpperAngle) && (currentPower > Constants.Arm.kSlowDownSpeed)) {
-        currentPower = Constants.Arm.kSlowDownSpeed;
-      } else if((currAngle < Constants.Arm.kSlowDownLowerAngle) && (currentPower < -Constants.Arm.kSlowDownSpeed)) {
-        currentPower = -Constants.Arm.kSlowDownSpeed;
+    double pidPower = m_armPid.calculate(currAngle, activeAngle);
+    double fedPower = m_armFeedforward.calculate(Math.toRadians(currAngle), targetVelocityRadPerS); // Feed forward expects 0 degrees as horizontal
+
+    if(updatePower) {
+      double realPower = (pidPower + fedPower);
+
+      if(Math.abs(realPower) > Constants.Arm.kMaxPower) {
+        double sign = (realPower >= 0.0) ? 1.0 : -1.0;
+        realPower = Constants.Arm.kMaxPower * sign;
       }
 
-      setPower(currentPower);
-    } else {
-      // Automation is enabled
-      double activeAngle;
-
-      if(m_currentControl.state == State.INTERRUPTED) {
-        activeAngle = m_blockedAngle;
-      } else {
-        activeAngle = m_targetAngle;
+      // If arm is close to limit switches, limit power to avoid smashing into them
+      if(!m_automationEnabled) {
+        if((currAngle >= Constants.Arm.kSlowDownUpperAngle) && (realPower > Constants.Arm.kSlowDownSpeed)) {
+          realPower = Constants.Arm.kSlowDownSpeed;
+        } else if((currAngle < Constants.Arm.kSlowDownLowerAngle) && (realPower < -Constants.Arm.kSlowDownSpeed)) {
+          realPower = -Constants.Arm.kSlowDownSpeed;
+        }
       }
-
-      // Convert from degrees to motor rotation
-      double rotationPosition = activeAngle / Constants.Arm.kArmConversionFactor; // 360 deg / 100 motor rotations per arm rotation
-      m_controller.setReference(rotationPosition, SparkBase.ControlType.kMAXMotionPositionControl);
+      setPower(realPower);
     }
   }
 
@@ -307,10 +334,19 @@ public class ArmSub extends TestableSubsystem {
    * 
    * @return true when we are within tolerance of our target height
    */
+
+  public void setHolding() {
+    m_currentControl.state = State.HOLDING;
+  }
+
+  public void setMoving() {
+    m_currentControl.state = State.MOVING;
+  }
+
   public boolean isAtTargetAngle() {
     // If we are within tolerance and our velocity is low, we're at our target
-    if((Math.abs(m_targetAngle - getAngle()) < Constants.Arm.kAngleTolerance)
-        && (Math.abs(getVelocity()) < Constants.Arm.kAtTargetMaxVelocity)) {
+    if(Math.abs(m_targetAngle - getAngle()) < Constants.Arm.kAngleTolerance) {
+      //&& (Math.abs(getVelocity()) < Constants.Arm.kAtTargetMaxVelocity)) {
       return true;
     } else {
       return false;
