@@ -37,6 +37,7 @@ public final class Constants {
     public static final int kElevatorMotor2 = 2;
     public static final int kArmMotor = 3;
     public static final int kClimbMotor = 4;
+    public static final int kIntakeMotor = 5;
 
     // We can have multiple custom 4917 Aruino boards connected via CAN.  List their IDs here.
     public static final int kElevatorCustomCanBoard = 4;
