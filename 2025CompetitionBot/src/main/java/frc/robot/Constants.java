@@ -37,6 +37,7 @@ public final class Constants {
     public static final int kElevatorMotor2 = 2;
     public static final int kArmMotor = 3;
     public static final int kClimbMotor = 4;
+    public static final int kIntakeMotor = 5;
 
     // We can have multiple custom 4917 Aruino boards connected via CAN.  List their IDs here.
     public static final int kElevatorCustomCanBoard = 4;
@@ -101,7 +102,7 @@ public final class Constants {
   public static final class Elevator {
     // All heights are in millimeters
     public static final double kMinHeight = 300.0;
-    public static final double kMaxHeight = 1662.0;
+    public static final double kMaxHeight = 1657.0;
 
     public static final double kRotationsToMm = 5 / (0.75 * 25.4 * Math.PI); // Gearing / Spool diameter in inches * mm/in * PI
 
