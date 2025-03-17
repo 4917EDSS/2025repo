@@ -218,13 +218,13 @@ public class RobotContainer {
     m_driverController.R2().onTrue(new InstantCommand(() -> RobotStatus.setRight()));
 
     // POV Up
-    m_driverController.povUp().onTrue(new ClimbDeployCmd(m_climbSub));
+    m_driverController.povUp().whileTrue(new ClimbDeployCmd(m_climbSub));
 
     // POV Right
     m_driverController.povRight().whileTrue(new AutoDriveCmd(m_visionSub, m_drivetrainSub, true));
 
     // POV Down
-    m_driverController.povDown().onTrue(new ClimbRetractCmd(m_climbSub));
+    m_driverController.povDown().whileTrue(new ClimbRetractCmd(m_climbSub));
 
     // POV Left
 
