@@ -41,6 +41,7 @@ public class ArmSub extends TestableSubsystem {
 
   private Supplier<Double> elevatorPosition;
   private double m_targetAngle = 0;
+  private double m_startingAngle = Constants.Arm.kMinArmAngle;
   private double m_blockedAngle;
   private boolean m_automationEnabled = false;
   private double m_smartDashboardCounter = 0;
@@ -173,6 +174,8 @@ public class ArmSub extends TestableSubsystem {
    * @param targetAngle target angle in degrees
    */
   public void setTargetAngle(double targetAngle) {
+    m_startingAngle = getAngle();
+
     if(targetAngle > Constants.Arm.kMaxArmAngle) {
       targetAngle = Constants.Arm.kMaxArmAngle;
     }
@@ -345,7 +348,9 @@ public class ArmSub extends TestableSubsystem {
 
   public boolean isAtTargetAngle() {
     // If we are within tolerance and our velocity is low, we're at our target
-    if(Math.abs(m_targetAngle - getAngle()) < Constants.Arm.kAngleTolerance) {
+    if((Math.abs(m_targetAngle - getAngle()) < Constants.Arm.kAngleTolerance)
+        || ((m_targetAngle < m_startingAngle) && (m_targetAngle > getAngle()))
+        || ((m_targetAngle > m_startingAngle) && (m_targetAngle < getAngle()))) {
       //&& (Math.abs(getVelocity()) < Constants.Arm.kAtTargetMaxVelocity)) {
       return true;
     } else {

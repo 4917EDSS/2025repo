@@ -6,7 +6,6 @@ package frc.robot;
 
 import java.util.logging.Level;
 import edu.wpi.first.units.measure.Angle;
-import frc.robot.utils.TestMotorParameters;
 import static edu.wpi.first.units.Units.*;
 
 /**
@@ -37,7 +36,6 @@ public final class Constants {
     public static final int kElevatorMotor2 = 2;
     public static final int kArmMotor = 3;
     public static final int kClimbMotor = 4;
-    public static final int kIntakeMotor = 5;
 
     // We can have multiple custom 4917 Aruino boards connected via CAN.  List their IDs here.
     public static final int kElevatorCustomCanBoard = 4;
@@ -215,20 +213,20 @@ public final class Constants {
      */
 
     /* Elevator Motors */
-    public static final TestMotorParameters kElevatorMotor1 =
-        new TestMotorParameters("ElevatorMotor1", 1, 0.1, 1000, 75, 74, 10, 1.5, 20, 5);
-    public static final TestMotorParameters kElevatorMotor2 =
-        new TestMotorParameters("ElevatorMotor2", 2, 0.1, 1000, 75, 74, 10, 1.5, 20, 5);
-    /* Intake Motors */
-    public static final TestMotorParameters kIntakeMotor1 =
-        new TestMotorParameters("IntakeMotor1", 1, 0.1, 1000, 75, 3.0, 10, 1.5, 0.1, 0.5);
-    public static final TestMotorParameters kIntakeMotor2 =
-        new TestMotorParameters("IntakeMotor2", 1, 0.1, 1000, 75, 3.0, 10, 1.5, 0.1, 0.5);
-    /* Arm Motor */
-    public static final TestMotorParameters kArmMotor =
-        new TestMotorParameters("ArmMotor", 1, 0.1, 1000, 75, 3.0, 10, 1.5, 0.1, 0.5);
-    /* Climb Motor */
-    public static final TestMotorParameters kClimbMotor =
-        new TestMotorParameters("ClimbMotor", 1, 0.1, 1000, 75, 3.0, 10, 1.5, 0.1, 0.5);
+    // public static final TestMotorParameters kElevatorMotor1 =
+    //     new TestMotorParameters("ElevatorMotor1", 1, 0.1, 1000, 75, 74, 10, 1.5, 20, 5);
+    // public static final TestMotorParameters kElevatorMotor2 =
+    //     new TestMotorParameters("ElevatorMotor2", 2, 0.1, 1000, 75, 74, 10, 1.5, 20, 5);
+    // /* Intake Motors */
+    // public static final TestMotorParameters kIntakeMotor1 =
+    //     new TestMotorParameters("IntakeMotor1", 1, 0.1, 1000, 75, 3.0, 10, 1.5, 0.1, 0.5);
+    // public static final TestMotorParameters kIntakeMotor2 =
+    //     new TestMotorParameters("IntakeMotor2", 1, 0.1, 1000, 75, 3.0, 10, 1.5, 0.1, 0.5);
+    // /* Arm Motor */
+    // public static final TestMotorParameters kArmMotor =
+    //     new TestMotorParameters("ArmMotor", 1, 0.1, 1000, 75, 3.0, 10, 1.5, 0.1, 0.5);
+    // /* Climb Motor */
+    // public static final TestMotorParameters kClimbMotor =
+    //     new TestMotorParameters("ClimbMotor", 1, 0.1, 1000, 75, 3.0, 10, 1.5, 0.1, 0.5);
   }
 }

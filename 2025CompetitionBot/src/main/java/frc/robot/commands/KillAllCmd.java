@@ -33,6 +33,7 @@ public class KillAllCmd extends Command {
     //Hold arm and elevator at current positions
     m_elevatorSub.setTargetHeight(m_elevatorSub.getPositionMm());
     m_armSub.setTargetAngle(m_armSub.getAngle());
+    m_elevatorSub.setIntakeMotors(0.0);
   }
 
   // Called every time the scheduler runs while the command is scheduled.
