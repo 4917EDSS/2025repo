@@ -305,13 +305,13 @@ public class RobotContainer {
 
     // POV Up
     m_operatorController.povUp()
-        .whileTrue(new StartEndCommand(() -> m_climbSub.setPower(0.25), () -> m_climbSub.setPower(0.0), m_climbSub));
+        .whileTrue(new StartEndCommand(() -> m_climbSub.setPower(0.75), () -> m_climbSub.setPower(0.0), m_climbSub));
 
     // POV Right
 
     // POV Down
     m_operatorController.povDown()
-        .whileTrue(new StartEndCommand(() -> m_climbSub.setPower(-0.25), () -> m_climbSub.setPower(0.0), m_climbSub));
+        .whileTrue(new StartEndCommand(() -> m_climbSub.setPower(-0.75), () -> m_climbSub.setPower(0.0), m_climbSub));
 
     // POV Left
 
