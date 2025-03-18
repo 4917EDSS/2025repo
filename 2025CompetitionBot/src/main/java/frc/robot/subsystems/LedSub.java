@@ -6,6 +6,7 @@ package frc.robot.subsystems;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
+import java.util.Random;
 import edu.wpi.first.hal.can.CANJNI;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
@@ -21,18 +22,36 @@ public class LedSub extends SubsystemBase {
   byte[] m_prevElevatorArr = new byte[0];
   int m_prevClimbId = 0;
   byte[] m_prevClimbArr = new byte[0];
+  int counter = 0;
+  byte R;
+  byte G;
+  byte B;
+  Random rand = new Random();
 
   /** Creates a new LedSub. */
   public LedSub() {
-    byte R = 0;
-    byte G = 127;
-    byte B = 0;
+    R = 127;
+    G = 0;
+    B = 0;
     setElevatorColor(R, G, B);
-    work(R, G, B);
+    setClimbColor(B, G, R);
+    //work(R, G, B);
   }
 
   @Override
-  public void periodic() {}
+  public void periodic() {
+    // if(counter >= 50) {
+    //   //setElevatorColor(R, G, B);
+    //   byte temp = B;
+    //   B = G;
+    //   G = R;
+    //   R = temp;
+    //   counter = 0;
+    // } else {
+    //   counter += 1;
+    // }
+    // setClimbColor(R, G, B);
+  }
 
   private void work(Byte R, Byte G, Byte B) {
     setClimbColor(R, G, B);
