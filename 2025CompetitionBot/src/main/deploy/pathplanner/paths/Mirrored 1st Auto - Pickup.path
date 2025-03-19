@@ -8,24 +8,24 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 5.773026315789473,
-        "y": 2.851151315789474
+        "x": 5.897084451367182,
+        "y": 3.1791669395961373
       },
       "isLocked": false,
-      "linkedName": "Mirrored 1st Auto Score"
+      "linkedName": null
     },
     {
       "anchor": {
-        "x": 1.6741776315789472,
-        "y": 0.694
+        "x": 1.232,
+        "y": 0.982
       },
       "prevControl": {
-        "x": 1.4325689549335086,
-        "y": 0.6297719113655097
+        "x": 0.9443286200276471,
+        "y": 0.8354352994025166
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "Mirrored 1st Pickup"
+      "linkedName": null
     }
   ],
   "rotationTargets": [],
@@ -42,7 +42,7 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": -125.53612903440268
+    "rotation": 54.464
   },
   "reversed": false,
   "folder": "Archive",
