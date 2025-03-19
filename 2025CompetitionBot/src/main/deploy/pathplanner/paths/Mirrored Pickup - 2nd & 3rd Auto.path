@@ -4,12 +4,12 @@
     {
       "anchor": {
         "x": 1.6741776315789472,
-        "y": 0.694
+        "y": 0.982
       },
       "prevControl": null,
       "nextControl": {
         "x": 2.7836815236631374,
-        "y": 1.4586420332877754
+        "y": 1.7466420332877755
       },
       "isLocked": false,
       "linkedName": "Mirrored 1st Pickup"
@@ -48,7 +48,7 @@
   "folder": null,
   "idealStartingState": {
     "velocity": 0,
-    "rotation": -125.53612903440268
+    "rotation": 54.464
   },
   "useDefaultConstraints": true
 }
