@@ -34,7 +34,6 @@ public class AutoDriveCmd extends Command {
   int counter;
   double lrOffset;
   double fbOffset;
-  double fbEnd;
   boolean useOffset;
   private final DrivetrainSub m_drivetrainSub;
 
@@ -51,21 +50,19 @@ public class AutoDriveCmd extends Command {
   public void initialize() {
     if(RobotStatus.LastReefPosition().equals(ReefPosition.kL2L3Algae)
         || RobotStatus.LastReefPosition().equals(ReefPosition.kL3L4Algae)) {
-      fbOffset = -0.1;
-      fbEnd = 0.0;
+      fbOffset = 0.457;
     } else {
-      fbOffset = 0.15;
-      fbEnd = 0.49;
+      fbOffset = 0.52;
       if(RobotStatus.LastReefPosition().equals(RobotStatus.ReefPosition.kL4)) {
-        fbEnd += 0.0127; //This is half an inch in meters
+        fbOffset += 0.0127; //This is half an inch in meters
       }
     }
 
     if(useOffset) {
       if(RobotStatus.isLeft()) {
-        lrOffset = 0.17;
+        lrOffset = 0.15;
       } else {
-        lrOffset = -0.17;
+        lrOffset = -0.19;
       }
     } else {
       lrOffset = 0;
@@ -84,15 +81,25 @@ public class AutoDriveCmd extends Command {
     double totalDist = Math.sqrt((lrDist * lrDist) + (fbDist * fbDist));
     double xPower = lrDist / totalDist;
     double yPower = fbDist / totalDist;
-    double slowDown;
+    double fbSlowDown;
+    double lrSlowDown;
+
     if(fbDist > -1.5) {
-      slowDown = 6;
+      fbSlowDown = 6 / (Math.abs(fbDist) + 0.25);
     } else {
-      slowDown = 2;
+      fbSlowDown = 2;
     }
+
+    if(Math.abs(lrDist) < 0.2) {
+      lrSlowDown = 6 / (Math.abs(lrDist) + 0.25);
+    } else {
+      lrSlowDown = 2;
+    }
+
     m_drivetrainSub.setControl(
-        autoDrive.withVelocityX(-yPower * MaxSpeed / slowDown).withVelocityY(xPower * MaxSpeed / 1.5)
-            .withRotationalRate(m_visionSub.getRobotRotation() / ((lrDist * 15) + 15) * MaxAngularRate * 0.20));
+        autoDrive.withVelocityX(-yPower * MaxSpeed / fbSlowDown).withVelocityY(xPower * MaxSpeed / lrSlowDown)
+            .withRotationalRate(
+                m_visionSub.getRobotRotation() / ((m_apriltagPos.getY() * 15) + 5) * -(MaxAngularRate * 0.20)));
 
     if(m_visionSub.getTv() == 0) {
       counter++;
@@ -105,7 +112,7 @@ public class AutoDriveCmd extends Command {
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    m_drivetrainSub.applyRequest(() -> brake);
+    //m_drivetrainSub.applyRequest(() -> brake);
     m_drivetrainSub.setControl(autoDrive.withVelocityX(0).withVelocityY(0).withRotationalRate(0));
   }
 
@@ -113,7 +120,9 @@ public class AutoDriveCmd extends Command {
   @Override
   public boolean isFinished() {
 
-    if(Math.abs(fbDist) < fbEnd && Math.abs(lrDist) < 0.025) {
+    if(Math.abs(m_apriltagPos.getY()) < fbOffset + 0.05 && Math.abs(m_apriltagPos.getY()) > fbOffset - 0.05
+        && Math.abs(lrDist) < 0.05 && Math.abs(m_apriltagPos.getRotation().getDegrees()) < 5) {
+      System.out.println("Forward/backward dist: " + fbDist);
 
       return true;
     }
