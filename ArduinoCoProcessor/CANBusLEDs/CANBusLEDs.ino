@@ -5,16 +5,14 @@
 
 #include "frc_mcp2515.h"
 #include "frc_CAN.h"
-#include <FastLED.h>  // This library needs to be installed 
 
-//Adafruit_VL53L0X range_sensor = Adafruit_VL53L0X();
+// FastLED by Daniel Garcia needs to be installed from the library manager.  Tested with version 3.9.14.
+#include <FastLED.h>  
 
 // Define the CAN Bus chipo select pin and the interrupt pin
 #define CAN_CS 8
 #define CAN_INTERRUPT 2
-#define CAN_PERIOD_MS 100
 #define CAN_PACKET_SIZE 8
-#define CAN_DEVICE_API 0x123  
 #define CAN_DEVICE_ID 6       // 6 for elevator (left), 7 for climb (right) !!! UPDATE ME WHEN FLASHING !!! 
 #define NUM_LEDS 79           // Elevator (left) 79, Climb (right) 67 !!!!!! LEAVE AT 79 UNLESS YOU ACTUALLY NEED TO CHANGE THIS!!!! 
 
@@ -24,7 +22,7 @@
 
 // LED Stuff
 #define LED_PIN 3 // Using D3
-int headlights = 4;
+#define HEADLIGHT_PIN 4
 CRGB leds[NUM_LEDS];
 
 
@@ -52,29 +50,14 @@ frc::CAN frcCANDevice{CAN_DEVICE_ID, frc::CANManufacturer::kTeamUse, frc::CANDev
 // Callback function. This will be called any time a new message is received
 // Matching one of the enabled devices.
 void CANCallback(frc::CAN* can, int apiId, bool rtr, const frc::CANData& data) {
-  /*
-    Serial.print("In callback. API: ");
-    Serial.print(apiId, HEX);
-
-    Serial.print(" RTR: ");
-    Serial.print(rtr);
-
-    Serial.print(" Data: ");
-
-    for (int i = 0; i < data.length; i++) {
-      Serial.print(data.data[i], HEX);
-      Serial.print(" ");
-    }
-
-    Serial.print("\n");*/
 
   if (apiId == 0) {
     // Turn on/off headlights
     if (data.data[0] == 0) {
-      digitalWrite(headlights, LOW);
+      digitalWrite(HEADLIGHT_PIN, LOW);
 
     } else {
-      digitalWrite(headlights, HIGH);
+      digitalWrite(HEADLIGHT_PIN, HIGH);
     }
 
   } else if (apiId == 1) {
@@ -96,26 +79,12 @@ void CANCallback(frc::CAN* can, int apiId, bool rtr, const frc::CANData& data) {
 
     blinkCounter = NUM_BLINKS;
   }
-
-  // Show that the message has been received 
-  //digitalWrite(headlights, HIGH);
 }
 
 // Callback function for any messages not matching a known device.
 // This would still have flags for RTR and Extended set, its a raw ID
 void UnknownMessageCallback(uint32_t id, const frc::CANData& data) {
-    /*Serial.print("Unknown message ");
-    Serial.print(id & CAN_EFF_MASK, HEX);
 
-    Serial.print(" Data: ");
-
-    for (int i = 0; i < data.length; i++)
-    {
-      Serial.print(data.data[i], HEX);
-      Serial.print(" ");
-    }
-
-    Serial.print("\n");    */
 }
 
 
@@ -124,13 +93,13 @@ void setup() {
     Serial.begin(115200);
 
     // Define LED outputs
-    pinMode(headlights, OUTPUT);
+    pinMode(HEADLIGHT_PIN, OUTPUT);
 
     // Test headlights by cycling three times
     for (int i = 0; i < 3; i++) {
-      digitalWrite(headlights, HIGH);
+      digitalWrite(HEADLIGHT_PIN, HIGH);
       delay(100);
-      digitalWrite(headlights, LOW);
+      digitalWrite(HEADLIGHT_PIN, LOW);
       delay(100);
     }
 
