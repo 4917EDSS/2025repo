@@ -53,7 +53,7 @@ public class AutoDriveCmd extends Command {
         || RobotStatus.LastReefPosition().equals(ReefPosition.kL3L4Algae)) {
       fbOffset = 0.457;
     } else {
-      fbOffset = 0.59;
+      fbOffset = 0.52;
       if(RobotStatus.LastReefPosition().equals(RobotStatus.ReefPosition.kL4)) {
         fbOffset += 0.0127; //This is half an inch in meters
       }
@@ -86,13 +86,13 @@ public class AutoDriveCmd extends Command {
     double lrSlowDown;
 
     if(fbDist > -1.5) {
-      fbSlowDown = 6 / (Math.abs(fbDist) + 0.5);
+      fbSlowDown = 6 / (Math.abs(fbDist) + 0.25);
     } else {
       fbSlowDown = 2;
     }
 
     if(Math.abs(lrDist) < 0.2) {
-      lrSlowDown = 6 / (Math.abs(lrDist) + 0.5);
+      lrSlowDown = 6 / (Math.abs(lrDist) + 0.25);
     } else {
       lrSlowDown = 2;
     }
