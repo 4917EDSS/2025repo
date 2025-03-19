@@ -53,7 +53,7 @@ public class AutoDriveCmd extends Command {
         || RobotStatus.LastReefPosition().equals(ReefPosition.kL3L4Algae)) {
       fbOffset = 0.457;
     } else {
-      fbOffset = 0.6;
+      fbOffset = 0.59;
       if(RobotStatus.LastReefPosition().equals(RobotStatus.ReefPosition.kL4)) {
         fbOffset += 0.0127; //This is half an inch in meters
       }
@@ -85,14 +85,14 @@ public class AutoDriveCmd extends Command {
     double fbSlowDown;
     double lrSlowDown;
 
-    if(fbDist > -1.16) {
-      fbSlowDown = 6;
+    if(fbDist > -1.5) {
+      fbSlowDown = 6 / (Math.abs(fbDist) + 0.5);
     } else {
       fbSlowDown = 2;
     }
 
-    if(Math.abs(lrDist) < 0.25) {
-      lrSlowDown = 8;
+    if(Math.abs(lrDist) < 0.2) {
+      lrSlowDown = 6 / (Math.abs(lrDist) + 0.5);
     } else {
       lrSlowDown = 2;
     }
@@ -114,7 +114,7 @@ public class AutoDriveCmd extends Command {
   @Override
   public void end(boolean interrupted) {
     System.out.println("end");
-    m_drivetrainSub.applyRequest(() -> brake);
+    //m_drivetrainSub.applyRequest(() -> brake);
     m_drivetrainSub.setControl(autoDrive.withVelocityX(0).withVelocityY(0).withRotationalRate(0));
   }
 
@@ -122,8 +122,8 @@ public class AutoDriveCmd extends Command {
   @Override
   public boolean isFinished() {
 
-    if(Math.abs(m_apriltagPos.getY()) < fbOffset + 0.02 && Math.abs(m_apriltagPos.getY()) > fbOffset - 0.02
-        && Math.abs(lrDist) < 0.02 && Math.abs(m_apriltagPos.getRotation().getDegrees()) < 2) {
+    if(Math.abs(m_apriltagPos.getY()) < fbOffset + 0.05 && Math.abs(m_apriltagPos.getY()) > fbOffset - 0.05
+        && Math.abs(lrDist) < 0.05 && Math.abs(m_apriltagPos.getRotation().getDegrees()) < 5) {
       System.out.println("Forward/backward dist: " + fbDist);
 
       return true;
