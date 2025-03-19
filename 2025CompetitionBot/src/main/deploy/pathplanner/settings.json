@@ -3,9 +3,8 @@
   "robotLength": 0.912,
   "holonomicMode": true,
   "pathFolders": [
-    "Example Auto",
     "Leave Auto",
-    "Mirrored Vision Auto",
+    "Archive",
     "Vision Auto"
   ],
   "autoFolders": [],
