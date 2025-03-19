@@ -85,13 +85,13 @@ public class AutoDriveCmd extends Command {
     double lrSlowDown;
 
     if(fbDist > -1.5) {
-      fbSlowDown = 6 / (Math.abs(fbDist) + 0.25);
+      fbSlowDown = 6 / (Math.abs(fbDist) + 0.3);
     } else {
       fbSlowDown = 2;
     }
 
     if(Math.abs(lrDist) < 0.2) {
-      lrSlowDown = 6 / (Math.abs(lrDist) + 0.25);
+      lrSlowDown = 6 / (Math.abs(lrDist) + 0.3);
     } else {
       lrSlowDown = 2;
     }
