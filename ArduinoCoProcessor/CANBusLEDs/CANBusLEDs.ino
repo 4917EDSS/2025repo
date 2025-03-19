@@ -19,6 +19,9 @@
 #define NUM_BLINKS 10 // Number of blinks 
 #define LED_UPDATE_PERIOD_MS 104 // use something that isn't a multiple of the 20ms RoboRIO period to reduce conflicts with the LEDs
 
+// Uncomment this line so LED updates will only occur after an CAN Bus packet.  This removes party mode functionality.
+//#define IMMEDIATE_UPDATE
+
 
 // LED Stuff
 #define LED_PIN 3 // Using D3
@@ -66,6 +69,15 @@ void CANCallback(frc::CAN* can, int apiId, bool rtr, const frc::CANData& data) {
     rgb[0] = data.data[0];
     rgb[1] = data.data[1];
     rgb[2] = data.data[2];
+
+#ifdef IMMEDIATE_UPDATE
+    // Update all of the LED Colours
+    for (int j = 0; j < NUM_LEDS; j++) {
+      leds[j] = CRGB(rgb[0], rgb[1], rgb[2]);
+    }
+    // Display the LEDs
+    FastLED.show();   
+#endif 
 
   } else if (apiId == 2) {
     // Blink NUM_BLINKS times between [RGB] (0-2) and [RGB] (3-5)
@@ -145,6 +157,8 @@ void loop() {
 
     // Update must be called every loop in order to receive messages
     frc::CAN::Update();
+
+#ifndef IMMEDIATE_UPDATE
 
     // Only update the LED's every LED_UPDATE_PERIOD_MS. The LED write routine
     // is intensive and requires the full processor resources to make it work
@@ -230,4 +244,5 @@ void loop() {
         FastLED.show();
       }
     }
+#endif
 }
