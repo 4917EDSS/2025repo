@@ -19,6 +19,8 @@ import frc.robot.utils.TestableSubsystem;
 public class ClimbSub extends TestableSubsystem {
   private static Logger m_logger = Logger.getLogger(ClimbSub.class.getName());
 
+  private final LedSub m_ledSub;
+
   private final TalonFX m_climbMotor = new TalonFX(Constants.CanIds.kClimbMotor);
   private final DigitalInput m_climbInLimit = new DigitalInput(Constants.DioIds.kClimbInLimitSwitch);
   private final DigitalInput m_climbOutLimit = new DigitalInput(Constants.DioIds.kClimbOutLimitSwitch);
@@ -26,7 +28,9 @@ public class ClimbSub extends TestableSubsystem {
   private final DigitalInput m_climbLatchBottomLimit = new DigitalInput(Constants.DioIds.kClimbLatchBottomSwitch);
 
   /** Creates a new ClimbSub. */
-  public ClimbSub() {
+  public ClimbSub(LedSub ledSub) {
+    m_ledSub = ledSub;
+
     TalonFXConfigurator talonFxConfiguarator = m_climbMotor.getConfigurator();
 
     // This is how you set a current limit inside the motor (vs on the input power supply)
@@ -59,6 +63,18 @@ public class ClimbSub extends TestableSubsystem {
     } else if(isAtInLimit() && (m_climbMotor.get() < 0)) {
       setPower(0);
     }
+
+    if(isTopLatched() && isBottomLatched()) {
+      m_ledSub.setElevatorColor((byte) 127, (byte) 127, (byte) 127);
+      m_ledSub.setClimbColor((byte) 127, (byte) 127, (byte) 127);
+    } else if(isBottomLatched() && !isTopLatched()) {
+      m_ledSub.setElevatorColor((byte) 127, (byte) 0, (byte) 0);
+      m_ledSub.setClimbColor((byte) 127, (byte) 0, (byte) 0);
+    } else if(isTopLatched() && !isBottomLatched()) {
+      m_ledSub.setElevatorColor((byte) 0, (byte) 0, (byte) 127);
+      m_ledSub.setClimbColor((byte) 0, (byte) 0, (byte) 127);
+    }
+
     // Add motor and limit switche(s) to Smartdashboard
     SmartDashboard.putNumber("Cl Angle", getPosition());
     SmartDashboard.putBoolean("Cl In Limit", isAtInLimit());

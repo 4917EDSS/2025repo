@@ -75,7 +75,7 @@ public class RobotContainer {
   private final LedSub m_ledSub = new LedSub();
   private final CanSub m_canSub = new CanSub(Constants.CanIds.kElevatorCustomCanBoard, m_ledSub);
   private final ArmSub m_armSub = new ArmSub(m_canSub);
-  private final ClimbSub m_climbSub = new ClimbSub();
+  private final ClimbSub m_climbSub = new ClimbSub(m_ledSub);
   private final DrivetrainSub m_drivetrainSub = TunerConstants.createDrivetrain();
   private final ElevatorSub m_elevatorSub = new ElevatorSub();
   private final VisionSub m_visionSub;
@@ -212,10 +212,16 @@ public class RobotContainer {
             new InstantCommand(() -> RobotStatus.l3L4Algae())));
 
     // L2
-    m_driverController.L2().onTrue(new InstantCommand(() -> RobotStatus.setLeft()));
+    m_driverController.L2()
+        .onTrue(new ParallelCommandGroup((new InstantCommand(() -> RobotStatus.setLeft())),
+            new InstantCommand(() -> m_ledSub.setElevatorColor((byte) 70, (byte) 10, (byte) 127)),
+            new InstantCommand(() -> m_ledSub.setClimbColor((byte) 70, (byte) 10, (byte) 127))));
 
     // R2
-    m_driverController.R2().onTrue(new InstantCommand(() -> RobotStatus.setRight()));
+    m_driverController.R2()
+        .onTrue(new ParallelCommandGroup((new InstantCommand(() -> RobotStatus.setRight())),
+            new InstantCommand(() -> m_ledSub.setElevatorColor((byte) 127, (byte) 127, (byte) 0)),
+            new InstantCommand(() -> m_ledSub.setClimbColor((byte) 127, (byte) 127, (byte) 0))));
 
     // POV Up
     m_driverController.povUp().whileTrue(new ClimbDeployCmd(m_climbSub));
