@@ -8,24 +8,24 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 1.5321292891790996,
-        "y": 2.3787349720719706
+        "x": 2.210791526627639,
+        "y": 1.7742849243962258
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 1.6741776315789472,
-        "y": 0.694
+        "x": 1.232,
+        "y": 0.982
       },
       "prevControl": {
-        "x": 2.656781724244345,
-        "y": 1.8271430219508122
+        "x": 2.2077248541762917,
+        "y": 1.7375319652960872
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "Mirrored 1st Pickup"
+      "linkedName": null
     }
   ],
   "rotationTargets": [],
@@ -42,10 +42,10 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": -125.53612903440268
+    "rotation": 54.464
   },
   "reversed": false,
-  "folder": null,
+  "folder": "Archive",
   "idealStartingState": {
     "velocity": 0,
     "rotation": 56.72560976899345

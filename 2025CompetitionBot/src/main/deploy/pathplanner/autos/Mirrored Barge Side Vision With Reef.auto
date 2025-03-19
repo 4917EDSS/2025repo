@@ -7,7 +7,7 @@
         {
           "type": "named",
           "data": {
-            "name": "Set Right"
+            "name": "Set Left"
           }
         },
         {
@@ -17,7 +17,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "Start - 1st Auto"
+                  "pathName": "Mirrored Start- 1st Auto"
                 }
               },
               {
@@ -38,7 +38,7 @@
         {
           "type": "named",
           "data": {
-            "name": "Set Left"
+            "name": "Set Right"
           }
         },
         {
@@ -48,7 +48,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "1st Score - Pickup"
+                  "pathName": "Mirrored 1st Auto - Pickup"
                 }
               },
               {
@@ -63,7 +63,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Pickup - 2nd Auto"
+            "pathName": "Mirrored Pickup - 2nd Auto"
           }
         },
         {
@@ -79,7 +79,44 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "2nd Score - Pickup"
+                  "pathName": "Mirrored 2nd Auto - Pickup"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "AutoGrabCoralAutoGrp"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Set Left"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Mirrored Pickup - 3rd Auto"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "AutoCoralScoreL4Grp"
+          }
+        },
+        {
+          "type": "parallel",
+          "data": {
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "Mirrored 3rd Auto - Pickup"
                 }
               },
               {
@@ -100,44 +137,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Pickup - 3rd Auto"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "AutoCoralScoreL4Grp"
-          }
-        },
-        {
-          "type": "parallel",
-          "data": {
-            "commands": [
-              {
-                "type": "path",
-                "data": {
-                  "pathName": "3rd Score - Pickup"
-                }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "AutoGrabCoralAutoGrp"
-                }
-              }
-            ]
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "Set Left"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "4th auto pickup"
+            "pathName": "Mirrored 4th auto pickup"
           }
         },
         {

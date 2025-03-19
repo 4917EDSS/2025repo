@@ -9,9 +9,9 @@ import frc.robot.subsystems.ElevatorSub;
 // NOTE: Consider using this command inline, rather than writing a subclass. For more
 // information, see:
 // https://docs.wpilib.org/en/stable/docs/software/commandbased/convenience-features.html
-public class AutoAlgaeRemovalL2L3ArmElGrp extends SequentialCommandGroup {
+public class AlgaePrepL2L3Grp extends SequentialCommandGroup {
   /** Creates a new AlgaeRemovalL2L3Grp. */
-  public AutoAlgaeRemovalL2L3ArmElGrp(ArmSub armSub, ElevatorSub elevatorSub) {
+  public AlgaePrepL2L3Grp(ArmSub armSub, ElevatorSub elevatorSub) {
     // Add your commands in the addCommands() call, e.g.
     // addCommands(new FooCommand(), new BarCommand());
     addCommands(

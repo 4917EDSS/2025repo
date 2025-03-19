@@ -4,6 +4,7 @@
 
 package frc.robot.commands;
 
+
 import edu.wpi.first.wpilibj2.command.ScheduleCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.Constants;
@@ -13,23 +14,25 @@ import frc.robot.subsystems.DrivetrainSub;
 import frc.robot.subsystems.ElevatorSub;
 import frc.robot.subsystems.VisionSub;
 
+
 // NOTE: Consider using this command inline, rather than writing a subclass. For more
 // information, see:
 // https://docs.wpilib.org/en/stable/docs/software/commandbased/convenience-features.html
-public class AutoCoralScoreL2Grp extends SequentialCommandGroup {
-  /** Creates a new AutoCoralScoreL2Grp. */
-  public AutoCoralScoreL2Grp(ArmSub armSub, CanSub canSub, DrivetrainSub drivetrainSub,
-      ElevatorSub elevatorSub, VisionSub visionSub) {
-
+public class AlgaeRemovalL3L4Grp extends SequentialCommandGroup {
+  /** Creates a new AlgaeRemovalL3L4Grp. */
+  public AlgaeRemovalL3L4Grp(ArmSub armSub, CanSub canSub, DrivetrainSub drivetrainSub,
+      ElevatorSub elevatorSub,
+      VisionSub visionSub) {
     // Add your commands in the addCommands() call, e.g.
     // addCommands(new FooCommand(), new BarCommand());
     addCommands(
-        new AutoCoralScoreL2ArmElGrp(armSub, elevatorSub), //Move to pre score position
-        new AutoDriveCmd(visionSub, drivetrainSub, true), //Drive to score location
-        new MoveElArmDeadlineGrp(Constants.Elevator.kL2PostScoreHeight, Constants.Arm.kL2PostScoreAngle, armSub,
-            elevatorSub), //Move to post score location (score)
-        new BackUpAfterScoringCmd(drivetrainSub), //Back up
-        new ScheduleCommand(new AutoGrabCoralGrp(armSub, canSub, elevatorSub)) //Grab coral
-    );
+        new MoveElArmGrp(Constants.Elevator.kL3L4AlgaeRemovalPrepHeight, Constants.Arm.kL3L4AlgaeRemovalPrepAngle,
+            armSub, elevatorSub), // Move elevator and arm to algae removal location
+        new AutoDriveCmd(visionSub, drivetrainSub, false), // Drive to vision target
+        new MoveElArmGrp(Constants.Elevator.kL3L4AlgaeRemovalPostHeight, Constants.Arm.kL3L4AlgaeRemovalPostAngle,
+            armSub, elevatorSub), // Remove algae
+        new BackUpAfterScoringCmd(drivetrainSub), // Backup
+        new ScheduleCommand(new GrabCoralTeleopGrp(armSub, canSub, elevatorSub)));
+
   }
 }

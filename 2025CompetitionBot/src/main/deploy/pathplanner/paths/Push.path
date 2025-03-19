@@ -3,28 +3,44 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 6.956892123287671,
-        "y": 7.323137842465753
+        "x": 6.957,
+        "y": 7.232
       },
       "prevControl": null,
       "nextControl": {
-        "x": 6.463431394615509,
-        "y": 7.327169208733531
+        "x": 7.437885836962286,
+        "y": 7.2314988416111925
       },
       "isLocked": false,
-      "linkedName": "Start"
+      "linkedName": null
     },
     {
       "anchor": {
-        "x": 6.5,
-        "y": 6.166
+        "x": 7.624,
+        "y": 7.232
       },
       "prevControl": {
-        "x": 6.975778902139547,
-        "y": 6.164373846731603
+        "x": 7.873991762485884,
+        "y": 7.229970544604856
+      },
+      "nextControl": {
+        "x": 7.374008237514115,
+        "y": 7.234029455395144
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 6.119,
+        "y": 6.623
+      },
+      "prevControl": {
+        "x": 6.402216718727811,
+        "y": 7.178101424416574
       },
       "nextControl": null,
-      "isLocked": false,
+      "isLocked": true,
       "linkedName": null
     }
   ],
@@ -42,10 +58,10 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 180.0
+    "rotation": -119.99999999999999
   },
   "reversed": false,
-  "folder": "Leave Auto",
+  "folder": "Vision Auto",
   "idealStartingState": {
     "velocity": 0,
     "rotation": -119.99999999999999
