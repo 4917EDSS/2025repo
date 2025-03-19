@@ -5,7 +5,6 @@
 
 #include "frc_mcp2515.h"
 #include "frc_CAN.h"
-#include "Adafruit_VL53L0X.h"
 #include <FastLED.h>  // This library needs to be installed 
 
 //Adafruit_VL53L0X range_sensor = Adafruit_VL53L0X();
@@ -20,7 +19,7 @@
 #define NUM_LEDS 79           // Elevator (left) 79, Climb (right) 67 !!!!!! LEAVE AT 79 UNLESS YOU ACTUALLY NEED TO CHANGE THIS!!!! 
 
 #define NUM_BLINKS 10 // Number of blinks 
-#define BLINK_DELAY 100 // Period of each blink
+#define LED_UPDATE_PERIOD_MS 104 // use something that isn't a multiple of the 20ms RoboRIO period to reduce conflicts with the LEDs
 
 
 // LED Stuff
@@ -35,8 +34,8 @@ CRGB leds[NUM_LEDS];
 // Global variables
 unsigned long long lastSendMs = 0; // track how long since we last sent a CAN packet
 unsigned int rgb[] = {0,0,0}; // Define the last command that was set by the CANbus communications
-unsigned int rgbBlink[] = {0,0,0,0,0,0}; // Blink on and off rgb values
-int blinkCounter = 0; // Number of blinks 
+unsigned int rgbBlink[] = {255,255,255,0,0,0}; // Blink on and off rgb values
+int blinkCounter = NUM_BLINKS; // Number of blinks 
 
 // Create an MCP2515 device. Only need to create 1 of these
 frc::MCP2515 mcp2515{CAN_CS};
@@ -70,6 +69,7 @@ void CANCallback(frc::CAN* can, int apiId, bool rtr, const frc::CANData& data) {
     Serial.print("\n");*/
 
   if (apiId == 0) {
+    // Turn on/off headlights
     if (data.data[0] == 0) {
       digitalWrite(headlights, LOW);
 
@@ -78,16 +78,15 @@ void CANCallback(frc::CAN* can, int apiId, bool rtr, const frc::CANData& data) {
     }
 
   } else if (apiId == 1) {
-    // Print the first data element 
-    //Serial.println(data.data[0], HEX);
-    // Define the last command with this new data
-    //lastCommand = data.data[0];
+    // Set all the LED's to constant color (if 0,0,0 enter party mode)
 
     rgb[0] = data.data[0];
     rgb[1] = data.data[1];
     rgb[2] = data.data[2];
 
   } else if (apiId == 2) {
+    // Blink NUM_BLINKS times between [RGB] (0-2) and [RGB] (3-5)
+
     rgbBlink[0] = data.data[0];
     rgbBlink[1] = data.data[1];
     rgbBlink[2] = data.data[2];
@@ -156,7 +155,8 @@ void setup() {
     
     // Set up FRC CAN to be able to use the CAN Impl and callbacks
     // Last parameter can be set to nullptr if unknown messages should be skipped
-    frc::CAN::SetCANImpl(&mcp2515, CAN_INTERRUPT, CANCallback, UnknownMessageCallback);
+    //frc::CAN::SetCANImpl(&mcp2515, CAN_INTERRUPT, CANCallback, UnknownMessageCallback);
+    frc::CAN::SetCANImpl(&mcp2515, CAN_INTERRUPT, CANCallback, nullptr);
 
     // All CAN Devices must be added to the read list. Otherwise they will not be handled correctly.
     frcCANDevice.AddToReadList();
@@ -171,26 +171,31 @@ void loop() {
     static int partyState = 0;
     static unsigned long lastMillis = 0;
     static int i = 0;
+    int j = 0;
     
 
     // Update must be called every loop in order to receive messages
     frc::CAN::Update();
 
-    // Add new LED commands here. Make sure to inform Software when new commands have been added 
+    // Only update the LED's every LED_UPDATE_PERIOD_MS. The LED write routine
+    // is intensive and requires the full processor resources to make it work
+    // and long LED chains effectively cause commands to be missed so we'll 
+    // reduce the number of updates so we get most of the packets. It is therefore
+    // preferred if the RoboRIO continuously updates at 20ms intervals.
+    if ((millis() - lastMillis) > LED_UPDATE_PERIOD_MS) {
+      lastMillis = millis();
 
-    if (blinkCounter > 0) {
-      if ((millis() - lastMillis) > BLINK_DELAY) {
-        lastMillis = millis();
+      if (blinkCounter > 0) {
         if ((blinkCounter % 2) == 0) {
           // Update all of the LED Colours
-          for (int i = 0; i < NUM_LEDS; i++) {
-            leds[i] = CRGB(rgbBlink[0], rgbBlink[1], rgbBlink[2]);
+          for (j = 0; j < NUM_LEDS; j++) {
+            leds[j] = CRGB(rgbBlink[0], rgbBlink[1], rgbBlink[2]);
           }
           
         } else {
           // Update all of the LED Colours
-          for (int i = 0; i < NUM_LEDS; i++) {
-            leds[i] = CRGB(rgbBlink[3], rgbBlink[4], rgbBlink[5]);
+          for (j = 0; j < NUM_LEDS; j++) {
+            leds[j] = CRGB(rgbBlink[3], rgbBlink[4], rgbBlink[5]);
           }
         }
         
@@ -198,20 +203,19 @@ void loop() {
         FastLED.show();
 
         blinkCounter--;      
-      }
+      
 
-    } else if ((rgb[0] == 0) && (rgb[1] == 0) && (rgb[2] == 0)) { // Party mode if all values are 0
-      if ((millis() - lastMillis) > 25) {
-        lastMillis = millis();
-
+      } else if ((rgb[0] == 0) && (rgb[1] == 0) && (rgb[2] == 0)) { // Party mode if all values are 0
+      
         switch (partyState) {
           case 0:
 
             leds[i] = CRGB(0, 255, 0);
-            FastLED.show();
             i++;
+            FastLED.show();
             
-            if (i == NUM_LEDS) {
+            
+            if (i >= NUM_LEDS) {
               partyState = 1;
               i = 0;
             }
@@ -220,10 +224,11 @@ void loop() {
           case 1:
           
             leds[i] = CRGB(255, 0, 0);
-            FastLED.show();
             i++;
+            FastLED.show();
             
-            if (i == NUM_LEDS) {
+            
+            if (i >= NUM_LEDS) {
               partyState = 2;
               i = 0;
             }
@@ -232,12 +237,11 @@ void loop() {
 
           case 2:
 
-
             leds[i] = CRGB(0, 0, 255);
-            FastLED.show();
             i++;
+            FastLED.show();
 
-            if (i == NUM_LEDS) {
+            if (i >= NUM_LEDS) {
               partyState = 0;
               i = 0;
             }
@@ -246,14 +250,15 @@ void loop() {
           default:
             partyState = 0;
         }
-      }
+      
 
-    } else { 
-      // Update all of the LED Colours
-      for (int i = 0; i < NUM_LEDS; i++) {
-        leds[i] = CRGB(rgb[0], rgb[1], rgb[2]);
+      } else { 
+        // Update all of the LED Colours
+        for (j = 0; j < NUM_LEDS; j++) {
+          leds[j] = CRGB(rgb[0], rgb[1], rgb[2]);
+        }
+        // Display the LEDs
+        FastLED.show();
       }
-      // Display the LEDs
-      FastLED.show();
     }
 }
