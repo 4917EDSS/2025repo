@@ -27,7 +27,7 @@ public class AutoDriveCmd extends Command {
   private final VisionSub m_visionSub;
   private final SwerveRequest.RobotCentric autoDrive = new SwerveRequest.RobotCentric()
       .withDriveRequestType(DriveRequestType.OpenLoopVoltage);
-  private final SwerveRequest.SwerveDriveBrake brake = new SwerveRequest.SwerveDriveBrake();
+  //private final SwerveRequest.SwerveDriveBrake brake = new SwerveRequest.SwerveDriveBrake();
   Pose2d m_apriltagPos;
   double lrDist;
   double fbDist;
