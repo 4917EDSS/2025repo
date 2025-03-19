@@ -7,13 +7,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Start - 1st Auto"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "AutoCoralScoreL4Grp"
+            "pathName": "Push"
           }
         }
       ]
