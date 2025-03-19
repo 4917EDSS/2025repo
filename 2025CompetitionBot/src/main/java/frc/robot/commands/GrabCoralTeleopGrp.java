@@ -4,7 +4,7 @@
 
 package frc.robot.commands;
 
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
@@ -16,9 +16,9 @@ import frc.robot.subsystems.ElevatorSub;
 // NOTE: Consider using this command inline, rather than writing a subclass. For more
 // information, see:
 // https://docs.wpilib.org/en/stable/docs/software/commandbased/convenience-features.html
-public class AutoGrabCoralAutoGrp extends SequentialCommandGroup {
+public class GrabCoralTeleopGrp extends SequentialCommandGroup {
   /** Creates a new GrabCoralGrp. */
-  public AutoGrabCoralAutoGrp(ArmSub armSub, CanSub canSub, ElevatorSub elevatorSub) {
+  public GrabCoralTeleopGrp(ArmSub armSub, CanSub canSub, ElevatorSub elevatorSub) {
     // Add your commands in the addCommands() call, e.g.
     // addCommands(new FooCommand(), new BarCommand());
     addCommands(
@@ -26,7 +26,15 @@ public class AutoGrabCoralAutoGrp extends SequentialCommandGroup {
             elevatorSub), //Get ready to grab coral
         new InstantCommand(() -> elevatorSub.setIntakeMotors(1.0)),
         new WaitForCoralPresentCmd(canSub),
+        new WaitCommand(0.1),
         new MoveElArmGrp(Constants.Elevator.kCoralLoadedHeight, Constants.Arm.kMinArmAngle, armSub, elevatorSub),
-        new InstantCommand(() -> elevatorSub.setIntakeMotors(0)));
+        new WaitCommand(0.1),
+        new InstantCommand(() -> elevatorSub.setIntakeMotors(0.0)),
+        new MoveElArmGrp(Constants.Elevator.kDangerZoneBottom, Constants.Arm.kMinArmAngle, armSub, elevatorSub),
+        new ConditionalCommand(
+            new MoveElArmGrp(Constants.Elevator.kCoralLoadedHeight, Constants.Arm.kMinArmAngle, armSub, elevatorSub),
+            new InstantCommand(), () -> canSub.isCoralPresent()),
+        new MoveElArmGrp(Constants.Elevator.kCoralGrabbableHeight, Constants.Arm.kMaxArmAngle, armSub,
+            elevatorSub));
   }
 }

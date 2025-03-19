@@ -22,14 +22,14 @@ import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandPS4Controller;
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.commands.ArmMoveWithJoystickCmd;
-import frc.robot.commands.AutoAlgaeRemovalL2L3Grp;
-import frc.robot.commands.AutoAlgaeRemovalL3L4Grp;
-import frc.robot.commands.AutoCoralScoreL2Grp;
-import frc.robot.commands.AutoCoralScoreL3Grp;
-import frc.robot.commands.AutoCoralScoreL4Grp;
+import frc.robot.commands.AlgaeRemovalL2L3Grp;
+import frc.robot.commands.AlgaeRemovalL3L4Grp;
+import frc.robot.commands.CoralScoreL2Grp;
+import frc.robot.commands.CoralScoreL3Grp;
+import frc.robot.commands.CoralScoreL4Grp;
 import frc.robot.commands.AutoDriveCmd;
-import frc.robot.commands.AutoGrabCoralAutoGrp;
-import frc.robot.commands.AutoGrabCoralGrp;
+import frc.robot.commands.GrabCoralAutoGrp;
+import frc.robot.commands.GrabCoralTeleopGrp;
 import frc.robot.commands.ClimbDeployCmd;
 import frc.robot.commands.ClimbRetractCmd;
 import frc.robot.commands.DoNothingGrp;
@@ -141,19 +141,19 @@ public class RobotContainer {
     //     new BackUpAfterScoringCmd(m_drivetrainSub));
 
     NamedCommands.registerCommand("AutoCoralScoreL2Grp",
-        new AutoCoralScoreL2Grp(m_armSub, m_canSub, m_drivetrainSub, m_elevatorSub, m_visionSub));
+        new CoralScoreL2Grp(m_armSub, m_canSub, m_drivetrainSub, m_elevatorSub, m_visionSub));
 
     NamedCommands.registerCommand("AutoCoralScoreL3Grp",
-        new AutoCoralScoreL3Grp(m_armSub, m_canSub, m_drivetrainSub, m_elevatorSub, m_visionSub));
+        new CoralScoreL3Grp(m_armSub, m_canSub, m_drivetrainSub, m_elevatorSub, m_visionSub));
 
     NamedCommands.registerCommand("AutoCoralScoreL4Grp",
-        new AutoCoralScoreL4Grp(m_armSub, m_canSub, m_drivetrainSub, m_elevatorSub, m_visionSub, true));
+        new CoralScoreL4Grp(m_armSub, m_canSub, m_drivetrainSub, m_elevatorSub, m_visionSub, true));
 
     NamedCommands.registerCommand("AutoGrabCoralGrp",
-        new AutoGrabCoralGrp(m_armSub, m_canSub, m_elevatorSub));
+        new GrabCoralTeleopGrp(m_armSub, m_canSub, m_elevatorSub));
 
     NamedCommands.registerCommand("AutoGrabCoralAutoGrp",
-        new AutoGrabCoralAutoGrp(m_armSub, m_canSub, m_elevatorSub));
+        new GrabCoralAutoGrp(m_armSub, m_canSub, m_elevatorSub));
 
     NamedCommands.registerCommand("AutoDriveCmd",
         new AutoDriveCmd(m_visionSub, m_drivetrainSub, true));
@@ -179,36 +179,36 @@ public class RobotContainer {
 
     // Square
 
-    m_driverController.square().onTrue(new AutoGrabCoralGrp(m_armSub, m_canSub, m_elevatorSub));//.onTrue(new AutoGrabCoralGrp(m_armSub, m_canSub, m_elevatorSub));//
+    m_driverController.square().onTrue(new GrabCoralTeleopGrp(m_armSub, m_canSub, m_elevatorSub));//.onTrue(new AutoGrabCoralGrp(m_armSub, m_canSub, m_elevatorSub));//
 
 
     // Cross
     m_driverController.cross()
         .onTrue(new ParallelCommandGroup(
-            new AutoCoralScoreL2Grp(m_armSub, m_canSub, m_drivetrainSub, m_elevatorSub, m_visionSub),
+            new CoralScoreL2Grp(m_armSub, m_canSub, m_drivetrainSub, m_elevatorSub, m_visionSub),
             new InstantCommand(() -> RobotStatus.l2())));
 
     // Circle
     m_driverController.circle()
         .onTrue(new ParallelCommandGroup(
-            new AutoCoralScoreL3Grp(m_armSub, m_canSub, m_drivetrainSub, m_elevatorSub, m_visionSub),
+            new CoralScoreL3Grp(m_armSub, m_canSub, m_drivetrainSub, m_elevatorSub, m_visionSub),
             new InstantCommand(() -> RobotStatus.l3())));
 
     // Triangle
     m_driverController.triangle()
         .onTrue(new ParallelCommandGroup(
-            new AutoCoralScoreL4Grp(m_armSub, m_canSub, m_drivetrainSub, m_elevatorSub, m_visionSub),
+            new CoralScoreL4Grp(m_armSub, m_canSub, m_drivetrainSub, m_elevatorSub, m_visionSub),
             new InstantCommand(() -> RobotStatus.l4())));
     // L1
     m_driverController.L1()
         .onTrue(new ParallelCommandGroup(
-            new AutoAlgaeRemovalL2L3Grp(m_armSub, m_canSub, m_drivetrainSub, m_elevatorSub, m_visionSub),
+            new AlgaeRemovalL2L3Grp(m_armSub, m_canSub, m_drivetrainSub, m_elevatorSub, m_visionSub),
             new InstantCommand(() -> RobotStatus.l2L3Algae())));
 
     // R1
     m_driverController.R1()
         .onTrue(new ParallelCommandGroup(
-            new AutoAlgaeRemovalL3L4Grp(m_armSub, m_canSub, m_drivetrainSub, m_elevatorSub, m_visionSub),
+            new AlgaeRemovalL3L4Grp(m_armSub, m_canSub, m_drivetrainSub, m_elevatorSub, m_visionSub),
             new InstantCommand(() -> RobotStatus.l3L4Algae())));
 
     // L2
@@ -267,7 +267,7 @@ public class RobotContainer {
     // Operator Controller Bindings /////////////////////////////////////////////////////////////////////////////////////////////
 
     // Square
-    m_operatorController.square().onTrue(new AutoGrabCoralGrp(m_armSub, m_canSub, m_elevatorSub));
+    m_operatorController.square().onTrue(new GrabCoralTeleopGrp(m_armSub, m_canSub, m_elevatorSub));
 
     // Cross
     m_operatorController.cross().onTrue(new ParallelCommandGroup(

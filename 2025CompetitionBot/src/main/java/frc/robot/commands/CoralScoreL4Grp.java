@@ -18,14 +18,14 @@ import frc.robot.subsystems.VisionSub;
 // NOTE: Consider using this command inline, rather than writing a subclass. For more
 // information, see:
 // https://docs.wpilib.org/en/stable/docs/software/commandbased/convenience-features.html
-public class AutoCoralScoreL4Grp extends SequentialCommandGroup {
-  public AutoCoralScoreL4Grp(ArmSub armSub, CanSub canSub, DrivetrainSub drivetrainSub,
+public class CoralScoreL4Grp extends SequentialCommandGroup {
+  public CoralScoreL4Grp(ArmSub armSub, CanSub canSub, DrivetrainSub drivetrainSub,
       ElevatorSub elevatorSub, VisionSub visionSub) {
     this(armSub, canSub, drivetrainSub, elevatorSub, visionSub, false);
   }
 
   /** Creates a new AutoCoralScoreL4Grp. */
-  public AutoCoralScoreL4Grp(ArmSub armSub, CanSub canSub, DrivetrainSub drivetrainSub,
+  public CoralScoreL4Grp(ArmSub armSub, CanSub canSub, DrivetrainSub drivetrainSub,
       ElevatorSub elevatorSub, VisionSub visionSub, boolean forauto) {
     // Add your commands in the addCommands() call, e.g.
     // addCommands(new FooCommand(), new BarCommand());
@@ -59,7 +59,7 @@ public class AutoCoralScoreL4Grp extends SequentialCommandGroup {
           new MoveElArmDeadlineGrp(Constants.Elevator.kL4PostScoreHeight, Constants.Arm.kL4PostScoreAngle, armSub,
               elevatorSub), //Move to post score location (score)
           new BackUpAfterScoringCmd(drivetrainSub), //Back up
-          new ScheduleCommand(new AutoGrabCoralGrp(armSub, canSub, elevatorSub)) //Grab coral
+          new ScheduleCommand(new GrabCoralTeleopGrp(armSub, canSub, elevatorSub)) //Grab coral
 
       );
     }

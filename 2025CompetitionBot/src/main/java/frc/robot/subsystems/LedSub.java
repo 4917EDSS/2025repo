@@ -38,12 +38,12 @@ public class LedSub extends SubsystemBase {
     setClimbColor(R, G, B);
   }
 
-  private void turnOnHeadlights() {
+  public void turnOnHeadlights() {
     leftHeadLight(true);
     rightHeadLight(true);
   }
 
-  private void turnOffHeadlights() {
+  public void turnOffHeadlights() {
     leftHeadLight(false);
     rightHeadLight(false);
   }
