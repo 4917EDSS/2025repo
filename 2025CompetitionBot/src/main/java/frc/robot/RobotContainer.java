@@ -22,14 +22,14 @@ import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandPS4Controller;
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.commands.ArmMoveWithJoystickCmd;
-import frc.robot.commands.AutoAlgaeRemovalL2L3Grp;
-import frc.robot.commands.AutoAlgaeRemovalL3L4Grp;
-import frc.robot.commands.AutoCoralScoreL2Grp;
-import frc.robot.commands.AutoCoralScoreL3Grp;
-import frc.robot.commands.AutoCoralScoreL4Grp;
+import frc.robot.commands.AlgaeRemovalL2L3Grp;
+import frc.robot.commands.AlgaeRemovalL3L4Grp;
+import frc.robot.commands.CoralScoreL2Grp;
+import frc.robot.commands.CoralScoreL3Grp;
+import frc.robot.commands.CoralScoreL4Grp;
 import frc.robot.commands.AutoDriveCmd;
-import frc.robot.commands.AutoGrabCoralAutoGrp;
-import frc.robot.commands.AutoGrabCoralGrp;
+import frc.robot.commands.GrabCoralAutoGrp;
+import frc.robot.commands.GrabCoralTeleopGrp;
 import frc.robot.commands.ClimbDeployCmd;
 import frc.robot.commands.ClimbRetractCmd;
 import frc.robot.commands.DoNothingGrp;
@@ -75,7 +75,7 @@ public class RobotContainer {
   private final LedSub m_ledSub = new LedSub();
   private final CanSub m_canSub = new CanSub(Constants.CanIds.kElevatorCustomCanBoard, m_ledSub);
   private final ArmSub m_armSub = new ArmSub(m_canSub);
-  private final ClimbSub m_climbSub = new ClimbSub();
+  private final ClimbSub m_climbSub = new ClimbSub(m_ledSub);
   private final DrivetrainSub m_drivetrainSub = TunerConstants.createDrivetrain();
   private final ElevatorSub m_elevatorSub = new ElevatorSub();
   private final VisionSub m_visionSub;
@@ -141,19 +141,19 @@ public class RobotContainer {
     //     new BackUpAfterScoringCmd(m_drivetrainSub));
 
     NamedCommands.registerCommand("AutoCoralScoreL2Grp",
-        new AutoCoralScoreL2Grp(m_armSub, m_canSub, m_drivetrainSub, m_elevatorSub, m_visionSub));
+        new CoralScoreL2Grp(m_armSub, m_canSub, m_drivetrainSub, m_elevatorSub, m_visionSub));
 
     NamedCommands.registerCommand("AutoCoralScoreL3Grp",
-        new AutoCoralScoreL3Grp(m_armSub, m_canSub, m_drivetrainSub, m_elevatorSub, m_visionSub));
+        new CoralScoreL3Grp(m_armSub, m_canSub, m_drivetrainSub, m_elevatorSub, m_visionSub));
 
     NamedCommands.registerCommand("AutoCoralScoreL4Grp",
-        new AutoCoralScoreL4Grp(m_armSub, m_canSub, m_drivetrainSub, m_elevatorSub, m_visionSub, true));
+        new CoralScoreL4Grp(m_armSub, m_canSub, m_drivetrainSub, m_elevatorSub, m_visionSub, true));
 
     NamedCommands.registerCommand("AutoGrabCoralGrp",
-        new AutoGrabCoralGrp(m_armSub, m_canSub, m_elevatorSub));
+        new GrabCoralTeleopGrp(m_armSub, m_canSub, m_elevatorSub));
 
     NamedCommands.registerCommand("AutoGrabCoralAutoGrp",
-        new AutoGrabCoralAutoGrp(m_armSub, m_canSub, m_elevatorSub));
+        new GrabCoralAutoGrp(m_armSub, m_canSub, m_elevatorSub));
 
     NamedCommands.registerCommand("AutoDriveCmd",
         new AutoDriveCmd(m_visionSub, m_drivetrainSub, true));
@@ -179,52 +179,58 @@ public class RobotContainer {
 
     // Square
 
-    m_driverController.square().onTrue(new AutoGrabCoralGrp(m_armSub, m_canSub, m_elevatorSub));//.onTrue(new AutoGrabCoralGrp(m_armSub, m_canSub, m_elevatorSub));//
+    m_driverController.square().onTrue(new GrabCoralTeleopGrp(m_armSub, m_canSub, m_elevatorSub));//.onTrue(new AutoGrabCoralGrp(m_armSub, m_canSub, m_elevatorSub));//
 
 
     // Cross
     m_driverController.cross()
         .onTrue(new ParallelCommandGroup(
-            new AutoCoralScoreL2Grp(m_armSub, m_canSub, m_drivetrainSub, m_elevatorSub, m_visionSub),
+            new CoralScoreL2Grp(m_armSub, m_canSub, m_drivetrainSub, m_elevatorSub, m_visionSub),
             new InstantCommand(() -> RobotStatus.l2())));
 
     // Circle
     m_driverController.circle()
         .onTrue(new ParallelCommandGroup(
-            new AutoCoralScoreL3Grp(m_armSub, m_canSub, m_drivetrainSub, m_elevatorSub, m_visionSub),
+            new CoralScoreL3Grp(m_armSub, m_canSub, m_drivetrainSub, m_elevatorSub, m_visionSub),
             new InstantCommand(() -> RobotStatus.l3())));
 
     // Triangle
     m_driverController.triangle()
         .onTrue(new ParallelCommandGroup(
-            new AutoCoralScoreL4Grp(m_armSub, m_canSub, m_drivetrainSub, m_elevatorSub, m_visionSub),
+            new CoralScoreL4Grp(m_armSub, m_canSub, m_drivetrainSub, m_elevatorSub, m_visionSub),
             new InstantCommand(() -> RobotStatus.l4())));
     // L1
     m_driverController.L1()
         .onTrue(new ParallelCommandGroup(
-            new AutoAlgaeRemovalL2L3Grp(m_armSub, m_canSub, m_drivetrainSub, m_elevatorSub, m_visionSub),
+            new AlgaeRemovalL2L3Grp(m_armSub, m_canSub, m_drivetrainSub, m_elevatorSub, m_visionSub),
             new InstantCommand(() -> RobotStatus.l2L3Algae())));
 
     // R1
     m_driverController.R1()
         .onTrue(new ParallelCommandGroup(
-            new AutoAlgaeRemovalL3L4Grp(m_armSub, m_canSub, m_drivetrainSub, m_elevatorSub, m_visionSub),
+            new AlgaeRemovalL3L4Grp(m_armSub, m_canSub, m_drivetrainSub, m_elevatorSub, m_visionSub),
             new InstantCommand(() -> RobotStatus.l3L4Algae())));
 
     // L2
-    m_driverController.L2().onTrue(new InstantCommand(() -> RobotStatus.setLeft()));
+    m_driverController.L2()
+        .onTrue(new ParallelCommandGroup((new InstantCommand(() -> RobotStatus.setLeft())),
+            new InstantCommand(() -> m_ledSub.setElevatorColor((byte) 70, (byte) 10, (byte) 127)),
+            new InstantCommand(() -> m_ledSub.setClimbColor((byte) 70, (byte) 10, (byte) 127))));
 
     // R2
-    m_driverController.R2().onTrue(new InstantCommand(() -> RobotStatus.setRight()));
+    m_driverController.R2()
+        .onTrue(new ParallelCommandGroup((new InstantCommand(() -> RobotStatus.setRight())),
+            new InstantCommand(() -> m_ledSub.setElevatorColor((byte) 127, (byte) 127, (byte) 0)),
+            new InstantCommand(() -> m_ledSub.setClimbColor((byte) 127, (byte) 127, (byte) 0))));
 
     // POV Up
-    m_driverController.povUp().onTrue(new ClimbDeployCmd(m_climbSub));
+    m_driverController.povUp().whileTrue(new ClimbDeployCmd(m_climbSub));
 
     // POV Right
     m_driverController.povRight().whileTrue(new AutoDriveCmd(m_visionSub, m_drivetrainSub, true));
 
     // POV Down
-    m_driverController.povDown().onTrue(new ClimbRetractCmd(m_climbSub));
+    m_driverController.povDown().whileTrue(new ClimbRetractCmd(m_climbSub));
 
     // POV Left
 
@@ -267,7 +273,7 @@ public class RobotContainer {
     // Operator Controller Bindings /////////////////////////////////////////////////////////////////////////////////////////////
 
     // Square
-    m_operatorController.square().onTrue(new AutoGrabCoralGrp(m_armSub, m_canSub, m_elevatorSub));
+    m_operatorController.square().onTrue(new GrabCoralTeleopGrp(m_armSub, m_canSub, m_elevatorSub));
 
     // Cross
     m_operatorController.cross().onTrue(new ParallelCommandGroup(
@@ -305,13 +311,13 @@ public class RobotContainer {
 
     // POV Up
     m_operatorController.povUp()
-        .whileTrue(new StartEndCommand(() -> m_climbSub.setPower(0.25), () -> m_climbSub.setPower(0.0), m_climbSub));
+        .whileTrue(new StartEndCommand(() -> m_climbSub.setPower(0.75), () -> m_climbSub.setPower(0.0), m_climbSub));
 
     // POV Right
 
     // POV Down
     m_operatorController.povDown()
-        .whileTrue(new StartEndCommand(() -> m_climbSub.setPower(-0.25), () -> m_climbSub.setPower(0.0), m_climbSub));
+        .whileTrue(new StartEndCommand(() -> m_climbSub.setPower(-0.75), () -> m_climbSub.setPower(0.0), m_climbSub));
 
     // POV Left
 

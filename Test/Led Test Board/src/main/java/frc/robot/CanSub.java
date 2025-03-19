@@ -2,7 +2,7 @@
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
 
-package frc.robot.subsystems;
+package frc.robot;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
@@ -29,6 +29,8 @@ public class CanSub extends SubsystemBase {
   public CanSub(int CustomSensorID, LedSub ledSub) {
     m_ledSub = ledSub;
     m_data_buffer = new byte[8];
+
+
     /*
      * m_do0 = new DigitalOutput(0);
      * m_do1 = new DigitalOutput(1);
@@ -47,6 +49,8 @@ public class CanSub extends SubsystemBase {
     SmartDashboard.putNumber("CAN Coral Raw", getCoralRaw());
     SmartDashboard.putNumber("???", getAnalog0());
     SmartDashboard.putBoolean("CAN Coral In", isCoralPresent());
+    //System.out.println(getTOFDist());
+    //updateShuffleboard();
   }
 
 
@@ -174,13 +178,13 @@ public class CanSub extends SubsystemBase {
 
   public boolean isCoralPresent() {
     if(m_coralSensor < 100) {
-      if(blinLed) {
-        m_ledSub.blink((byte) 0, (byte) 127, (byte) 0, (byte) 127, (byte) 127, (byte) 127);
-        blinLed = false;
-      }
+      // if(blinLed) {
+      //   m_ledSub.blink();
+      //   blinLed = false;
+      // }
       return true;
     } else {
-      blinLed = true;
+      // blinLed = true;
       return false;
     }
   }

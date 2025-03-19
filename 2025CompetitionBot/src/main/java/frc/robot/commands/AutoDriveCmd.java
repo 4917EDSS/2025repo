@@ -11,7 +11,6 @@ import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.Robot;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.DrivetrainSub;
 import frc.robot.subsystems.VisionSub;
@@ -113,7 +112,6 @@ public class AutoDriveCmd extends Command {
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    System.out.println("end");
     //m_drivetrainSub.applyRequest(() -> brake);
     m_drivetrainSub.setControl(autoDrive.withVelocityX(0).withVelocityY(0).withRotationalRate(0));
   }
@@ -129,7 +127,6 @@ public class AutoDriveCmd extends Command {
       return true;
     }
     if(counter >= 25) {
-      System.out.println("counter: " + counter);
       return true;
     }
     return false;
