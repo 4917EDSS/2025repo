@@ -40,6 +40,7 @@ import frc.robot.commands.MoveElArmGrp;
 import frc.robot.commands.MoveElArmPostManualCmd;
 import frc.robot.commands.SetArmToPositionCmd;
 import frc.robot.commands.SetElevatorToHeightCmd;
+import frc.robot.commands.WaitForCoralPresentCmd;
 import frc.robot.commands.tests.RunTestsGrp;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.ArmSub;
@@ -169,6 +170,8 @@ public class RobotContainer {
     NamedCommands.registerCommand("Set Left", (new InstantCommand(() -> RobotStatus.setLeft())));
 
     NamedCommands.registerCommand("Set Right", (new InstantCommand(() -> RobotStatus.setRight())));
+
+    NamedCommands.registerCommand("IsCoralPresent", (new WaitForCoralPresentCmd(m_canSub)));
   }
 
   /**
@@ -224,15 +227,16 @@ public class RobotContainer {
             new InstantCommand(() -> m_ledSub.setClimbColor((byte) 127, (byte) 127, (byte) 0))));
 
     // POV Up
-    m_driverController.povUp().whileTrue(new ClimbDeployCmd(m_climbSub));
+    m_driverController.povUp();
 
     // POV Right
-    m_driverController.povRight().whileTrue(new AutoDriveCmd(m_visionSub, m_drivetrainSub, true));
+    m_driverController.povRight().whileTrue(new ClimbRetractCmd(m_climbSub));
 
     // POV Down
-    m_driverController.povDown().whileTrue(new ClimbRetractCmd(m_climbSub));
+    m_driverController.povDown().onTrue(new InstantCommand(() -> RobotStatus.setClearNextAlgae()));
 
     // POV Left
+    m_driverController.povLeft().whileTrue(new ClimbDeployCmd(m_climbSub));
 
     // Share
     m_driverController.share();

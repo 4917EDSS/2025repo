@@ -81,7 +81,7 @@ public final class Constants {
     public static final double kSlowDownSpeed = 0.15; // 1 = full power
 
     public static final double kL2PreScoreAngle = 33;
-    public static final double kL2PostScoreAngle = -5.0;
+    public static final double kL2PostScoreAngle = 0.0;
     public static final double kL3PreScoreAngle = 33;
     public static final double kL3PostScoreAngle = -5.0;
     public static final double kL4PreScoreAngle = 33;

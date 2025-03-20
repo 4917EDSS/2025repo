@@ -46,9 +46,28 @@
           "data": {
             "commands": [
               {
-                "type": "path",
+                "type": "sequential",
                 "data": {
-                  "pathName": "1st Score - Pickup"
+                  "commands": [
+                    {
+                      "type": "path",
+                      "data": {
+                        "pathName": "1st Score - Pickup"
+                      }
+                    },
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "IsCoralPresent"
+                      }
+                    },
+                    {
+                      "type": "path",
+                      "data": {
+                        "pathName": "Pickup - 2nd Auto"
+                      }
+                    }
+                  ]
                 }
               },
               {
@@ -58,37 +77,12 @@
                 }
               }
             ]
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "Pickup - 2nd Auto"
           }
         },
         {
           "type": "named",
           "data": {
             "name": "AutoCoralScoreL4Grp"
-          }
-        },
-        {
-          "type": "parallel",
-          "data": {
-            "commands": [
-              {
-                "type": "path",
-                "data": {
-                  "pathName": "2nd Score - Pickup"
-                }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "AutoGrabCoralAutoGrp"
-                }
-              }
-            ]
           }
         },
         {
@@ -98,9 +92,41 @@
           }
         },
         {
-          "type": "path",
+          "type": "parallel",
           "data": {
-            "pathName": "Pickup - 3rd Auto"
+            "commands": [
+              {
+                "type": "sequential",
+                "data": {
+                  "commands": [
+                    {
+                      "type": "path",
+                      "data": {
+                        "pathName": "2nd Score - Pickup"
+                      }
+                    },
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "IsCoralPresent"
+                      }
+                    },
+                    {
+                      "type": "path",
+                      "data": {
+                        "pathName": "Pickup - 3rd Auto"
+                      }
+                    }
+                  ]
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "AutoGrabCoralAutoGrp"
+                }
+              }
+            ]
           }
         },
         {

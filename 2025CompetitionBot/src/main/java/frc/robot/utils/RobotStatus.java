@@ -30,6 +30,7 @@ public class RobotStatus extends Command {
 
   private static boolean aimingLeft = true;
   private static ReefPosition robotLastReefPosition = ReefPosition.kL4;
+  private static boolean clearNextAlgae = false;
   private static Alliance alliance;
 
   public static void l2() {
@@ -79,6 +80,18 @@ public class RobotStatus extends Command {
 
   public static ReefPosition LastReefPosition() {
     return robotLastReefPosition;
+  }
+
+  public static void setClearNextAlgae() {
+    clearNextAlgae = true;
+  }
+
+  public static void clearClearNextAlgae() {
+    clearNextAlgae = false;
+  }
+
+  public static boolean getClearNextAlgae() {
+    return clearNextAlgae;
   }
 
   public static double getLastPositionHeight() {
