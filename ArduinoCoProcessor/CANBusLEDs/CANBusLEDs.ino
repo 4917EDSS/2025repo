@@ -34,7 +34,7 @@ CRGB leds[NUM_LEDS];
 
 // Global variables
 unsigned long long lastSendMs = 0; // track how long since we last sent a CAN packet
-unsigned int rgb[] = {70, 10, 127}; // Define the last command that was set by the CANbus communications
+unsigned int rgb[] = {0, 0, 0}; // Define the last command that was set by the CANbus communications
 unsigned int rgbBlink[] = {255,255,255,0,0,0}; // Blink on and off rgb values
 int blinkCounter = NUM_BLINKS; // Number of blinks 
 
@@ -280,22 +280,22 @@ void loop() {
         }
         */
 
-        for (int y = -10; y < NUM_LEDS; y ++) {
+        for (int y = 0; y < (NUM_LEDS+10); y ++) {
           // Check to make sure we are within the bounds of the LED range
-          if ((y+i >= 0) && (y+i < NUM_LEDS)) {
+          if (((y+i-10) >= 0) && ((y+i-10) < NUM_LEDS)) {
             // If you want the first 5 LEDs on, you want the last 5 off 
             if ((y % 10) < 6) {
-              leds[y+i] = CRGB(127, 127, 0);
+              leds[y+i-10] = CRGB(127, 127, 0);
 
             } else {
-              leds[y+i] = CRGB(0, 0, 0);
+              leds[y+i-10] = CRGB(0, 0, 0);
             }
           }
         } 
 
         // Increment loop and show LEDs
         FastLED.show();
-        i ++;
+        i++;
 
         if (i >= 10) {
           i = 0;
@@ -304,15 +304,15 @@ void loop() {
 
       } else if ((rgb[0] == 70) && (rgb[1] == 10) && (rgb[2] == 127)) {    // If software programs purple (70, 10, 127) 
         // In reverse of the above function
-        for (int y = -10; y < NUM_LEDS; y ++) {
+        for (int y = 0; y < (NUM_LEDS+10); y ++) {
           // Check to make sure we are within the bounds of the LED range
-          if ((y+i >= 0) && (y+i < NUM_LEDS)) {
+          if (((y+i-10) >= 0) && ((y+i-10) < NUM_LEDS)) {
             // If you want the first 5 LEDs on, you want the last 5 off 
             if ((y % 10) < 6) {
-              leds[y+i] = CRGB(70, 10, 127);
+              leds[y+i-10] = CRGB(70, 10, 127);
 
             } else {
-              leds[y+i] = CRGB(0, 0, 0);
+              leds[y+i-10] = CRGB(0, 0, 0);
             }
           }
         } 
