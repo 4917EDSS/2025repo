@@ -186,7 +186,7 @@ public final class Constants {
   }
 
   public static final class Intake {
-    public static final double kIntakePower = 0.6;
+    public static final double kIntakePower = 0.7;
   }
 
   ////////// Test pass/fail/warn parameters ///////////////////////////////////////////////////////

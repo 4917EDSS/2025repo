@@ -75,7 +75,7 @@ public class AutoDriveCmd extends Command {
   public boolean isInFbZone(boolean feedForwardCutout) {
     double deadband = 0.02;
     if(feedForwardCutout) {
-      deadband += 0.02;
+      deadband += 0.01;
     }
     return Math.abs(m_apriltagPos.getY()) < fbOffset + deadband && Math.abs(m_apriltagPos.getY()) > fbOffset - deadband;
   }
@@ -83,7 +83,7 @@ public class AutoDriveCmd extends Command {
   public boolean isInLrZone(boolean feedForwardCutout) {
     double deadband = 0.02;
     if(feedForwardCutout) {
-      deadband += 0.02;
+      deadband += 0.01;
     }
     return (Math.abs(lrDist) < deadband);
   }
@@ -112,7 +112,7 @@ public class AutoDriveCmd extends Command {
         autoDrive.withVelocityX(-yPower - fbFeedforward)
             .withVelocityY(xPower + lrFeedforward)
             .withRotationalRate(
-                m_visionSub.getRobotRotation() / ((m_apriltagPos.getY() * 15) + 5) * -(MaxAngularRate * 0.20)));
+                m_visionSub.getRobotRotation() / 5));
 
     if(m_visionSub.getTv() == 0) {
       counter++;
@@ -134,7 +134,6 @@ public class AutoDriveCmd extends Command {
   public boolean isFinished() {
 
     if(isInFbZone(false) && isInLrZone(false) && Math.abs(m_apriltagPos.getRotation().getDegrees()) < 5) {
-      System.out.println("Forward/backward dist: " + fbDist);
 
       return true;
     }
