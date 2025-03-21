@@ -134,8 +134,15 @@ public class AutoDriveCmd extends Command {
   public boolean isFinished() {
 
     if(isInFbZone(false) && isInLrZone(false) && Math.abs(m_apriltagPos.getRotation().getDegrees()) < 5) {
+      System.out.println("Forward/backward dist: " + fbDist);
 
       return true;
+    } else if(!isInFbZone(false) && isInLrZone(false) && Math.abs(m_apriltagPos.getRotation().getDegrees()) < 5) {
+      System.out.println("Not in fb zone!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!1");
+    } else if(isInFbZone(false) && !isInLrZone(false) && Math.abs(m_apriltagPos.getRotation().getDegrees()) < 5) {
+      System.out.println("NOt in lr zone22222222222222222222222222222222222");
+    } else if(isInFbZone(false) && isInLrZone(false) && !(Math.abs(m_apriltagPos.getRotation().getDegrees()) < 5)) {
+      System.out.println("Not finishsed rotation3333333333333333333333333333333");
     }
     if(counter >= 25) {
       return true;
