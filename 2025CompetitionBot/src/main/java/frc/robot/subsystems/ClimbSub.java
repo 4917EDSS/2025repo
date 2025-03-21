@@ -46,6 +46,7 @@ public class ClimbSub extends TestableSubsystem {
     outputConfigs.NeutralMode = NeutralModeValue.Brake;
     talonFxConfiguarator.apply(outputConfigs);
 
+
     init();
   }
 
@@ -60,7 +61,7 @@ public class ClimbSub extends TestableSubsystem {
     // This method will be called once per scheduler run
     if(isAtOutLimit() && (m_climbMotor.get() > 0)) {
       setPower(0);
-    } else if(isAtInLimit() && (m_climbMotor.get() < 0)) {
+    } else if((isAtInLimit() || getPosition() <= 0.0) && (m_climbMotor.get() < 0)) {
       setPower(0);
     }
 

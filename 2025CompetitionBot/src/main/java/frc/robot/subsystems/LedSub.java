@@ -30,6 +30,7 @@ public class LedSub extends SubsystemBase {
 
     setElevatorColor(R, G, B);
     // work(R, G, B);
+    turnOffHeadlights();
   }
 
   @Override

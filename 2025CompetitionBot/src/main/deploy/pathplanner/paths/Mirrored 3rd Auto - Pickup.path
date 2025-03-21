@@ -16,16 +16,16 @@
     },
     {
       "anchor": {
-        "x": 1.232,
-        "y": 0.982
+        "x": 1.2321061643835618,
+        "y": 1.0874785958904112
       },
       "prevControl": {
-        "x": 2.2077248541762917,
-        "y": 1.7375319652960872
+        "x": 2.2078310185598538,
+        "y": 1.8430105611864984
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "mirrored pickup"
     }
   ],
   "rotationTargets": [],
@@ -42,7 +42,7 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 54.464
+    "rotation": 54.0
   },
   "reversed": false,
   "folder": "Archive",

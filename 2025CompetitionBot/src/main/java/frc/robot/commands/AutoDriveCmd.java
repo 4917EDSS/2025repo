@@ -52,17 +52,17 @@ public class AutoDriveCmd extends Command {
         || RobotStatus.LastReefPosition().equals(ReefPosition.kL3L4Algae)) {
       fbOffset = 0.457;
     } else {
-      fbOffset = 0.50;
+      fbOffset = 0.51;
       if(RobotStatus.LastReefPosition().equals(RobotStatus.ReefPosition.kL4)) {
-        fbOffset += 0.0327; //This is half an inch in meters
+        fbOffset += 0.0227; //This is half an inch in meters
       }
     }
 
     if(useOffset) {
       if(RobotStatus.isLeft()) {
-        lrOffset = 0.15;
+        lrOffset = 0.165;
       } else {
-        lrOffset = -0.17;
+        lrOffset = -0.165;
       }
     } else {
       lrOffset = 0;
@@ -71,8 +71,12 @@ public class AutoDriveCmd extends Command {
     counter = 0;
   }
 
-  public boolean isInFbZone() {
-    return Math.abs(m_apriltagPos.getY()) < fbOffset + 0.05 && Math.abs(m_apriltagPos.getY()) > fbOffset - 0.05;
+  public boolean isInFbZone(boolean feedForwardCutout) {
+    double deadband = 0.02;
+    if(feedForwardCutout) {
+      deadband += 0.02;
+    }
+    return Math.abs(m_apriltagPos.getY()) < fbOffset + deadband && Math.abs(m_apriltagPos.getY()) > fbOffset - deadband;
   }
 
   // Called every time the scheduler runs while the command is scheduled.
@@ -88,20 +92,20 @@ public class AutoDriveCmd extends Command {
     double fbSlowDown;
     double lrSlowDown;
     double fbFeedforard = 0;
-    if(!isInFbZone()) {
-      fbFeedforard += 0.2 * Math.signum(yPower);
+    if(!isInFbZone(true)) {
+      fbFeedforard += 0.15 * Math.signum(yPower);
     }
 
     if(fbDist > -1.25) {
-      fbSlowDown = 6 / (Math.abs(fbDist) + 0.3);
+      fbSlowDown = 6 / (Math.abs(fbDist) + 0.25);
     } else {
       fbSlowDown = 2;
     }
 
-    if(Math.abs(lrDist) < 0.2) {
-      lrSlowDown = 6 / (Math.abs(lrDist) + 0.3);
+    if(Math.abs(lrDist) < 0.4) {
+      lrSlowDown = 7 / (Math.abs(lrDist) + 0.25);
     } else {
-      lrSlowDown = 2;
+      lrSlowDown = 2.5;
     }
 
     m_drivetrainSub.setControl(
@@ -129,7 +133,7 @@ public class AutoDriveCmd extends Command {
   @Override
   public boolean isFinished() {
 
-    if(isInFbZone() && Math.abs(lrDist) < 0.05 && Math.abs(m_apriltagPos.getRotation().getDegrees()) < 5) {
+    if(isInFbZone(false) && Math.abs(lrDist) < 0.02 && Math.abs(m_apriltagPos.getRotation().getDegrees()) < 5) {
       System.out.println("Forward/backward dist: " + fbDist);
 
       return true;

@@ -3,13 +3,13 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 3.954523026315789,
-        "y": 5.256578947368421
+        "x": 3.921703767123288,
+        "y": 5.294670376712329
       },
       "prevControl": null,
       "nextControl": {
-        "x": 4.596533363281906,
-        "y": 4.8454613521553895
+        "x": 4.563714104089405,
+        "y": 4.883552781499297
       },
       "isLocked": false,
       "linkedName": "2nd Score"
@@ -17,11 +17,11 @@
     {
       "anchor": {
         "x": 1.292208904109589,
-        "y": 7.037649828767123
+        "y": 6.977547089041095
       },
       "prevControl": {
         "x": 0.987570286504138,
-        "y": 7.2078945705367
+        "y": 7.147791830810672
       },
       "nextControl": null,
       "isLocked": false,
@@ -48,7 +48,7 @@
   "folder": "Vision Auto",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": -59.65675111576046
+    "rotation": -59.99999999999999
   },
   "useDefaultConstraints": true
 }

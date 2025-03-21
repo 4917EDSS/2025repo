@@ -4,15 +4,15 @@
     {
       "anchor": {
         "x": 1.2321061643835618,
-        "y": 0.982
+        "y": 1.0874785958904112
       },
       "prevControl": null,
       "nextControl": {
         "x": 3.0212167782205888,
-        "y": 1.455705723292924
+        "y": 1.5611843191833352
       },
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "mirrored pickup"
     },
     {
       "anchor": {

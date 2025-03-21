@@ -227,7 +227,7 @@ public class RobotContainer {
             new InstantCommand(() -> m_ledSub.setClimbColor((byte) 127, (byte) 127, (byte) 0))));
 
     // POV Up
-    m_driverController.povUp();
+    m_driverController.povUp().onTrue(new AutoDriveCmd(m_visionSub, m_drivetrainSub, true));
 
     // POV Right
     m_driverController.povRight().whileTrue(new ClimbRetractCmd(m_climbSub));
