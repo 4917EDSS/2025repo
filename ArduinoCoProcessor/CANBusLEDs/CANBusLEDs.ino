@@ -34,7 +34,7 @@ CRGB leds[NUM_LEDS];
 
 // Global variables
 unsigned long long lastSendMs = 0; // track how long since we last sent a CAN packet
-unsigned int rgb[] = {0,0,0}; // Define the last command that was set by the CANbus communications
+unsigned int rgb[] = {70, 10, 127}; // Define the last command that was set by the CANbus communications
 unsigned int rgbBlink[] = {255,255,255,0,0,0}; // Blink on and off rgb values
 int blinkCounter = NUM_BLINKS; // Number of blinks 
 
@@ -150,6 +150,8 @@ void loop() {
     int16_t analog0;
     uint8_t data[CAN_PACKET_SIZE];
     static int partyState = 0;
+    static int rightParty = 0;
+    static int leftParty = 0;
     static unsigned long lastMillis = 0;
     static int i = 0;
     int j = 0;
@@ -234,6 +236,95 @@ void loop() {
             partyState = 0;
         }
       
+
+      } else if ((rgb[0] == 127) && (rgb[1] == 127) && (rgb[2] == 0)) {    // If software programs yellow (127,127,0) 
+        /*
+        // This party mode is setting LEDs to go from left to right
+        switch (rightParty) {
+          case 0:
+            // Set the pattern to leds in the right
+            for (int y = i; y < i + 6; y++) {
+              leds[y] = CRGB(127, 127, 0);
+            }
+
+            // Increment loop and update LEDs
+            i += 10;
+            FastLED.show();
+            
+            
+            if (i >= NUM_LEDS) {
+              rightParty = 1;
+              i = 0;
+            }
+            break;
+          
+          case 1:
+            // Set the LEDs off
+            for (int y = 0; y < i + 6; y++) {
+              leds[y] = CRGB(0, 0, 0);
+            }
+
+            // Increment loop and update LEDs
+            i += 10;
+            FastLED.show();
+            
+            
+            if (i >= NUM_LEDS) {
+              rightParty = 0;
+              i = 0;
+            }
+            break;
+
+          default:
+            rightParty = 0;
+        }
+        */
+
+        for (int y = -10; y < NUM_LEDS; y ++) {
+          // Check to make sure we are within the bounds of the LED range
+          if ((y+i >= 0) && (y+i < NUM_LEDS)) {
+            // If you want the first 5 LEDs on, you want the last 5 off 
+            if ((y % 10) < 6) {
+              leds[y+i] = CRGB(127, 127, 0);
+
+            } else {
+              leds[y+i] = CRGB(0, 0, 0);
+            }
+          }
+        } 
+
+        // Increment loop and show LEDs
+        FastLED.show();
+        i ++;
+
+        if (i >= 10) {
+          i = 0;
+        }
+
+
+      } else if ((rgb[0] == 70) && (rgb[1] == 10) && (rgb[2] == 127)) {    // If software programs purple (70, 10, 127) 
+        // In reverse of the above function
+        for (int y = -10; y < NUM_LEDS; y ++) {
+          // Check to make sure we are within the bounds of the LED range
+          if ((y+i >= 0) && (y+i < NUM_LEDS)) {
+            // If you want the first 5 LEDs on, you want the last 5 off 
+            if ((y % 10) < 6) {
+              leds[y+i] = CRGB(70, 10, 127);
+
+            } else {
+              leds[y+i] = CRGB(0, 0, 0);
+            }
+          }
+        } 
+
+        // Increment loop and show LEDs
+        FastLED.show();
+        i --;
+
+        if (i < 0) {
+          i = 9;
+        }
+
 
       } else { 
         // Update all of the LED Colours
