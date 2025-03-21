@@ -20,8 +20,8 @@ public class CanSub extends SubsystemBase {
    */
   int m_ARBID;
   static int m_TOFDist;
-  static int m_analog0;
-  static int m_coralSensor;
+  static int m_upperCoralSensor;
+  static int m_lowerCoralSensor;
   LedSub m_ledSub;
   boolean blinLed = true;
 
@@ -45,8 +45,9 @@ public class CanSub extends SubsystemBase {
     UpdateCustomSensor();
     SmartDashboard.putNumber("CAN TOF Dist", getTOFDist());
     SmartDashboard.putNumber("CAN Coral Raw", getCoralRaw());
-    SmartDashboard.putNumber("???", getAnalog0());
-    SmartDashboard.putBoolean("CAN Coral In", isCoralPresent());
+    SmartDashboard.putNumber("Upper Coral Sensor Raw", getUpperCoralSensor());
+    SmartDashboard.putBoolean("CAN Coral In", isLowerCoralPresent());
+    SmartDashboard.putBoolean("Is Upper Coral Present", isUpperCoralPresent());
   }
 
 
@@ -103,7 +104,7 @@ public class CanSub extends SubsystemBase {
           m_TOFDist = (msb << 8) + lsb;
 
 
-          if(m_data_buffer.length >= 2) {
+          if(m_data_buffer.length >= 6) {
 
             int msb1 = m_data_buffer[4];
             if(msb1 < 0) {
@@ -115,10 +116,10 @@ public class CanSub extends SubsystemBase {
               lsb1 = lsb1 + 256;
             }
 
-            m_analog0 = (msb1 << 8) + lsb1;
+            m_upperCoralSensor = (msb1 << 8) + lsb1;
           }
 
-          if(m_data_buffer.length >= 2) {
+          if(m_data_buffer.length >= 4) {
 
             int msb2 = m_data_buffer[2];
             if(msb2 < 0) {
@@ -130,7 +131,7 @@ public class CanSub extends SubsystemBase {
               lsb2 = lsb2 + 256;
             }
 
-            m_coralSensor = (msb2 << 8) + lsb2;
+            m_lowerCoralSensor = (msb2 << 8) + lsb2;
           }
 
           //m_TOFDist = ((int) m_data_buffer[0] << 8) + m_data_buffer[1];
@@ -165,15 +166,15 @@ public class CanSub extends SubsystemBase {
   }
 
   public int getCoralRaw() {
-    return m_coralSensor;
+    return m_lowerCoralSensor;
   }
 
-  public int getAnalog0() {
-    return m_analog0;
+  public int getUpperCoralSensor() {
+    return m_upperCoralSensor;
   }
 
-  public boolean isCoralPresent() {
-    if(m_coralSensor < 100) {
+  public boolean isLowerCoralPresent() {
+    if(m_lowerCoralSensor < 100) {
       if(blinLed) {
         m_ledSub.blink((byte) 0, (byte) 127, (byte) 0, (byte) 127, (byte) 127, (byte) 127);
         blinLed = false;
@@ -181,6 +182,14 @@ public class CanSub extends SubsystemBase {
       return true;
     } else {
       blinLed = true;
+      return false;
+    }
+  }
+
+  public boolean isUpperCoralPresent() {
+    if(m_upperCoralSensor < 750) {
+      return true;
+    } else {
       return false;
     }
   }

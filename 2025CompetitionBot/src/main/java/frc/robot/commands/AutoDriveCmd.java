@@ -8,6 +8,7 @@ import static edu.wpi.first.units.Units.MetersPerSecond;
 import static edu.wpi.first.units.Units.RadiansPerSecond;
 import static edu.wpi.first.units.Units.RotationsPerSecond;
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
+import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -52,9 +53,9 @@ public class AutoDriveCmd extends Command {
         || RobotStatus.LastReefPosition().equals(ReefPosition.kL3L4Algae)) {
       fbOffset = 0.457;
     } else {
-      fbOffset = 0.51;
+      fbOffset = 0.49;
       if(RobotStatus.LastReefPosition().equals(RobotStatus.ReefPosition.kL4)) {
-        fbOffset += 0.0227; //This is half an inch in meters
+        fbOffset += 0.0327; //This is half an inch in meters
       }
     }
 
@@ -79,6 +80,14 @@ public class AutoDriveCmd extends Command {
     return Math.abs(m_apriltagPos.getY()) < fbOffset + deadband && Math.abs(m_apriltagPos.getY()) > fbOffset - deadband;
   }
 
+  public boolean isInLrZone(boolean feedForwardCutout) {
+    double deadband = 0.02;
+    if(feedForwardCutout) {
+      deadband += 0.02;
+    }
+    return (Math.abs(lrDist) < deadband);
+  }
+
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
@@ -86,31 +95,22 @@ public class AutoDriveCmd extends Command {
     // check if angle is positive or negative
     lrDist = m_apriltagPos.getX() + lrOffset;
     fbDist = m_apriltagPos.getY() + fbOffset;
-    double totalDist = Math.sqrt((lrDist * lrDist) + (fbDist * fbDist));
-    double xPower = lrDist / totalDist;
-    double yPower = fbDist / totalDist;
-    double fbSlowDown;
-    double lrSlowDown;
-    double fbFeedforard = 0;
+    double p = 1.75;
+    double xPower = lrDist * p;
+    double yPower = fbDist * p;
+    double fbFeedforward = 0;
+    double lrFeedforward = 0;
     if(!isInFbZone(true)) {
-      fbFeedforard += 0.15 * Math.signum(yPower);
+      fbFeedforward += 0.15 * Math.signum(yPower);
     }
 
-    if(fbDist > -1.25) {
-      fbSlowDown = 6 / (Math.abs(fbDist) + 0.25);
-    } else {
-      fbSlowDown = 2;
-    }
-
-    if(Math.abs(lrDist) < 0.4) {
-      lrSlowDown = 7 / (Math.abs(lrDist) + 0.25);
-    } else {
-      lrSlowDown = 2.5;
+    if(!isInLrZone(true)) {
+      lrFeedforward += 0.15 * Math.signum(xPower);
     }
 
     m_drivetrainSub.setControl(
-        autoDrive.withVelocityX((-yPower * MaxSpeed / fbSlowDown) - fbFeedforard)
-            .withVelocityY(xPower * MaxSpeed / lrSlowDown)
+        autoDrive.withVelocityX(-yPower - fbFeedforward)
+            .withVelocityY(xPower + lrFeedforward)
             .withRotationalRate(
                 m_visionSub.getRobotRotation() / ((m_apriltagPos.getY() * 15) + 5) * -(MaxAngularRate * 0.20)));
 
@@ -133,7 +133,7 @@ public class AutoDriveCmd extends Command {
   @Override
   public boolean isFinished() {
 
-    if(isInFbZone(false) && Math.abs(lrDist) < 0.02 && Math.abs(m_apriltagPos.getRotation().getDegrees()) < 5) {
+    if(isInFbZone(false) && isInLrZone(false) && Math.abs(m_apriltagPos.getRotation().getDegrees()) < 5) {
       System.out.println("Forward/backward dist: " + fbDist);
 
       return true;

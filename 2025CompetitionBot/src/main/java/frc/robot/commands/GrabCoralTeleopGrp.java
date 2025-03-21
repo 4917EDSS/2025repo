@@ -25,7 +25,7 @@ public class GrabCoralTeleopGrp extends SequentialCommandGroup {
         new MoveElArmGrp(Constants.Elevator.kCoralGrabbableHeight, Constants.Arm.kCoralGrabbableAngle, armSub,
             elevatorSub), //Get ready to grab coral
         new InstantCommand(() -> elevatorSub.setIntakeMotors(Constants.Intake.kIntakePower)),
-        new WaitForCoralPresentCmd(canSub),
+        new WaitForLowerCoralCmd(canSub),
         new WaitCommand(0.1),
         new MoveElArmGrp(Constants.Elevator.kCoralLoadedHeight, Constants.Arm.kMinArmAngle, armSub, elevatorSub),
         new WaitCommand(0.1),
@@ -33,7 +33,7 @@ public class GrabCoralTeleopGrp extends SequentialCommandGroup {
         new MoveElArmGrp(Constants.Elevator.kDangerZoneBottom, Constants.Arm.kMinArmAngle, armSub, elevatorSub),
         new ConditionalCommand(
             new MoveElArmGrp(Constants.Elevator.kCoralLoadedHeight, Constants.Arm.kMinArmAngle, armSub, elevatorSub),
-            new InstantCommand(), () -> canSub.isCoralPresent()),
+            new InstantCommand(), () -> canSub.isLowerCoralPresent()),
         new MoveElArmGrp(Constants.Elevator.kCoralGrabbableHeight, Constants.Arm.kMaxArmAngle, armSub,
             elevatorSub));
   }

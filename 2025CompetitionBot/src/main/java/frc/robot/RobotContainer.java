@@ -40,7 +40,8 @@ import frc.robot.commands.MoveElArmGrp;
 import frc.robot.commands.MoveElArmPostManualCmd;
 import frc.robot.commands.SetArmToPositionCmd;
 import frc.robot.commands.SetElevatorToHeightCmd;
-import frc.robot.commands.WaitForCoralPresentCmd;
+import frc.robot.commands.WaitForLowerCoralCmd;
+import frc.robot.commands.WaitForUpperCoralCmd;
 import frc.robot.commands.tests.RunTestsGrp;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.ArmSub;
@@ -171,7 +172,7 @@ public class RobotContainer {
 
     NamedCommands.registerCommand("Set Right", (new InstantCommand(() -> RobotStatus.setRight())));
 
-    NamedCommands.registerCommand("IsCoralPresent", (new WaitForCoralPresentCmd(m_canSub)));
+    NamedCommands.registerCommand("IsCoralPresent", (new WaitForUpperCoralCmd(m_canSub)));
   }
 
   /**

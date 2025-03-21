@@ -125,6 +125,7 @@ void loop() {
 
     int16_t distance;
     int16_t analog0;
+    int16_t analog1;
     uint8_t data[CAN_PACKET_SIZE];
 
     // Update must be called every loop in order to receive messages
@@ -142,6 +143,8 @@ void loop() {
 
     // Read the analog IR sensor
     analog0 = analogRead(A0);
+
+    analog1 = analogRead(A1);
 
     // Writes can happen any time if you want to create a device that is more
     // interrupt driven.  Alternatively you can use a periodic send as shown
@@ -161,6 +164,9 @@ void loop() {
         // Analog 0 sensor MSB, LSB
         data[2] = analog0 >> 8;
         data[3] = analog0 & 0xFF;
+
+        data[4] = analog1 >> 8;
+        data[5] = analog1 & 0xFF;
 
 
         // Send bytes. The API command is any 10 bit value specific to the device though

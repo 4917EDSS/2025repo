@@ -11,12 +11,12 @@ import frc.robot.subsystems.CanSub;
  * You should consider using the more terse Command factories API instead
  * https://docs.wpilib.org/en/stable/docs/software/commandbased/organizing-command-based.html#defining-commands
  */
-public class WaitForCoralPresentCmd extends Command {
+public class WaitForLowerCoralCmd extends Command {
   private final CanSub m_canSub;
   public boolean gotCoral = false;
 
   /** Creates a new WaitForCoralPresentCmd. */
-  public WaitForCoralPresentCmd(CanSub canSub) {
+  public WaitForLowerCoralCmd(CanSub canSub) {
     m_canSub = canSub;
   }
 
@@ -35,6 +35,6 @@ public class WaitForCoralPresentCmd extends Command {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return m_canSub.isCoralPresent();
+    return m_canSub.isLowerCoralPresent();
   }
 }

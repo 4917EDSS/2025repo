@@ -126,7 +126,7 @@ public final class Constants {
     public static final double kL2PreScoreHeight = 730.0;
     public static final double kL2PostScoreHeight = 550.0;
     public static final double kL3PreScoreHeight = 1077.0;
-    public static final double kL3PostScoreHeight = 900.0;
+    public static final double kL3PostScoreHeight = 930.0;
     public static final double kL4PreScoreHeight = kMaxHeight;
     public static final double kL4PostScoreHeight = 1450;
     public static final double kL3L4AlgaeRemovalPrepHeight = 842;
