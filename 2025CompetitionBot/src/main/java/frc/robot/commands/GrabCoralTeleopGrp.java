@@ -24,7 +24,7 @@ public class GrabCoralTeleopGrp extends SequentialCommandGroup {
     addCommands(
         new MoveElArmGrp(Constants.Elevator.kCoralGrabbableHeight, Constants.Arm.kCoralGrabbableAngle, armSub,
             elevatorSub), //Get ready to grab coral
-        new InstantCommand(() -> elevatorSub.setIntakeMotors(1.0)),
+        new InstantCommand(() -> elevatorSub.setIntakeMotors(Constants.Intake.kIntakePower)),
         new WaitForCoralPresentCmd(canSub),
         new WaitCommand(0.1),
         new MoveElArmGrp(Constants.Elevator.kCoralLoadedHeight, Constants.Arm.kMinArmAngle, armSub, elevatorSub),

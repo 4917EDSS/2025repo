@@ -138,14 +138,6 @@ public final class Constants {
     // public static final double kElevatorDropScore = -30;
   }
 
-  public static class Intake {
-    public static final double kDeployEncoderPositionConversionFactor = 1.00; // From rotations to degrees
-    public static final double kDeployEncoderVelocityConversionFactor = 1.00; // From rotations per minute? to degrees per second
-
-    public static final double kRollersEncoderPositionConversionFactor = 1.00; // From rotations to degrees
-    public static final double kRollersEncoderVelocityConversionFactor = 1.00; // From rotations per minute? to degrees per second
-  }
-
   // Values that are specific to a particular physical robot
   public static final class RobotSpecific {
     public static final String PracticeSerialNumber = "03147322";
@@ -191,6 +183,10 @@ public final class Constants {
         {1.22, 1.22, 1.32, 1.32, 1.22, 1.22, 1.32, 1.32, 1.22, 1.22, 1.24, 1.24, 1.24, 1.24, 1.24, 1.24};
 
     public static final double kDistanceToCloseToDrive = -1.25;
+  }
+
+  public static final class Intake {
+    public static final double kIntakePower = 0.6;
   }
 
   ////////// Test pass/fail/warn parameters ///////////////////////////////////////////////////////
