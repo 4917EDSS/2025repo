@@ -138,12 +138,8 @@ public class VisionSub extends SubsystemBase {
     updateOdometry(m_drivetrainSub.getState());
   }
 
-  public double getRobotRotation() {
-    return botposeTarget[4];
-  }
-
   public Pose2d getTagPose2d() {
-    return new Pose2d(botposeTarget[0], botposeTarget[2], new Rotation2d(botposeTarget[4]));
+    return new Pose2d(botposeTarget[0], botposeTarget[2], new Rotation2d((botposeTarget[4] / 360.0) * 2 * Math.PI));
   }
 
   public long getTv() {

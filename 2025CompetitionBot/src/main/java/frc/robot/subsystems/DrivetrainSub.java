@@ -232,6 +232,11 @@ public class DrivetrainSub extends TunerSwerveDrivetrain implements Subsystem {
 
   @Override
   public void periodic() {
+
+    ChassisSpeeds robotSpeeds = getRobotRelativeSpeeds();
+    SmartDashboard.putNumber("Chassis vx", robotSpeeds.vxMetersPerSecond);
+    SmartDashboard.putNumber("Chassis vy", robotSpeeds.vyMetersPerSecond);
+    SmartDashboard.putNumber("Chassis rotation velocity", robotSpeeds.omegaRadiansPerSecond);
     /*
      * Periodically try to apply the operator perspective.
      * If we haven't applied the operator perspective before, then we should apply

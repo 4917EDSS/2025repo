@@ -8,12 +8,14 @@ import static edu.wpi.first.units.Units.MetersPerSecond;
 import static edu.wpi.first.units.Units.RadiansPerSecond;
 import static edu.wpi.first.units.Units.RotationsPerSecond;
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
-import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.DrivetrainSub;
+import frc.robot.subsystems.LedSub;
 import frc.robot.subsystems.VisionSub;
 import frc.robot.utils.RobotStatus;
 import frc.robot.utils.RobotStatus.ReefPosition;
@@ -37,12 +39,14 @@ public class AutoDriveCmd extends Command {
   double fbOffset;
   boolean useOffset;
   private final DrivetrainSub m_drivetrainSub;
+  //private final LedSub m_ledSub;
 
   /** Creates a new AutoDriveCmd. */
-  public AutoDriveCmd(VisionSub visionSub, DrivetrainSub drivetrainSub, boolean useOffset) {
+  public AutoDriveCmd(VisionSub visionSub, DrivetrainSub drivetrainSub, boolean useOffset) { //, LedSub LedSub) {
     m_visionSub = visionSub;
     m_drivetrainSub = drivetrainSub;
     this.useOffset = useOffset;
+    //m_ledSub = LedSub;
     addRequirements(drivetrainSub);// Use addRequirements() here to declare subsystem dependencies.
   }
 
@@ -53,9 +57,9 @@ public class AutoDriveCmd extends Command {
         || RobotStatus.LastReefPosition().equals(ReefPosition.kL3L4Algae)) {
       fbOffset = 0.457;
     } else {
-      fbOffset = 0.49;
+      fbOffset = 0.48;
       if(RobotStatus.LastReefPosition().equals(RobotStatus.ReefPosition.kL4)) {
-        fbOffset += 0.0327; //This is half an inch in meters
+        fbOffset += 0.0427; //This is half an inch in meters
       }
     }
 
@@ -88,6 +92,14 @@ public class AutoDriveCmd extends Command {
     return (Math.abs(lrDist) < deadband);
   }
 
+  public boolean isInRotZone(boolean feedForwardCutout) {
+    double deadband = 5;
+    if(feedForwardCutout) {
+      deadband += 0;
+    }
+    return (Math.abs(m_apriltagPos.getRotation().getDegrees()) < deadband);
+  }
+
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
@@ -100,6 +112,7 @@ public class AutoDriveCmd extends Command {
     double yPower = fbDist * p;
     double fbFeedforward = 0;
     double lrFeedforward = 0;
+    double rotFeedforward = 0;
     if(!isInFbZone(true)) {
       fbFeedforward += 0.15 * Math.signum(yPower);
     }
@@ -108,14 +121,23 @@ public class AutoDriveCmd extends Command {
       lrFeedforward += 0.15 * Math.signum(xPower);
     }
 
+    ChassisSpeeds robotSpeeds = m_drivetrainSub.getRobotRelativeSpeeds();
+
+    if(!isInRotZone(true) && Math.abs(robotSpeeds.omegaRadiansPerSecond) < 0.035) {
+      rotFeedforward += 0.03 * Math.signum(m_apriltagPos.getRotation().getDegrees());
+    }
+
     m_drivetrainSub.setControl(
         autoDrive.withVelocityX(-yPower - fbFeedforward)
             .withVelocityY(xPower + lrFeedforward)
             .withRotationalRate(
-                m_visionSub.getRobotRotation() / 5));
+                m_apriltagPos.getRotation().getDegrees() / 5 + rotFeedforward));
 
-    if(m_visionSub.getTv() == 0) {
+    if(m_visionSub.getTv() == 0
+        || (Math.abs(robotSpeeds.vxMetersPerSecond) < 0.01 && Math.abs(robotSpeeds.vyMetersPerSecond) < 0.01
+            && Math.abs(robotSpeeds.omegaRadiansPerSecond) < 0.025)) {
       counter++;
+      //System.out.println(counter);
     } else {
       counter = 0;
     }
@@ -133,20 +155,25 @@ public class AutoDriveCmd extends Command {
   @Override
   public boolean isFinished() {
 
-    if(isInFbZone(false) && isInLrZone(false) && Math.abs(m_apriltagPos.getRotation().getDegrees()) < 5) {
-      System.out.println("Forward/backward dist: " + fbDist);
-
+    if(isInFbZone(false) && isInLrZone(false) && isInRotZone(false)) {
+      // System.out.println("5555555555555555555555555 zone condition");
       return true;
-    } else if(!isInFbZone(false) && isInLrZone(false) && Math.abs(m_apriltagPos.getRotation().getDegrees()) < 5) {
-      System.out.println("Not in fb zone!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!1");
-    } else if(isInFbZone(false) && !isInLrZone(false) && Math.abs(m_apriltagPos.getRotation().getDegrees()) < 5) {
-      System.out.println("NOt in lr zone22222222222222222222222222222222222");
-    } else if(isInFbZone(false) && isInLrZone(false) && !(Math.abs(m_apriltagPos.getRotation().getDegrees()) < 5)) {
-      System.out.println("Not finishsed rotation3333333333333333333333333333333");
     }
+    /*
+     * } else if(!isInFbZone(false) && isInLrZone(false) && Math.abs(m_apriltagPos.getRotation().getDegrees()) < 5) {
+     * System.out.println("Not in fb zone!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!1");
+     * } else if(isInFbZone(false) && !isInLrZone(false) && Math.abs(m_apriltagPos.getRotation().getDegrees()) < 5) {
+     * System.out.println("NOt in lr zone22222222222222222222222222222222222");
+     * } else if(isInFbZone(false) && isInLrZone(false) && !(Math.abs(m_apriltagPos.getRotation().getDegrees()) < 5)) {
+     * System.out.println("Not finishsed rotation3333333333333333333333333333333");
+     * }
+     */
     if(counter >= 25) {
+      // System.out.println("------------------------------- counter condition");
       return true;
     }
+    //m_ledSub.setElevatorColor((byte) 127, (byte) 127, (byte) 127);
+    //m_ledSub.setClimbColor((byte) 127, (byte) 127, (byte) 127);
     return false;
   }
 }

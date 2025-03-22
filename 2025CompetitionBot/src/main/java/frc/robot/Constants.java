@@ -102,7 +102,7 @@ public final class Constants {
   public static final class Elevator {
     // All heights are in millimeters
     public static final double kMinHeight = 300.0;
-    public static final double kMaxHeight = 1640.0;
+    public static final double kMaxHeight = 1670.0;
 
     public static final double kRotationsToMm = 5 / (0.75 * 25.4 * Math.PI); // Gearing / Spool diameter in inches * mm/in * PI
 
@@ -123,12 +123,12 @@ public final class Constants {
     public static final double kCoralLoadedHeight = 690; // This should be some height above the bottom danger zone so arm can swing up
     public static final double kStartingHeight = kCoralLoadedHeight; // Height where elevator starts with coral pre-loaded
     public static final double kCoralGrabbableHeight = 901.0; // Height that coral can still slide in under the arm for the coral to be grabbable
-    public static final double kL2PreScoreHeight = 730.0;
-    public static final double kL2PostScoreHeight = 550.0;
-    public static final double kL3PreScoreHeight = 1077.0;
-    public static final double kL3PostScoreHeight = 930.0;
+    public static final double kL2PreScoreHeight = 743.0;
+    public static final double kL2PostScoreHeight = 563.0;
+    public static final double kL3PreScoreHeight = 1127.0;
+    public static final double kL3PostScoreHeight = 980.0;
     public static final double kL4PreScoreHeight = kMaxHeight;
-    public static final double kL4PostScoreHeight = 1450;
+    public static final double kL4PostScoreHeight = 1500;
     public static final double kL3L4AlgaeRemovalPrepHeight = 842;
     public static final double kL2L3AlgaeRemovalPrepHeight = 560;
     public static final double kL2L3AlgaeRemovalPostHeight = kL2L3AlgaeRemovalPrepHeight + 20;
