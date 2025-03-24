@@ -39,6 +39,12 @@ public class AutoDriveCmd extends Command {
   double fbOffset;
   boolean useOffset;
   private final DrivetrainSub m_drivetrainSub;
+  double previousPosx;
+  double previousPosy;
+  double previousPosRot;
+  double posXDifference;
+  double posYDifference;
+  double posRotDifference;
   //private final LedSub m_ledSub;
 
   /** Creates a new AutoDriveCmd. */
@@ -113,6 +119,15 @@ public class AutoDriveCmd extends Command {
     double fbFeedforward = 0;
     double lrFeedforward = 0;
     double rotFeedforward = 0;
+
+    posXDifference = Math.abs(previousPosx - m_apriltagPos.getX());
+    posYDifference = Math.abs(previousPosy - m_apriltagPos.getY());
+    posRotDifference = Math.abs(previousPosRot - m_apriltagPos.getRotation().getDegrees());
+    SmartDashboard.putNumber("posXDifference", posXDifference);
+    SmartDashboard.putNumber("posYDifference", posYDifference);
+    SmartDashboard.putNumber("posRotDifference", posRotDifference);
+
+
     if(!isInFbZone(true)) {
       fbFeedforward += 0.15 * Math.signum(yPower);
     }
@@ -123,7 +138,7 @@ public class AutoDriveCmd extends Command {
 
     ChassisSpeeds robotSpeeds = m_drivetrainSub.getRobotRelativeSpeeds();
 
-    if(!isInRotZone(true) && Math.abs(robotSpeeds.omegaRadiansPerSecond) < 0.035) {
+    if(!isInRotZone(true) && (Math.abs(robotSpeeds.omegaRadiansPerSecond) < 0.035)) {
       rotFeedforward += 0.03 * Math.signum(m_apriltagPos.getRotation().getDegrees());
     }
 
@@ -133,15 +148,26 @@ public class AutoDriveCmd extends Command {
             .withRotationalRate(
                 m_apriltagPos.getRotation().getDegrees() / 5 + rotFeedforward));
 
-    if(m_visionSub.getTv() == 0
-        || (Math.abs(robotSpeeds.vxMetersPerSecond) < 0.01 && Math.abs(robotSpeeds.vyMetersPerSecond) < 0.01
-            && Math.abs(robotSpeeds.omegaRadiansPerSecond) < 0.025)) {
+    SmartDashboard.putNumber("posXDifference", posXDifference);
+    SmartDashboard.putNumber("posYDifference", posYDifference);
+    SmartDashboard.putNumber("posRotDifference", posRotDifference);
+    SmartDashboard.putNumber("m_visionSub.getTv", m_visionSub.getTv());
+
+
+    if((m_visionSub.getTv() == 0)
+        || ((posXDifference < 0.0075) && (posYDifference < 0.0075) && (posRotDifference < 3))) { //If x difference is less than .01 AND y difference is less than .01 AND rotational difference is less than .025 THEN we are not moving and counter goes up
       counter++;
       //System.out.println(counter);
     } else {
       counter = 0;
     }
+    System.out.println(counter);
+
     // rotate in desired direction until angle is 0
+    previousPosx = m_apriltagPos.getX();
+    previousPosy = m_apriltagPos.getY();
+    previousPosRot = m_apriltagPos.getRotation().getDegrees();
+
   }
 
   // Called once the command ends or is interrupted.
@@ -151,12 +177,14 @@ public class AutoDriveCmd extends Command {
     m_drivetrainSub.setControl(autoDrive.withVelocityX(0).withVelocityY(0).withRotationalRate(0));
   }
 
+
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
 
     if(isInFbZone(false) && isInLrZone(false) && isInRotZone(false)) {
       // System.out.println("5555555555555555555555555 zone condition");
+      System.out.println("We reached target zone");
       return true;
     }
     /*
@@ -170,6 +198,7 @@ public class AutoDriveCmd extends Command {
      */
     if(counter >= 25) {
       // System.out.println("------------------------------- counter condition");
+      System.out.println("We've timed out"); //hey we timed out here//
       return true;
     }
     //m_ledSub.setElevatorColor((byte) 127, (byte) 127, (byte) 127);
