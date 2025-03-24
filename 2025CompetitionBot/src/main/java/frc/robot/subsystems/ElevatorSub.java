@@ -202,6 +202,8 @@ public class ElevatorSub extends TestableSubsystem {
     } else if((getPositionMm() > Constants.Elevator.kSlowDownUpperStageHeight)
         && (power > Constants.Elevator.kSlowDownUpperStagePower)) {
       powerValue = Constants.Elevator.kSlowDownUpperStagePower;
+    } else if((getPositionMm() >= Constants.Elevator.kMaxHeight) && (power > 0.0)) {
+      powerValue = 0;
     }
 
     if(powerValue > 0.75) {

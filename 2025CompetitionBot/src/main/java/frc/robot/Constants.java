@@ -113,7 +113,7 @@ public final class Constants {
     public static final double kSlowDownLowerStagePower = -0.15;
     public static final double kSlowDownLowerStageHeight = kMinHeight + 10;
     public static final double kSlowDownUpperStagePower = 0.15;
-    public static final double kSlowDownUpperStageHeight = kMaxHeight - 10;
+    public static final double kSlowDownUpperStageHeight = kMaxHeight - 50;
 
     public static final double kDangerZoneBottom = 817;
     public static final double kDangerZoneBraceBottom = 1203;
@@ -127,7 +127,7 @@ public final class Constants {
     public static final double kL2PostScoreHeight = 563.0;
     public static final double kL3PreScoreHeight = 1127.0;
     public static final double kL3PostScoreHeight = 980.0;
-    public static final double kL4PreScoreHeight = kMaxHeight;
+    public static final double kL4PreScoreHeight = kMaxHeight - 5;
     public static final double kL4PostScoreHeight = 1500;
     public static final double kL3L4AlgaeRemovalPrepHeight = 842;
     public static final double kL2L3AlgaeRemovalPrepHeight = 560;
