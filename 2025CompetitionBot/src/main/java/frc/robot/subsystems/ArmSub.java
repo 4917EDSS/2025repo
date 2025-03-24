@@ -94,6 +94,7 @@ public class ArmSub extends TestableSubsystem {
     SmartDashboard.putNumber("Arm Power", m_armMotor.get());
     SmartDashboard.putBoolean("Is at Arm limit", isAtTargetAngle());
     SmartDashboard.putNumber("Target Arm Angle", m_targetAngle);
+    SmartDashboard.putString("State", m_currentControl.state.toString());
 
     // Current power value is sent in setPower()
 
