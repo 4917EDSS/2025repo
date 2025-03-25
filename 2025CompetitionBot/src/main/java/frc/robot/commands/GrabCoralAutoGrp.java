@@ -23,7 +23,7 @@ public class GrabCoralAutoGrp extends SequentialCommandGroup {
     addCommands(
         new MoveElArmGrp(Constants.Elevator.kCoralGrabbableHeight, Constants.Arm.kCoralGrabbableAngle, armSub,
             elevatorSub), //Get ready to grab coral
-        new InstantCommand(() -> elevatorSub.setIntakeMotors(Constants.Intake.kIntakePower)),
+        new InstantCommand(() -> elevatorSub.setIntakeMotors(Constants.Intake.kAutoIntakePower)),
         new WaitForLowerCoralCmd(canSub),
         new MoveElArmGrp(Constants.Elevator.kCoralLoadedHeight, Constants.Arm.kMinArmAngle, armSub, elevatorSub),
         new InstantCommand(() -> elevatorSub.setIntakeMotors(0.0)));

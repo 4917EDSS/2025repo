@@ -206,8 +206,8 @@ public class ElevatorSub extends TestableSubsystem {
       powerValue = 0;
     }
 
-    if(powerValue > 0.75) {
-      powerValue = 0.75;
+    if(powerValue > 0.85) {
+      powerValue = 0.85;
     } else if(powerValue < -0.5) {
       powerValue = -0.5;
     }
