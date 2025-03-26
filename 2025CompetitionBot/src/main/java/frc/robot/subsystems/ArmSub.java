@@ -99,7 +99,7 @@ public class ArmSub extends TestableSubsystem {
     // Current power value is sent in setPower()
 
     // for tuning PID and feed forward values only
-    boolean tuning = true;
+    boolean tuning = false;
     if(tuning) {
       // Lighten the load by only updating these twice a second
       if(++m_smartDashboardCounter >= 30) {
