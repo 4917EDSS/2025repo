@@ -32,7 +32,6 @@ public class SetElevatorToHeightCmd extends Command {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    m_elevatorSub.enableAutomation();
     m_elevatorSub.setTargetHeight(m_targetHeight);
     m_elevatorSub.setElevatorSlowMode((m_isSlow));
   }
