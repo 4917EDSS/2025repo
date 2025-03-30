@@ -153,7 +153,6 @@ public class ElevatorSub extends TestableSubsystem {
     SmartDashboard.putNumber("El Current 2", testGetMotorAmps(2));
     SmartDashboard.putBoolean("Is at Elivator limit", isAtTargetHeight());
     SmartDashboard.putNumber("Elevator Target", m_targetHeight);
-
     // Current power value is sent in setPower()
 
     boolean tuning = false;
@@ -265,6 +264,11 @@ public class ElevatorSub extends TestableSubsystem {
     runHeightControl(false);
   }
 
+  /**
+   * Set the power of the coral intake wheels motor in the chute
+   * 
+   * @param power power to set the motor to (-1.0 to 1.0)
+   */
   public void setIntakeMotors(double power) {
     m_intakeMotor.set(power);
   }
@@ -310,7 +314,11 @@ public class ElevatorSub extends TestableSubsystem {
     return !m_encoderResetSwitch.get();
   }
 
-
+  /**
+   * Enable/disable the limit on elevator power
+   * 
+   * @param isSlow true to limit the power
+   */
   public void setElevatorSlowMode(boolean isSlow) {
     m_isSlow = isSlow;
 
@@ -419,7 +427,6 @@ public class ElevatorSub extends TestableSubsystem {
     }
 
     if(updatePower) {
-
       if(m_isSlow) {
         if(totalPower > 0.2) {
           totalPower = 0.2;
@@ -428,7 +435,6 @@ public class ElevatorSub extends TestableSubsystem {
         }
       }
       setPower(totalPower);
-
     }
   }
 

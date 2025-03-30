@@ -334,19 +334,24 @@ public class ArmSub extends TestableSubsystem {
   }
 
   /**
-   * Indicates whether or not we are at our target height
-   * 
-   * @return true when we are within tolerance of our target height
+   * Sets the arm state to hold its current angle
    */
-
   public void setHolding() {
     m_currentControl.state = State.HOLDING;
   }
 
+  /**
+   * Sets the arm state to move to the target angle
+   */
   public void setMoving() {
     m_currentControl.state = State.MOVING;
   }
 
+  /**
+   * Indicates whether or not we are at our target height
+   * 
+   * @return true when we are within tolerance of our target height
+   */
   public boolean isAtTargetAngle() {
     // If we are within tolerance and our velocity is low, we're at our target
     if((Math.abs(m_targetAngle - getAngle()) < Constants.Arm.kAngleTolerance)
