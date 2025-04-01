@@ -26,6 +26,7 @@ public class SetArmToPositionCmd extends Command {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
+    m_armSub.enableAutomation();
     m_armSub.setTargetAngle(m_targetAngle);
   }
 

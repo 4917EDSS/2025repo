@@ -139,6 +139,7 @@ public class ArmSub extends TestableSubsystem {
   public void setPower(double power) {
     m_armMotor.set(power);
     SmartDashboard.putNumber("Arm Power", power);
+    setMoving();
   }
 
   /**
@@ -169,6 +170,40 @@ public class ArmSub extends TestableSubsystem {
   }
 
   /**
+   * Sets the target angle that the arm should move to
+   * 
+   * @param targetAngle target angle in degrees
+   */
+  public void setTargetAngle(double targetAngle) {
+    m_startingAngle = getAngle();
+
+    if(targetAngle > Constants.Arm.kMaxArmAngle) {
+      targetAngle = Constants.Arm.kMaxArmAngle;
+    }
+    if(targetAngle < Constants.Arm.kMinArmAngle) {
+      targetAngle = Constants.Arm.kMinArmAngle;
+    }
+    m_targetAngle = targetAngle;
+    enableAutomation();
+    runAngleControl(true);
+  }
+
+  /**
+   * Enables automation
+   */
+  public void enableAutomation() {
+    m_automationEnabled = true;
+    setMoving();
+  }
+
+  /**
+   * Disables automation
+   */
+  public void disableAutomation() {
+    m_automationEnabled = false;
+  }
+
+  /**
    * Returns if the arm is at its lower limit or not
    * 
    * @return true when it's at the limit, false otherwise
@@ -184,40 +219,6 @@ public class ArmSub extends TestableSubsystem {
    */
   public boolean isAtUpperLimit() {
     return m_forwardLimitSwitch.isPressed();
-  }
-
-  /**
-   * Sets the target angle that the arm should move to
-   * 
-   * @param targetAngle target angle in degrees
-   */
-  public void setTargetAngle(double targetAngle) {
-    m_startingAngle = getAngle();
-
-    if(targetAngle > Constants.Arm.kMaxArmAngle) {
-      targetAngle = Constants.Arm.kMaxArmAngle;
-    }
-    if(targetAngle < Constants.Arm.kMinArmAngle) {
-      targetAngle = Constants.Arm.kMinArmAngle;
-    }
-    m_targetAngle = targetAngle;
-    setMoving();
-    enableAutomation();
-    runAngleControl(true);
-  }
-
-  /**
-   * Enables automation
-   */
-  public void enableAutomation() {
-    m_automationEnabled = true;
-  }
-
-  /**
-   * Disables automation
-   */
-  public void disableAutomation() {
-    m_automationEnabled = false;
   }
 
   /**
@@ -247,7 +248,10 @@ public class ArmSub extends TestableSubsystem {
         break;
 
       case HOLDING:
+        SmartDashboard.putBoolean("Arm Holding", true);
+
         break;
+
 
       default:
         m_currentControl.state = State.INTERRUPTED;
@@ -295,7 +299,6 @@ public class ArmSub extends TestableSubsystem {
     if(m_currentControl.state == State.INTERRUPTED) {
       activeAngle = m_blockedAngle;
     }
-
     if(m_currentControl.state == State.HOLDING) {
       setPower(0);
       return;
@@ -335,7 +338,6 @@ public class ArmSub extends TestableSubsystem {
    */
   public void setHolding() {
     m_currentControl.state = State.HOLDING;
-    SmartDashboard.putBoolean("Arm Holding", true);
   }
 
   /**
@@ -343,7 +345,6 @@ public class ArmSub extends TestableSubsystem {
    */
   public void setMoving() {
     m_currentControl.state = State.MOVING;
-    SmartDashboard.putBoolean("Arm Holding", false);
   }
 
   /**
