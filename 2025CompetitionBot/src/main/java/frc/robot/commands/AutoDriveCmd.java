@@ -152,11 +152,11 @@ public class AutoDriveCmd extends Command {
     if((m_visionSub.getTv() == 0)
         || ((posXDifference < 0.0075) && (posYDifference < 0.0075) && (posRotDifference < 3))) { //If x difference is less than .01 AND y difference is less than .01 AND rotational difference is less than .025 THEN we are not moving and counter goes up
       counter++;
-      //System.out.println(counter);
+      System.out.println(counter);
     } else {
       counter = 0;
     }
-    System.out.println(counter);
+    //System.out.println(counter);
 
     // rotate in desired direction until angle is 0
     previousPosx = m_apriltagPos.getX();
