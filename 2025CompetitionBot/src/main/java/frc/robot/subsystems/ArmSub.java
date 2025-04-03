@@ -300,7 +300,11 @@ public class ArmSub extends TestableSubsystem {
       activeAngle = m_blockedAngle;
     }
     if(m_currentControl.state == State.HOLDING) {
-      setPower(0);
+      if(getAngle() >= 27) {
+        setPower(0.15);
+      } else {
+        setPower(0);
+      }
       return;
     }
 
