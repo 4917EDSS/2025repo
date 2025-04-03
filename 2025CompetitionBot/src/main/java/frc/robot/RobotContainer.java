@@ -25,6 +25,7 @@ import frc.robot.commands.AlgaeRemovalL2L3Grp;
 import frc.robot.commands.AlgaeRemovalL3L4Grp;
 import frc.robot.commands.ArmMoveWithJoystickCmd;
 import frc.robot.commands.AutoDriveCmd;
+import frc.robot.commands.BackUpToPickUpcmd;
 import frc.robot.commands.ClimbDeployCmd;
 import frc.robot.commands.ClimbRetractCmd;
 import frc.robot.commands.CoralScoreL2Grp;
@@ -239,7 +240,7 @@ public class RobotContainer {
     m_driverController.povLeft().whileTrue(new ClimbDeployCmd(m_climbSub));
 
     // Share
-    m_driverController.share();
+    m_driverController.share().whileTrue(new BackUpToPickUpcmd(m_drivetrainSub, m_canSub));
 
     // Options
     m_driverController.options().onTrue(new InstantCommand(() -> slowDown()))

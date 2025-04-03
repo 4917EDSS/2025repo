@@ -123,9 +123,9 @@ public final class Constants {
     public static final double kCoralLoadedHeight = 690; // This should be some height above the bottom danger zone so arm can swing up
     public static final double kStartingHeight = kCoralLoadedHeight; // Height where elevator starts with coral pre-loaded
     public static final double kCoralGrabbableHeight = 901.0; // Height that coral can still slide in under the arm for the coral to be grabbable
-    public static final double kL2PreScoreHeight = 743.0;
+    public static final double kL2PreScoreHeight = 723.0;
     public static final double kL2PostScoreHeight = 563.0;
-    public static final double kL3PreScoreHeight = 1127.0;
+    public static final double kL3PreScoreHeight = 1107.0;
     public static final double kL3PostScoreHeight = 980.0;
     public static final double kL4PreScoreHeight = kMaxHeight - 5;
     public static final double kL4PostScoreHeight = 1500;

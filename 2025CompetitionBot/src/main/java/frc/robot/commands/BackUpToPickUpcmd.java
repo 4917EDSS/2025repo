@@ -17,14 +17,12 @@ import frc.robot.commands.WaitForUpperCoralCmd;
  */
 public class BackUpToPickUpcmd extends Command {
   private final DrivetrainSub m_drivetrainSub;
-  private final CanSub m_canSub;
   private final SwerveRequest.RobotCentric autoBackUpDrive = new SwerveRequest.RobotCentric()
       .withDriveRequestType(DriveRequestType.OpenLoopVoltage);
 
   /** Creates a new BackUpToPickUpcmd. */
   public BackUpToPickUpcmd(DrivetrainSub drivetrainSub, CanSub canSub) {
     m_drivetrainSub = drivetrainSub;
-    m_canSub = canSub;
     addRequirements(drivetrainSub);
     // Use addRequirements() here to declare subsystem dependencies.
   }
@@ -38,14 +36,19 @@ public class BackUpToPickUpcmd extends Command {
   public void execute() {
 
     m_drivetrainSub.setControl(
-        autoBackUpDrive.withVelocityX(0.1)
+        autoBackUpDrive.withVelocityX(-0.25)
             .withVelocityY(0)
             .withRotationalRate(0));
   }
 
   // Called once the command ends or is interrupted.
   @Override
-  public void end(boolean interrupted) {}
+  public void end(boolean interrupted) {
+    m_drivetrainSub.setControl(
+        autoBackUpDrive.withVelocityX(0)
+            .withVelocityY(0)
+            .withRotationalRate(0));
+  }
 
   // Returns true when the command should end.
   @Override

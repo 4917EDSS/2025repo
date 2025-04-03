@@ -175,6 +175,14 @@ public class CanSub extends SubsystemBase {
 
   public boolean isLowerCoralPresent() {
     if(m_lowerCoralSensor < 100) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  public boolean isUpperCoralPresent() {
+    if(m_upperCoralSensor < 750) {
       if(blinLed) {
         m_ledSub.blink((byte) 0, (byte) 127, (byte) 0, (byte) 127, (byte) 127, (byte) 127);
         blinLed = false;
@@ -182,14 +190,6 @@ public class CanSub extends SubsystemBase {
       return true;
     } else {
       blinLed = true;
-      return false;
-    }
-  }
-
-  public boolean isUpperCoralPresent() {
-    if(m_upperCoralSensor < 750) {
-      return true;
-    } else {
       return false;
     }
   }
