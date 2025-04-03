@@ -210,10 +210,12 @@ public class RobotContainer {
             new InstantCommand(() -> RobotStatus.l2L3Algae())));
 
     // R1
-    m_driverController.R1()
-        .onTrue(new ParallelCommandGroup(
-            new AlgaeRemovalL3L4Grp(m_armSub, m_canSub, m_drivetrainSub, m_elevatorSub, m_visionSub),
-            new InstantCommand(() -> RobotStatus.l3L4Algae())));
+    m_driverController.R1().onTrue(new InstantCommand(() -> slowDown()))
+        .onFalse(new InstantCommand(() -> speedUp()));
+
+    // .onTrue(new ParallelCommandGroup(
+    //     new AlgaeRemovalL3L4Grp(m_armSub, m_canSub, m_drivetrainSub, m_elevatorSub, m_visionSub),
+    //     new InstantCommand(() -> RobotStatus.l3L4Algae())));
 
     // L2
     m_driverController.L2()
@@ -243,8 +245,8 @@ public class RobotContainer {
     m_driverController.share().whileTrue(new BackUpToPickUpcmd(m_drivetrainSub, m_canSub));
 
     // Options
-    m_driverController.options().onTrue(new InstantCommand(() -> slowDown()))
-        .onFalse(new InstantCommand(() -> speedUp()));;
+    // m_driverController.options().onTrue(new InstantCommand(() -> slowDown()))
+    //     .onFalse(new InstantCommand(() -> speedUp()));;
     // m_driverController.options().whileTrue(AutoBuilder.pathfindToPose(
     //     new Pose2d(2, 6.5, new Rotation2d(0)),
     //     m_constraints,
