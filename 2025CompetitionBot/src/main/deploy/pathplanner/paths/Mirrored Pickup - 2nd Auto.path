@@ -8,8 +8,8 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 1.5393615417423259,
-        "y": 1.1474105734301592
+        "x": 1.4088828596801974,
+        "y": 0.910701900593773
       },
       "isLocked": false,
       "linkedName": "mirrored pickup"
@@ -20,8 +20,8 @@
         "y": 1.119
       },
       "prevControl": {
-        "x": 1.7697107085377572,
-        "y": 1.0533521890629114
+        "x": 1.5927226027397259,
+        "y": 0.8320419520547944
       },
       "nextControl": null,
       "isLocked": false,

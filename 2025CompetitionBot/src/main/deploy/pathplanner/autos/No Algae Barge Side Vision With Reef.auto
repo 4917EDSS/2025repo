@@ -7,7 +7,7 @@
         {
           "type": "named",
           "data": {
-            "name": "Set Left"
+            "name": "Set Right"
           }
         },
         {
@@ -17,7 +17,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "Mirrored Start- 1st Auto"
+                  "pathName": "Start - 1st Auto"
                 }
               },
               {
@@ -38,7 +38,7 @@
         {
           "type": "named",
           "data": {
-            "name": "Set Right"
+            "name": "Set Left"
           }
         },
         {
@@ -52,7 +52,7 @@
                     {
                       "type": "path",
                       "data": {
-                        "pathName": "Mirrored 1st Auto - Pickup"
+                        "pathName": "1st Score - Pickup"
                       }
                     },
                     {
@@ -64,7 +64,7 @@
                     {
                       "type": "path",
                       "data": {
-                        "pathName": "Mirrored Pickup - 2nd Auto"
+                        "pathName": "Pickup - 2nd Auto"
                       }
                     }
                   ]
@@ -101,7 +101,7 @@
         {
           "type": "named",
           "data": {
-            "name": "Set Left"
+            "name": "Set Right"
           }
         },
         {
@@ -115,7 +115,7 @@
                     {
                       "type": "path",
                       "data": {
-                        "pathName": "Mirrored 2nd Auto - Pickup"
+                        "pathName": "2nd Score - Pickup"
                       }
                     },
                     {
@@ -127,7 +127,7 @@
                     {
                       "type": "path",
                       "data": {
-                        "pathName": "Mirrored Pickup - 3rd Auto"
+                        "pathName": "Pickup - 3rd Auto"
                       }
                     }
                   ]
@@ -140,7 +140,7 @@
                     {
                       "type": "wait",
                       "data": {
-                        "waitTime": 0.1
+                        "waitTime": 0.5
                       }
                     },
                     {
@@ -166,47 +166,15 @@
           "data": {
             "commands": [
               {
-                "type": "sequential",
+                "type": "path",
                 "data": {
-                  "commands": [
-                    {
-                      "type": "path",
-                      "data": {
-                        "pathName": "Mirrored 3rd Auto - Pickup"
-                      }
-                    },
-                    {
-                      "type": "named",
-                      "data": {
-                        "name": "IsCoralPresent"
-                      }
-                    },
-                    {
-                      "type": "path",
-                      "data": {
-                        "pathName": "Mirrored 4th auto pickup"
-                      }
-                    }
-                  ]
+                  "pathName": "3rd Score - Pickup"
                 }
               },
               {
-                "type": "sequential",
+                "type": "named",
                 "data": {
-                  "commands": [
-                    {
-                      "type": "wait",
-                      "data": {
-                        "waitTime": 0.1
-                      }
-                    },
-                    {
-                      "type": "named",
-                      "data": {
-                        "name": "AutoGrabCoralAutoGrp"
-                      }
-                    }
-                  ]
+                  "name": "AutoGrabCoralAutoGrp"
                 }
               }
             ]
@@ -215,7 +183,13 @@
         {
           "type": "named",
           "data": {
-            "name": "Set Right"
+            "name": "Set Left"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "4th auto pickup"
           }
         },
         {

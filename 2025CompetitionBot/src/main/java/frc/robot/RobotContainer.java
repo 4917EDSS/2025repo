@@ -380,6 +380,8 @@ public class RobotContainer {
     m_Chooser.setDefaultOption("Leave", new PathPlannerAuto("Leave Auto"));
     m_Chooser.addOption("Do-Nothing", new DoNothingGrp());
     m_Chooser.addOption("Barge Side Vision With Reef", new PathPlannerAuto("Barge Side Vision With Reef"));
+    m_Chooser.addOption("No Algae Barge Side Vision With Reef",
+        new PathPlannerAuto("No Algae Barge Side Vision With Reef"));
     m_Chooser.addOption("Processor Side Vision With Reef", new PathPlannerAuto("Mirrored Barge Side Vision With Reef"));
     m_Chooser.addOption("Push and Leave", new PathPlannerAuto("Push and Leave"));
     m_Chooser.addOption("Push With Barge Side Vision With Reef",
