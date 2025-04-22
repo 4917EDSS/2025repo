@@ -3,13 +3,13 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 1.2321061643835618,
-        "y": 1.0874785958904112
+        "x": 1.2,
+        "y": 1.04
       },
       "prevControl": null,
       "nextControl": {
-        "x": 6.160530821917808,
-        "y": 1.598351883561644
+        "x": 6.1284246575342465,
+        "y": 1.5508732876712328
       },
       "isLocked": false,
       "linkedName": "mirrored pickup"

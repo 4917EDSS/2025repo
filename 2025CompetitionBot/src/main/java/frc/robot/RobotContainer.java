@@ -374,7 +374,7 @@ public class RobotContainer {
   }
 
   /**
-   * Create a list of auto period action choices
+   * Create a list of auto period action choices+
    */
   void autoChooserSetup() {
     m_Chooser.setDefaultOption("Leave", new PathPlannerAuto("Leave Auto"));

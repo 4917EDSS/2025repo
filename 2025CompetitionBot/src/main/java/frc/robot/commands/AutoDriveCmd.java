@@ -60,7 +60,7 @@ public class AutoDriveCmd extends Command {
     } else {
       fbOffset = 0.48;
       if(RobotStatus.LastReefPosition().equals(RobotStatus.ReefPosition.kL4)) {
-        fbOffset += 0.0227; //This is half an inch in meters
+        fbOffset += 0.0277; //This is half an inch in meters
       }
     }
 
