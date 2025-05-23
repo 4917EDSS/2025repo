@@ -27,6 +27,10 @@ public class FieldImage {
         //add all vertices and sides here. Use side numbers for vertices
     }
 
+    public void generateRobot() {
+        //add robot vertices and sides
+    }
+
     public ArrayList<double[]> getVerts() {
         ArrayList<double[]> vertices = new ArrayList<double[]>();
         vertices.addAll(robotVertices);
