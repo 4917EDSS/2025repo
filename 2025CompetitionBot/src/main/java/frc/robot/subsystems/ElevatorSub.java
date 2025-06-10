@@ -449,7 +449,7 @@ public class ElevatorSub extends TestableSubsystem {
         && (getVelocity() < Constants.Elevator.kAtTargetMaxVelocity)) {
       return true;
     } else if(m_targetHeight >= 1600 && isAtUpperLimit()) {
-      return true;
+      return true;    
     } else {
       return false;
     }
