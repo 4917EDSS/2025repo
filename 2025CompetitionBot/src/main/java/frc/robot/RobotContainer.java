@@ -210,8 +210,8 @@ public class RobotContainer {
             new InstantCommand(() -> RobotStatus.l2L3Algae())));
 
     // R1
-    m_driverController.R1().onTrue(new InstantCommand(() -> slowDown()))
-        .onFalse(new InstantCommand(() -> speedUp()));
+    // m_driverController.R1().onTrue(new InstantCommand(() -> slowDown()))
+    //     .onFalse(new InstantCommand(() -> speedUp()));
 
     // .onTrue(new ParallelCommandGroup(
     //     new AlgaeRemovalL3L4Grp(m_armSub, m_canSub, m_drivetrainSub, m_elevatorSub, m_visionSub),
