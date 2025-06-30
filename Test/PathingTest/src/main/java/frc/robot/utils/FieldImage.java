@@ -7,43 +7,14 @@ import java.util.ArrayList;
 
 /** Add your docs here. */
 public class FieldImage {
-    ArrayList<double[]> fieldVertices = new ArrayList<double[]>();
-    ArrayList<double[]> fieldSides = new ArrayList<double[]>();
-
-    ArrayList<double[]> robotVertices = new ArrayList<double[]>();
-    ArrayList<double[]> robotSides = new ArrayList<double[]>();
-
-    public void addVerticies(double x, double y) {
-        double[] coords = {x,y};
-        fieldVertices.add(coords);
-    }
-
-    public void addSide(double x1, double y1, double x2, double y2){
-        double[] coords = {x1,y1,x2,y2};
-        fieldSides.add(coords);
-    }
 
     public void generateField() {
-        //add all vertices and sides here. Use side numbers for vertices
+        //create a grid map of the field (idk about the fidelity)
     }
 
     public void generateRobot() {
-        //add robot vertices and sides
+        //no idea how this will be updated, but we'll see. maybe we can just extrapolate other robots positions based on their size.
     }
 
-    public ArrayList<double[]> getVerts() {
-        ArrayList<double[]> vertices = new ArrayList<double[]>();
-        vertices.addAll(robotVertices);
-        vertices.addAll(fieldVertices);
-        return vertices;
-    }
-
-    public ArrayList<double[]> getSides() {
-        ArrayList<double[]> sides = new ArrayList<double[]>();
-        sides.addAll(robotSides);
-        sides.addAll(fieldSides);
-        return sides;
-    }
-
-    //Need to cerate representation of field with verticies of shapes and edges. Use visibility graph pathing with a* search algorithm
+    //What i had here was crap because i didnt understand how search alorgithms worked, now im just going to use a grid
 }
