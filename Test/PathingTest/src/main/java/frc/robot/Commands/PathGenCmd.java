@@ -9,6 +9,8 @@ public class PathGenCmd{
   int[] targetPos;
   double g;
   int[][] field;
+  int[][][] connections = new int[55][27][2];
+  double[][] gVals = new double[55][27];
 
   public double calcF(int[] pos){
     return calcG(pos)+calcH(pos);
@@ -60,16 +62,29 @@ public class PathGenCmd{
           toSearch.remove(currentPos);
 
           if(currentPos.equals(targetPos)) {
-            //idk
+            int[] currentPathCoord = targetPos.clone();
+            ArrayList<int[]> path = new ArrayList<int[]>();
+            int count = 1000;
+            while(currentPathCoord != startingPos){
+              path.add(currentPathCoord);
+              currentPathCoord[0] = connections[currentPathCoord[0]][currentPathCoord[1]][0];
+              currentPathCoord[1] = connections[currentPathCoord[0]][currentPathCoord[1]][1];
+              count--;
+              if(count<0){
+                //it dies but i dont want to deal with this yet
+              }
+            }
           }
 
           for(int[] neighbour : getNeighbours(currentPos)) {
             boolean inToSearch = toSearch.contains(neighbour);
 
-            double costToNeighbour = calcG(currentPos) + getDistance(currentPos, neighbour);
+            double costToNeighbour = gVals[currentPos[0]][currentPos[1]] + getDistance(currentPos, neighbour);
 
             if(!inToSearch || costToNeighbour < calcG(neighbour)){
-              //idk
+              gVals[neighbour[0]][neighbour[1]] = costToNeighbour;
+              connections[neighbour[0]][neighbour[1]][0] = currentPos[0];
+              connections[neighbour[0]][neighbour[1]][1] = currentPos[1];
 
                 if(!inToSearch){
                   //idk
