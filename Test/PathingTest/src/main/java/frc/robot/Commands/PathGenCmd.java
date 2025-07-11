@@ -11,16 +11,16 @@ public class PathGenCmd{
   int[][] field;
 
   public double calcF(int[] pos){
-    return calcG()+calcH(pos);
+    return calcG(pos)+calcH(pos);
   }
 
   public double calcH(int[] pos){
     return Math.sqrt(Math.pow(targetPos[0] - pos[0], 2));
   }
 
-  public double calcG(){
+  public double calcG(int[] pos){
     return 0.0;
-    //idfk
+    //idk
   }
 
   public int[][] getNeighbours(int[] pos){
@@ -35,6 +35,10 @@ public class PathGenCmd{
     }
     int[][] returnArray = new int[neighbours.size()][2];
     return returnArray;
+  }
+
+  public double getDistance(int[] start, int[] end) {
+    return Math.sqrt(Math.pow(end[0] - start[0], 2));
   }
 
   public void generatePath(int[] startingPos, int[] targetPos, int[][] field) {
@@ -56,11 +60,21 @@ public class PathGenCmd{
           toSearch.remove(currentPos);
 
           if(currentPos.equals(targetPos)) {
-            //tspmo ong
+            //idk
           }
 
           for(int[] neighbour : getNeighbours(currentPos)) {
-            
+            boolean inToSearch = toSearch.contains(neighbour);
+
+            double costToNeighbour = calcG(currentPos) + getDistance(currentPos, neighbour);
+
+            if(!inToSearch || costToNeighbour < calcG(neighbour)){
+              //idk
+
+                if(!inToSearch){
+                  //idk
+                }
+            }
           }
 
         }
