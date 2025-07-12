@@ -50,13 +50,14 @@ public class PathGenCmd{
     ArrayList<int[]> processed = new ArrayList<int[]>();
     toSearch.add(startingPos);
 
-    while(!currentPos.equals(targetPos)) {
+    while(toSearch.size()>0) {
       currentPos = toSearch.get(0);
 
         for(int[] coord : toSearch) {
-          if(calcF(coord)<calcF(currentPos) || calcF(coord) == calcF(currentPos) && calcH(coord) < calcH(currentPos)){
+          if(calcF(coord)<calcF(currentPos) || calcF(coord) == calcF(currentPos) && calcH(coord) < calcH(currentPos)) {
             currentPos = coord.clone();
           }
+        }
 
           processed.add(currentPos);
           toSearch.remove(currentPos);
@@ -87,12 +88,10 @@ public class PathGenCmd{
               connections[neighbour[0]][neighbour[1]][1] = currentPos[1];
 
                 if(!inToSearch){
-                  //idk
+                  toSearch.add(neighbour);
                 }
             }
           }
-
-        }
     }
   }
 }
