@@ -12,16 +12,7 @@ public final class Main {
   private Main() {}
 
   public static void main(String... args) {
-     PathGenCmd pathGenCmd = new PathGenCmd();
-     FieldImage fieldImage = new FieldImage();
-     int[] s  = {0,0};
-     int[] t = {20,20};
-     System.out.println("i hate ts");
-     for(int[] k : pathGenCmd.generatePath(s, t, fieldImage.field)){
-      System.out.println('m');
-      System.out.println(k);
-     }
-     //RobotBase.startRobot(Robot::new);
+     RobotBase.startRobot(Robot::new);
 
   }
 }
