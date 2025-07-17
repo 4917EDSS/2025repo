@@ -5,8 +5,6 @@
 package frc.robot;
 
 import edu.wpi.first.wpilibj.RobotBase;
-import frc.robot.Commands.PathGenCmd;
-import frc.robot.utils.FieldImage;
 
 public final class Main {
   private Main() {}
