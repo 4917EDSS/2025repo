@@ -11,8 +11,8 @@ public class PathGenCmd {
   int[] targetPos;
   double g;
   int[][] field;
-  int[][][] connections = new int[55][27][2];
-  double[][] gVals = new double[55][27];
+  int[][][] connections;
+  double[][] gVals;
 
   public double calcF(int[] pos) {
     return gVals[pos[0]][pos[1]] + calcH(pos);
@@ -53,6 +53,9 @@ public class PathGenCmd {
   public ArrayList<int[]> generatePath(int[] startingPos, int[] targetPos, int[][] field) {
     this.targetPos = targetPos;
     this.field = field;
+    this.connections = new int[field.length][field[0].length][2];
+    gVals = new double[field.length][field[0].length];
+
     ArrayList<int[]> toSearch = new ArrayList<int[]>();
     ArrayList<int[]> processed = new ArrayList<int[]>();
     toSearch.add(startingPos);
