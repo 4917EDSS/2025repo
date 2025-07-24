@@ -16,7 +16,7 @@ public class RobotContainer {
   private final PathGenCmd m_pathGenCmd = new PathGenCmd();
   private final FieldImage m_fieldImage = new FieldImage();
   private int[] startingPos = {0, 0};
-  private int[] targetPos = {20, 10};
+  private int[] targetPos = {99, 69};
 
   public RobotContainer() {
     configureBindings();

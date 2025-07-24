@@ -28,7 +28,7 @@ public class PathGenCmd {
       for(int j = -1; j < 2; j++) {
         int[] temp = {pos[0] + i, pos[1] + j};
 
-        if((pos[0] + i >= 0 && pos[0] + i <= 55 && pos[1] + j >= 0 && pos[1] + j <= 27
+        if((pos[0] + i >= 0 && pos[0] + i <= field.length && pos[1] + j >= 0 && pos[1] + j <= field[0].length
             && field[pos[0] + i][pos[1] + j] == 0 && (i != 0 || j != 0))) {
           boolean fail = false;
           for(int[] f : processed) {
