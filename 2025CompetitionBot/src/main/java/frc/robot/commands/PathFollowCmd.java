@@ -5,24 +5,46 @@
 package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.Command;
+import frc.robot.commands.PathGenCmd;
+import frc.robot.subsystems.DrivetrainSub;
+import java.util.ArrayList;
 
 /*
  * You should consider using the more terse Command factories API instead
  * https://docs.wpilib.org/en/stable/docs/software/commandbased/organizing-command-based.html#defining-commands
  */
 public class PathFollowCmd extends Command {
+
+  private final DrivetrainSub m_drivetrainSub;
+  final PathGenCmd m_pathGenCmd = new PathGenCmd();
+  ArrayList<int[]> path = new ArrayList<int[]>();
+  int[] currentPos = new int[2];
+  int conversionFactor;
+  int fieldLength = 57; //I actually have no idea, were gonna have to figure this one out
+  int[] targetPos;
+
   /** Creates a new PathFollowCmd. */
-  public PathFollowCmd() {
+  public PathFollowCmd(DrivetrainSub drivetrainSub, int[] target) {
+    targetPos = target;
+    conversionFactor = fieldLength / m_pathGenCmd.field.length;
+    m_drivetrainSub = drivetrainSub;
     // Use addRequirements() here to declare subsystem dependencies.
+    addRequirements(drivetrainSub);
   }
 
   // Called when the command is initially scheduled.
   @Override
-  public void initialize() {}
+  public void initialize() {
+    currentPos[0] = (int) Math.round(m_drivetrainSub.getPose().getX() * conversionFactor);
+    currentPos[1] = (int) Math.round(m_drivetrainSub.getPose().getY() * conversionFactor);
+    path = m_pathGenCmd.generatePath(currentPos, targetPos, m_pathGenCmd.field);
+  }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
-  public void execute() {}
+  public void execute() {
+    path = m_pathGenCmd.generatePath(null, null, null);
+  }
 
   // Called once the command ends or is interrupted.
   @Override
