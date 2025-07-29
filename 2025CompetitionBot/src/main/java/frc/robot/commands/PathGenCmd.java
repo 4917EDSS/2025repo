@@ -6,13 +6,14 @@ import java.util.ArrayList;
  * You should consider using the more terse Command factories API instead
  * https://docs.wpilib.org/en/stable/docs/software/commandbased/organizing-command-based.html#defining-commands
  */
-public class PathGenCmd {
+public class PathGenCmd implements Runnable {
   int[] currentPos;
   int[] targetPos;
   double g;
   int[][] field;
   int[][][] connections;
   double[][] gVals;
+  String pathString;
 
   public double calcF(int[] pos) {
     return gVals[pos[0]][pos[1]] + calcH(pos);
@@ -130,4 +131,10 @@ public class PathGenCmd {
     return coords;
   }
 
+  @Override
+  public void run() {
+    while(true) {
+      System.out.println("this isnt working");
+    }
+  }
 }

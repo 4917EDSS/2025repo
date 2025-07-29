@@ -39,6 +39,7 @@ import frc.robot.commands.GrabCoralTeleopGrp;
 import frc.robot.commands.KillAllCmd;
 import frc.robot.commands.MoveElArmGrp;
 import frc.robot.commands.MoveElArmPostManualCmd;
+import frc.robot.commands.PathGenCmd;
 import frc.robot.commands.SetArmToPositionCmd;
 import frc.robot.commands.SetElevatorToHeightCmd;
 import frc.robot.commands.WaitForUpperCoralCmd;
@@ -96,6 +97,9 @@ public class RobotContainer {
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
+    //thread stuff
+
+
     // turn off logging
     // SignalLogger.stop();
     m_armSub.setElevatorPositionSupplier(() -> m_elevatorSub.getPositionMm());

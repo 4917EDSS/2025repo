@@ -37,6 +37,8 @@ public class PathFollowCmd extends Command {
   public void initialize() {
     currentPos[0] = (int) Math.round(m_drivetrainSub.getPose().getX() * conversionFactor);
     currentPos[1] = (int) Math.round(m_drivetrainSub.getPose().getY() * conversionFactor);
+    double xPosDiff = m_drivetrainSub.getPose().getX() * conversionFactor - currentPos[0];
+    double yPosDiff = m_drivetrainSub.getPose().getX() * conversionFactor - currentPos[1];
     path = m_pathGenCmd.generatePath(currentPos, targetPos, m_pathGenCmd.field);
   }
 
