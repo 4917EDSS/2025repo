@@ -134,7 +134,12 @@ public class PathGenCmd implements Runnable {
   @Override
   public void run() {
     while(true) {
-      System.out.println("this isnt working");
+      try {
+        System.out.println("this isnt working");
+        Thread.sleep(1000);
+      } catch (InterruptedException ie) {
+
+      }
     }
   }
 }

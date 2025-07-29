@@ -14,6 +14,8 @@ import frc.robot.commands.PathGenCmd;
  * call.
  */
 public final class Main {
+  String path;
+
   private Main() {}
 
   /**
@@ -29,7 +31,6 @@ public final class Main {
     t1.start();
     Thread t2 = new Thread((Runnable) robotBaseThread);
     t2.start();
-
     //RobotBase.startRobot(Robot::new);
   }
 }
