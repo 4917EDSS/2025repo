@@ -27,9 +27,11 @@ public final class Main {
   public static void main(String... args) {
     RobotBaseThread robotBaseThread = new RobotBaseThread();
     final PathGenCmd m_pathGenCmd = new PathGenCmd();
-    Thread t1 = new Thread(m_pathGenCmd);
+    Thread t1 = new Thread((Runnable) robotBaseThread);
+    Thread t2 = new Thread(m_pathGenCmd);
+    t1.setPriority(10);
+    t2.setPriority(1);
     t1.start();
-    Thread t2 = new Thread((Runnable) robotBaseThread);
     t2.start();
     //RobotBase.startRobot(Robot::new);
   }

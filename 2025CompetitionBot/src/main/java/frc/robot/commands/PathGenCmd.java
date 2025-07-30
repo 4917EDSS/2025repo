@@ -52,7 +52,8 @@ public class PathGenCmd implements Runnable {
   }
 
   public ArrayList<int[]> generatePath(int[] startingPos, int[] targetPos, int[][] field) {
-    this.targetPos = targetPos;
+    startingPos =
+        this.targetPos = targetPos;
     this.field = field;
     this.connections = new int[field.length][field[0].length][2];
     gVals = new double[field.length][field[0].length];

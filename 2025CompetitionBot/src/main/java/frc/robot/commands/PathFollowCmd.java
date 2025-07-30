@@ -8,6 +8,9 @@ import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.commands.PathGenCmd;
 import frc.robot.subsystems.DrivetrainSub;
 import java.util.ArrayList;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicIntegerArray;
+import java.util.concurrent.atomic.AtomicLong;
 
 /*
  * You should consider using the more terse Command factories API instead
@@ -18,7 +21,8 @@ public class PathFollowCmd extends Command {
   private final DrivetrainSub m_drivetrainSub;
   final PathGenCmd m_pathGenCmd = new PathGenCmd();
   ArrayList<int[]> path = new ArrayList<int[]>();
-  int[] currentPos = new int[2];
+  int[] currentPosInt = new int[2];
+  AtomicIntegerArray currentPos;
   int conversionFactor;
   int fieldLength = 57; //I actually have no idea, were gonna have to figure this one out
   int[] targetPos;
@@ -35,11 +39,12 @@ public class PathFollowCmd extends Command {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    currentPos[0] = (int) Math.round(m_drivetrainSub.getPose().getX() * conversionFactor);
-    currentPos[1] = (int) Math.round(m_drivetrainSub.getPose().getY() * conversionFactor);
-    double xPosDiff = m_drivetrainSub.getPose().getX() * conversionFactor - currentPos[0];
-    double yPosDiff = m_drivetrainSub.getPose().getX() * conversionFactor - currentPos[1];
-    path = m_pathGenCmd.generatePath(currentPos, targetPos, m_pathGenCmd.field);
+    currentPosInt[0] = (int) Math.round(m_drivetrainSub.getPose().getX() * conversionFactor);
+    currentPosInt[1] = (int) Math.round(m_drivetrainSub.getPose().getY() * conversionFactor);
+    currentPos = new AtomicIntegerArray(currentPosInt);
+    double xPosDiff = m_drivetrainSub.getPose().getX() * conversionFactor - currentPos.get(0);
+    double yPosDiff = m_drivetrainSub.getPose().getX() * conversionFactor - currentPos.get(1);
+    //path = m_pathGenCmd.generatePath(currentPos, targetPos, m_pathGenCmd.field);
   }
 
   // Called every time the scheduler runs while the command is scheduled.
