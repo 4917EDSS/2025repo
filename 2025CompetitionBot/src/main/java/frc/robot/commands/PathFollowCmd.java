@@ -21,7 +21,6 @@ public class PathFollowCmd extends Command {
   private final DrivetrainSub m_drivetrainSub;
   final PathGenCmd m_pathGenCmd = new PathGenCmd();
   ArrayList<int[]> path = new ArrayList<int[]>();
-  int[] currentPosInt = new int[2];
   AtomicIntegerArray currentPos;
   int conversionFactor;
   int fieldLength = 57; //I actually have no idea, were gonna have to figure this one out
@@ -39,9 +38,6 @@ public class PathFollowCmd extends Command {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    currentPosInt[0] = (int) Math.round(m_drivetrainSub.getPose().getX() * conversionFactor);
-    currentPosInt[1] = (int) Math.round(m_drivetrainSub.getPose().getY() * conversionFactor);
-    currentPos = new AtomicIntegerArray(currentPosInt);
     double xPosDiff = m_drivetrainSub.getPose().getX() * conversionFactor - currentPos.get(0);
     double yPosDiff = m_drivetrainSub.getPose().getX() * conversionFactor - currentPos.get(1);
     //path = m_pathGenCmd.generatePath(currentPos, targetPos, m_pathGenCmd.field);
@@ -50,7 +46,7 @@ public class PathFollowCmd extends Command {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    path = m_pathGenCmd.generatePath(null, null, null);
+    //path = m_pathGenCmd.generatePath(null, null, null);
   }
 
   // Called once the command ends or is interrupted.

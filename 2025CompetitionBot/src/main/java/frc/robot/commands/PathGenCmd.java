@@ -1,19 +1,26 @@
 package frc.robot.commands;
 
 import java.util.ArrayList;
+import java.util.concurrent.atomic.AtomicIntegerArray;
+import frc.robot.subsystems.DrivetrainSub;
+import frc.robot.utils.FieldImage;
 
 /*
  * You should consider using the more terse Command factories API instead
  * https://docs.wpilib.org/en/stable/docs/software/commandbased/organizing-command-based.html#defining-commands
  */
 public class PathGenCmd implements Runnable {
+  FieldImage fieldImage = new FieldImage();
+  DrivetrainSub m_drivetrainSub;
   int[] currentPos;
   int[] targetPos;
   double g;
-  int[][] field;
+  int[][] field = fieldImage.field;
   int[][][] connections;
   double[][] gVals;
   String pathString;
+  int fieldLength = 57;
+  int conversionFactor = fieldLength / field.length;
 
   public double calcF(int[] pos) {
     return gVals[pos[0]][pos[1]] + calcH(pos);
@@ -51,10 +58,11 @@ public class PathGenCmd implements Runnable {
     return Math.sqrt(Math.pow(start[0] - end[0], 2) + Math.pow(start[1] - end[1], 2));
   }
 
-  public ArrayList<int[]> generatePath(int[] startingPos, int[] targetPos, int[][] field) {
-    startingPos =
-        this.targetPos = targetPos;
-    this.field = field;
+  public ArrayList<int[]> generatePath(int[] targetPos, DrivetrainSub drivetrainSub) {
+    m_drivetrainSub = drivetrainSub;
+    int[] startingPos = {(int) Math.round(m_drivetrainSub.getPose().getX() * conversionFactor),
+        (int) Math.round(m_drivetrainSub.getPose().getY() * conversionFactor)};
+    this.targetPos = targetPos;
     this.connections = new int[field.length][field[0].length][2];
     gVals = new double[field.length][field[0].length];
 
@@ -124,9 +132,9 @@ public class PathGenCmd implements Runnable {
   }
 
 
-  public String printPoints(int[] startingCoords, int[] targetCoords, int[][] gameField) {
+  public String printPoints(int[] targetCoords, DrivetrainSub drivetrainSub) {
     String coords = "";
-    for(int[] n : generatePath(startingCoords, targetCoords, gameField)) {
+    for(int[] n : generatePath(targetCoords, drivetrainSub)) {
       coords = coords + (n[0] + ", " + n[1] + "\n");
     }
     return coords;
