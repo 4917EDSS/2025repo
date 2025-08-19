@@ -1,9 +1,8 @@
 package frc.robot.commands;
 
 import java.util.ArrayList;
-import java.util.concurrent.atomic.AtomicIntegerArray;
-import frc.robot.subsystems.DrivetrainSub;
 import frc.robot.utils.FieldImage;
+import frc.robot.utils.PathFollowTargetPos;
 
 /*
  * You should consider using the more terse Command factories API instead
@@ -11,7 +10,6 @@ import frc.robot.utils.FieldImage;
  */
 public class PathGenCmd implements Runnable {
   FieldImage fieldImage = new FieldImage();
-  DrivetrainSub m_drivetrainSub;
   int[] currentPos;
   int[] targetPos;
   double g;
@@ -58,10 +56,9 @@ public class PathGenCmd implements Runnable {
     return Math.sqrt(Math.pow(start[0] - end[0], 2) + Math.pow(start[1] - end[1], 2));
   }
 
-  public ArrayList<int[]> generatePath(int[] targetPos, DrivetrainSub drivetrainSub) {
-    m_drivetrainSub = drivetrainSub;
-    int[] startingPos = {(int) Math.round(m_drivetrainSub.getPose().getX() * conversionFactor),
-        (int) Math.round(m_drivetrainSub.getPose().getY() * conversionFactor)};
+  public ArrayList<int[]> generatePath(int[] targetPos) {
+    int[] startingPos = {(int) Math.round(PathFollowTargetPos.startingPos[0] * conversionFactor),
+        (int) Math.round(PathFollowTargetPos.startingPos[0] * conversionFactor)};
     this.targetPos = targetPos;
     this.connections = new int[field.length][field[0].length][2];
     gVals = new double[field.length][field[0].length];
@@ -132,10 +129,18 @@ public class PathGenCmd implements Runnable {
   }
 
 
-  public String printPoints(int[] targetCoords, DrivetrainSub drivetrainSub) {
+  public String printPoints(int[] targetCoords) {
     String coords = "";
-    for(int[] n : generatePath(targetCoords, drivetrainSub)) {
+    for(int[] n : generatePath(targetCoords)) {
       coords = coords + (n[0] + ", " + n[1] + "\n");
+    }
+    return coords;
+  }
+
+  public int[] printNextPoint(int[] targetCoords) {
+    int[] coords = new int[2];
+    for(int[] n : generatePath(targetCoords)) {
+      coords = n;
     }
     return coords;
   }
@@ -144,8 +149,9 @@ public class PathGenCmd implements Runnable {
   public void run() {
     while(true) {
       try {
-        System.out.println("this isnt working");
-        Thread.sleep(1000);
+        PathFollowTargetPos.finalPos = printNextPoint(PathFollowTargetPos.finalPos);
+        System.out.println(PathFollowTargetPos.finalPos);
+        Thread.sleep(100);
       } catch (InterruptedException ie) {
 
       }

@@ -7,6 +7,8 @@ package frc.robot.commands;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.commands.PathGenCmd;
 import frc.robot.subsystems.DrivetrainSub;
+import frc.robot.utils.FieldImage;
+import frc.robot.utils.PathFollowTargetPos;
 import java.util.ArrayList;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicIntegerArray;
@@ -19,17 +21,17 @@ import java.util.concurrent.atomic.AtomicLong;
 public class PathFollowCmd extends Command {
 
   private final DrivetrainSub m_drivetrainSub;
-  final PathGenCmd m_pathGenCmd = new PathGenCmd();
+  FieldImage fieldImage = new FieldImage();
   ArrayList<int[]> path = new ArrayList<int[]>();
-  AtomicIntegerArray currentPos;
   int conversionFactor;
+  int[] currentPos = new int[2];
   int fieldLength = 57; //I actually have no idea, were gonna have to figure this one out
-  int[] targetPos;
+  public int[] driveTargetPos;
 
   /** Creates a new PathFollowCmd. */
   public PathFollowCmd(DrivetrainSub drivetrainSub, int[] target) {
-    targetPos = target;
-    conversionFactor = fieldLength / m_pathGenCmd.field.length;
+    driveTargetPos = target;
+    conversionFactor = fieldLength / fieldImage.field.length;
     m_drivetrainSub = drivetrainSub;
     // Use addRequirements() here to declare subsystem dependencies.
     addRequirements(drivetrainSub);
@@ -38,14 +40,19 @@ public class PathFollowCmd extends Command {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    double xPosDiff = m_drivetrainSub.getPose().getX() * conversionFactor - currentPos.get(0);
-    double yPosDiff = m_drivetrainSub.getPose().getX() * conversionFactor - currentPos.get(1);
-    //path = m_pathGenCmd.generatePath(currentPos, targetPos, m_pathGenCmd.field);
+    PathFollowTargetPos.finalPos = driveTargetPos;
+    currentPos[0] = (int) Math.round(m_drivetrainSub.getPose().getX());
+    currentPos[1] = (int) Math.round(m_drivetrainSub.getPose().getY());
+    double xPosDiff = m_drivetrainSub.getPose().getX() * conversionFactor - m_drivetrainSub.getPose().getX();
+    double yPosDiff = m_drivetrainSub.getPose().getY() * conversionFactor - m_drivetrainSub.getPose().getY();
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
+    currentPos[0] = (int) Math.round(m_drivetrainSub.getPose().getX());
+    currentPos[1] = (int) Math.round(m_drivetrainSub.getPose().getY());
+    PathFollowTargetPos.startingPos = currentPos;
     //path = m_pathGenCmd.generatePath(null, null, null);
   }
 
