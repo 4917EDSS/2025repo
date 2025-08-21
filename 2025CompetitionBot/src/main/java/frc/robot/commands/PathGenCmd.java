@@ -103,7 +103,7 @@ public class PathGenCmd implements Runnable {
             //it dies but i dont want to deal with this yet
           }
         }
-        path.add(currentPathCoord);
+        //path.add(currentPathCoord);
         return path;
 
       }
@@ -149,8 +149,8 @@ public class PathGenCmd implements Runnable {
   public void run() {
     while(true) {
       try {
-        PathFollowTargetPos.finalPos = printNextPoint(PathFollowTargetPos.finalPos);
-        System.out.println(PathFollowTargetPos.finalPos);
+        PathFollowTargetPos.currentTarget = printNextPoint(PathFollowTargetPos.finalPos);
+        System.out.println(PathFollowTargetPos.finalPos[0] + ", " + PathFollowTargetPos.finalPos[1]);
         Thread.sleep(100);
       } catch (InterruptedException ie) {
 
