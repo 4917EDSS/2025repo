@@ -4,7 +4,7 @@
 
 package frc.robot;
 
-import frc.robot.commands.PathGenCmd;
+import edu.wpi.first.wpilibj.RobotBase;
 
 /**
  * Do NOT add any static variables to this class, or any initialization at all. Unless you know what
@@ -12,8 +12,6 @@ import frc.robot.commands.PathGenCmd;
  * call.
  */
 public final class Main {
-  String path;
-
   private Main() {}
 
   /**
@@ -23,14 +21,6 @@ public final class Main {
    * If you change your main robot class, change the parameter type.
    */
   public static void main(String... args) {
-    RobotBaseThread robotBaseThread = new RobotBaseThread();
-    final PathGenCmd m_pathGenCmd = new PathGenCmd();
-    Thread t1 = new Thread((Runnable) robotBaseThread);
-    Thread t2 = new Thread(m_pathGenCmd);
-    t1.setPriority(10);
-    t2.setPriority(1);
-    t1.start();
-    t2.start();
-    //RobotBase.startRobot(Robot::new);
+    RobotBase.startRobot(Robot::new);
   }
 }

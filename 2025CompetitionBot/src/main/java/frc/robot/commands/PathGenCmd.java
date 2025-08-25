@@ -3,12 +3,13 @@ package frc.robot.commands;
 import java.util.ArrayList;
 import frc.robot.utils.FieldImage;
 import frc.robot.utils.PathFollowTargetPos;
+import edu.wpi.first.wpilibj2.command.Command;
 
 /*
  * You should consider using the more terse Command factories API instead
  * https://docs.wpilib.org/en/stable/docs/software/commandbased/organizing-command-based.html#defining-commands
  */
-public class PathGenCmd implements Runnable {
+public class PathGenCmd extends Command {
   FieldImage fieldImage = new FieldImage();
   int[] currentPos;
   int[] targetPos;
@@ -146,15 +147,16 @@ public class PathGenCmd implements Runnable {
   }
 
   @Override
-  public void run() {
-    while(true) {
-      try {
-        PathFollowTargetPos.currentTarget = printNextPoint(PathFollowTargetPos.finalPos);
-        System.out.println(PathFollowTargetPos.finalPos[0] + ", " + PathFollowTargetPos.finalPos[1]);
-        Thread.sleep(100);
-      } catch (InterruptedException ie) {
+  public void execute() {
+    PathFollowTargetPos.currentTarget = printNextPoint(PathFollowTargetPos.finalPos);
+    System.out.println(PathFollowTargetPos.finalPos[0] + ", " + PathFollowTargetPos.finalPos[1]);
+  }
 
-      }
-    }
+  public void end(boolean interrupted) {}
+
+  // Returns true when the command should end.
+  @Override
+  public boolean isFinished() {
+    return false;
   }
 }
