@@ -22,36 +22,16 @@ import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandGenericHID;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.Constants.OperatorConstants;
-import frc.robot.commands.ArmMoveWithJoystickCmd;
+
 import frc.robot.commands.AutoDriveCmd;
 // import frc.robot.commands.BackUpToPickUpcmd;
-import frc.robot.commands.ClimbDeployCmd;
-import frc.robot.commands.ClimbRetractCmd;
-import frc.robot.commands.CoralScoreL2Grp;
-import frc.robot.commands.CoralScoreL3Grp;
-import frc.robot.commands.CoralScoreL4Grp;
+
 import frc.robot.commands.DoNothingGrp;
 import frc.robot.commands.DriveToNearestScoreLocationCmd;
-import frc.robot.commands.ElevatorMoveWithJoystickCmd;
-import frc.robot.commands.GrabCoralAutoGrp;
-import frc.robot.commands.GrabCoralTeleopGrp;
-import frc.robot.commands.KillAllCmd;
-import frc.robot.commands.MoveElArmGrp;
-import frc.robot.commands.MoveElArmPostManualCmd;
-import frc.robot.commands.SetArmToPositionCmd;
-import frc.robot.commands.SetElevatorToHeightCmd;
-import frc.robot.commands.WaitForUpperCoralCmd;
-import frc.robot.commands.tests.RunTestsGrp;
 import frc.robot.generated.TunerConstants;
-import frc.robot.subsystems.ArmSub;
-import frc.robot.subsystems.CanSub;
-import frc.robot.subsystems.ClimbSub;
 import frc.robot.subsystems.DrivetrainSub;
-import frc.robot.subsystems.ElevatorSub;
-import frc.robot.subsystems.LedSub;
 import frc.robot.subsystems.VisionSub;
 import frc.robot.utils.RobotStatus;
-import frc.robot.utils.TestManager;
 
 
 /**
@@ -70,7 +50,7 @@ public class RobotContainer {
       .withDriveRequestType(DriveRequestType.Velocity);
 
   // RobotContainer constants
-  private final TestManager m_testManager = new TestManager();
+
 
   // Robot subsystems
   private final DrivetrainSub m_drivetrainSub = TunerConstants.createDrivetrain();
